@@ -24,11 +24,4 @@ type CoordinatesPointsForCalculate struct {
 }
 
 type Response struct {
-	Response []ResponseCoordinates `json:"response"`
-}
-
-type ResponseCoordinates struct {
-	SignalRange                float64           `json:"signal"`
-	SignalRangeWithCoordinates CoordinatesPoints `json:"signal_range"`
-	Color                      string            `json:"color"`
 }

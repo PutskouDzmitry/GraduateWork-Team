@@ -17,43 +17,26 @@ type wifi struct {
 	signalLossReceiving       float64
 }
 
-func CalculationOfValues(coordinates model.CoordinatesAllSchemes) (*model.Response, error) {
+func CalculationOfValues(coordinates model.CoordinatesAllSchemes) (float64, error) {
 	var COM float64 = 10
-	var response *model.Response
 
 	sensitivity := getSensitivityVersusBaudRate(coordinates.Speed)
 	if sensitivity == -1 {
-		return nil, fmt.Errorf("this program doesn't supposed this speed: %v", coordinates.Speed)
+		return -1, fmt.Errorf("this program doesn't supposed this speed: %v", coordinates.Speed)
 	}
 
 	numberOfChannel := getCenterFrequency(coordinates.NumberOfChannels)
 	if numberOfChannel == -1 {
-		return nil, fmt.Errorf("this program doesn't supposed this number of channel: %v", coordinates.NumberOfChannels)
+		return -1, fmt.Errorf("this program doesn't supposed this number of channel: %v", coordinates.NumberOfChannels)
 	}
 	numberOfChannel *= 1000
 
 	wifiSignal := initValues(coordinates.TransmitterPower, coordinates.GainOfTransmittingAntenna, coordinates.GainOfReceivingAntenna, sensitivity,
 		coordinates.SignalLossTransmitting, coordinates.SignalLossReceiving)
-
-	for i, value := range coordinates.CoordinatesForCalculate {
-
-		FSL := wifiSignal.getTotalSystemGain(COM)
-		logrus.Info(FSL)
-		distance := wifiSignal.getCommunicationRange(FSL, numberOfChannel)
-		logrus.Info(distance)
-
-		if value.Distance > distance {
-			response.Response[i].Color = "green"
-		} else {
-			response.Response[i].Color = "red"
-		}
-
-		response.Response[i].SignalRange = distance
-
-		logrus.Info("response: ", response)
-	}
-
-	return response, nil
+	FSL := wifiSignal.getTotalSystemGain(COM)
+	distance := wifiSignal.getCommunicationRange(FSL, numberOfChannel)
+	logrus.Info("distance: ", distance)
+	return distance, nil
 }
 
 func (w wifi) getTotalSystemGain(COM float64) float64 {
