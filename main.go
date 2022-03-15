@@ -37,25 +37,66 @@ func drawShapes(infile image.Image, dc *gg.Context, x, y, rx, ry, angle1, angle2
 		rotation += angle / 2
 	}
 	dc.NewSubPath()
+	var j int64
 	for i := 0; i < n; i++ {
 		a := rotation + angle*float64(i)
 		color, err := detectColorOfPixel(infile, x+r*math.Cos(a), y+r*math.Sin(a))
 		if err != nil {
 			logrus.Fatal(err)
 		}
-		if !color {
-			//logrus.Info("1qwe")
-			//logrus.Info(x+r*math.Cos(a), y+r*math.Sin(a))
-			//logrus.Info("2qwe")
-			//dc.SetRGBA255(255, 0, 0, 150)
-			//dc.LineTo(x+r*math.Cos(a), y+r*math.Sin(a))
-			continue
+		if !color && j == 0 {
+			dc.SetRGBA255(255, 0, 0, 150)
+			j++
+		}
+		if color && j == 0 {
+			dc.SetRGBA255(0, 255, 0, 150)
 		}
 		dc.LineTo(x+r*math.Cos(a), y+r*math.Sin(a))
-		dc.SetRGBA255(0, 255, 0, 150)
 	}
 	dc.ClosePath()
 }
+
+//func drawShapes(infile image.Image, dc *gg.Context, x, y, rx, ry, angle1, angle2 float64) {
+//	const n = 360
+//	var rotation float64 = 20
+//	var r float64 = getRadius()
+//	angle := 2 * math.Pi / float64(n)
+//	rotation -= math.Pi / 2
+//	if n%2 == 0 {
+//		rotation += angle / 2
+//	}
+//	dc.NewSubPath()
+//	for i := 0; i < n; i++ {
+//		if i == 287 {
+//			break
+//		}
+//		a := rotation + angle*float64(i)
+//		color, err := detectColorOfPixel(infile, x+r*math.Cos(a), y+r*math.Sin(a))
+//		if err != nil {
+//			logrus.Fatal(err)
+//		}
+//		if !color {
+//			j := 0.0
+//			for {
+//				color, err := detectColorOfPixel(infile, x - j+r*math.Cos(a), y - j+r*math.Sin(a))
+//				if err != nil {
+//					logrus.Fatal(err)
+//				}
+//				if color {
+//					break
+//				}
+//				j++
+//			}
+//			dc.SetRGBA255(255, 0, 0, 255)
+//			dc.LineTo(x - j+r*math.Cos(a), y- j+r*math.Sin(a))
+//		} else {
+//			dc.SetRGBA255(0, 255, 0, 150)
+//		}
+//		dc.LineTo(x+r*math.Cos(a), y+r*math.Sin(a))
+//		dc.FillPreserve()
+//	}
+//	dc.ClosePath()
+//}
 
 func detectColorOfPixel(img image.Image, x, y float64) (bool, error) {
 	pixel, err := getPixels(img, x, y)
@@ -69,11 +110,11 @@ func detectColorOfPixel(img image.Image, x, y float64) (bool, error) {
 }
 
 func getPointOfRouter() (float64, float64) {
-	return 650, 300
+	return 550, 250
 }
 
 func getRadius() float64 {
-	return 100
+	return 20
 }
 
 func getPixels(img image.Image, x, y float64) (Pixel, error) {

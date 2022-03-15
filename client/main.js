@@ -1,21 +1,26 @@
-window.onload = function() {
-    var input = document.getElementById('input');
-    input.addEventListener('change', handleFiles);
-}
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
 
-function handleFiles(e) {
-    var ctx = document.getElementById('canvas').getContext('2d');
-    var url = URL.createObjectURL(e.target.files[0]);
-    var img = new Image();
-    img.onload = function() {
-        ctx.drawImage(img, 0, 0, 600, 400);
-    }
-    img.src = url;
-}
+// Рисуем фон
+ctx.fillStyle = '#FD0';
+ctx.fillRect(0, 0, 75, 75);
+ctx.fillStyle = '#6C0';
+ctx.fillRect(75, 0, 75, 75);
+ctx.fillStyle = '#09F';
+ctx.fillRect(0, 75, 75, 75);
+ctx.fillStyle = '#F30';
+ctx.fillRect(75, 75, 75, 75);
+ctx.fillStyle = '#FFF';
 
-$('.canvas').click(function(e){
-    var target = this.getBoundingClientRect();
-    var x = e.clientX - target.left;
-    var y = e.clientY - target.top;
-    $('#coord-click').html(x + ', ' + y);
-});
+// Устанавливаем уровень прозрачности
+ctx.globalAlpha = 0.8;
+
+// Рисуем круги
+ctx.fillStyle = 'blue';
+ctx.fillRect(70, 70, 100, 100);
+
+// for (let i = 0; i < 7; i++) {
+//     ctx.beginPath();
+//     ctx.arc(75, 75, 10 + 10 * i, 0, Math.PI * 2, true);
+//     ctx.fill();
+// }

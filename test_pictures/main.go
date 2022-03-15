@@ -2,34 +2,73 @@ package main
 
 import (
 	"github.com/fogleman/gg"
+	"github.com/sirupsen/logrus"
+	"github.com/tfriedel6/canvas/sdlcanvas"
 	"image/color"
+	"math"
+)
+
+var (
+	path2 = "./test_pictures/floor.png"
+	n     = 320
 )
 
 func main() {
-	dc := gg.NewContext(400, 400)
+	im, err := gg.LoadPNG(path2)
+	if err != nil {
+		logrus.Fatal(err)
+	}
+	wnd, _, err := sdlcanvas.CreateWindow(1280, 720, "Hello")
+	if err != nil {
+		panic(err)
+	}
+	defer wnd.Destroy()
 
-	grad1 := gg.NewConicGradient(200, 200, 0)
-	grad1.AddColorStop(0.0, color.Black)
-	grad1.AddColorStop(0.5, color.RGBA{255, 215, 0, 255})
-	grad1.AddColorStop(1.0, color.RGBA{255, 0, 0, 255})
+	var x, y, r float64 = 200, 200, 800
+	var rotation float64 = 20
+	angle := 2 * math.Pi / float64(n)
+	rotation -= math.Pi / 2
 
-	grad2 := gg.NewConicGradient(200, 200, 90)
-	grad2.AddColorStop(0.00, color.RGBA{255, 0, 0, 255})
-	grad2.AddColorStop(0.16, color.RGBA{255, 255, 0, 255})
-	grad2.AddColorStop(0.33, color.RGBA{0, 255, 0, 255})
-	grad2.AddColorStop(0.50, color.RGBA{0, 255, 255, 255})
-	grad2.AddColorStop(0.66, color.RGBA{0, 0, 255, 255})
-	grad2.AddColorStop(0.83, color.RGBA{255, 0, 255, 255})
-	grad2.AddColorStop(1.00, color.RGBA{255, 0, 0, 255})
+	ctx := gg.NewContextForImage(im)
+	var colorCircle color.RGBA
+	logrus.Info(colorCircle)
+	for j := 0; j < 1; j++ {
+		nr := r / 5
+		if j == 0 {
+			colorCircle = color.RGBA{R: 255, G: 0, B: 0, A: 254}
+		}
+		if j == 1 {
+			nr += nr
+			colorCircle = color.RGBA{G: 255}
+		}
+		ctx.NewSubPath()
+		for i := 0; i < n; i++ {
+			a := angle * float64(i)
+			cos := math.Cos(a)
+			sin := math.Sin(a)
+			if i == 0 {
+				ctx.MoveTo(x+nr, y)
+				continue
+			}
+			ctx.LineTo(x+nr*cos, y+nr*sin)
+			ctx.SetColor(color.Alpha16{0})
+		}
+		ctx.Fill()
+	}
+	ctx.SavePNG("gradient-conic.png")
+}
 
-	dc.SetStrokeStyle(grad1)
-	dc.SetLineWidth(20)
-	dc.DrawCircle(200, 200, 180)
-	dc.Stroke()
-
-	dc.SetFillStyle(grad2)
-	dc.DrawCircle(200, 200, 150)
-	dc.Fill()
-
-	dc.SavePNG("gradient-conic.png")
+func gradient() {
+	im, err := gg.LoadPNG(path2)
+	if err != nil {
+		logrus.Fatal(err)
+	}
+	c := gg.NewRadialGradient(100, 75, 5, 100, 75, 75)
+	c.AddColorStop(0, color.White)
+	c.AddColorStop(1, color.RGBA{B: 255, A: 255})
+	ctx := gg.NewContextForImage(im)
+	ctx.DrawArc(100, 75, 60, 0, 2*math.Pi)
+	ctx.SetFillStyle(c)
+	ctx.Fill()
+	ctx.SavePNG("gradient-conic.png")
 }
