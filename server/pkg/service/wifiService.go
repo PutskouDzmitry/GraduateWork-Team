@@ -17,7 +17,7 @@ type wifi struct {
 	signalLossReceiving       float64
 }
 
-func CalculationOfValues(coordinates model.CoordinatesAllSchemes) (float64, error) {
+func CalculationOfValues(coordinates model.RouterSettings) (float64, error) {
 	var COM float64 = 10
 
 	sensitivity := getSensitivityVersusBaudRate(coordinates.Speed)

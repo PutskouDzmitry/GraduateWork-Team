@@ -7,42 +7,50 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"io"
-	"log"
 	"net/http"
 	"os"
 )
 
 func (h Handler) calculationOfValues(c *gin.Context) {
-	var coordinates model.CoordinatesAllSchemes
-	var coordinatesOfRouter model.CoordinatesPoints
-	if err := c.BindJSON(&coordinates); err != nil {
+	var routers []model.RouterSettings
+	if err := c.BindJSON(&routers); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
-	logrus.Info("start data from front-end ", coordinates)
+	logrus.Info("start data from front-end ", routers)
 
-	distance, err := service.CalculationOfValues(coordinates)
-	if err != nil {
-		newErrorResponse(c, http.StatusInternalServerError, err.Error())
-	}
 	file, header, err := c.Request.FormFile("upload")
 	logrus.Info(file)
 	filename := header.Filename
 	fmt.Println(header.Filename)
 	out, err := os.Create(filename + ".png")
 	if err != nil {
-		log.Fatal(err)
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
 	}
 	defer out.Close()
 	_, err = io.Copy(out, file)
 	if err != nil {
-		log.Fatal(err)
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
 	}
-	name := service.DrawImage("2", filename, distance, coordinatesOfRouter.X, coordinatesOfRouter.Y)
-	logrus.Info(name)
-	//logrus.Info("response date for front-end ", responseCoordinates)
-	//
-	//c.JSON(http.StatusOK, responseCoordinates)
+	distances := make([]float64, 10, 10)
+	for _, router := range routers {
+		distance, err := service.CalculationOfValues(router)
+		if err != nil {
+			newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		}
+		distances = append(distances, distance)
+	}
+	draw := service.NewDrawImage(routers, distances, filename)
+	err = draw.DrawOnImage()
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+	logrus.Info("response date for front-end ", responseCoordinates)
+
+	c.JSON(http.StatusOK, responseCoordinates)
 }
 
 func (h Handler) saveData(c *gin.Context) {

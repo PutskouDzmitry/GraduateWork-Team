@@ -1,65 +1,152 @@
 package service
 
 import (
-	"fmt"
+	"github.com/PutskouDzmitry/GraduateWork/server/pkg/model"
 	"github.com/fogleman/gg"
 	"github.com/sirupsen/logrus"
 	"image"
+	"image/color"
 	"math"
-	"os"
 )
 
-func DrawImage(id, fileName string, distance float64, x, y float64) string {
-	im, err := gg.LoadPNG(fileName)
-	if err != nil {
-		logrus.Fatal(err)
-	}
-	dc := gg.NewContextForImage(im)
-	infile, err := os.Open(fileName)
-	img, _, err := image.Decode(infile)
-	if err != nil {
-		logrus.Fatal(err)
-	}
-	drawShapes(img, dc, x, y, distance)
-	dc.Fill()
-	fileNameResult := fmt.Sprint(id + ".png")
-	dc.SavePNG(fileNameResult)
-	return fileNameResult
+type drawImage struct {
+	fileName             string
+	coordinatesOfRouters []model.RouterSettings
+	radius               []float64
 }
 
-func drawShapes(infile image.Image, dc *gg.Context, x, y, radius float64) {
-	const n = 360
+func NewDrawImage(coordinatesOfRouters []model.RouterSettings, radius []float64, fileName string) *drawImage {
+	return &drawImage{
+		coordinatesOfRouters: coordinatesOfRouters,
+		radius:               radius,
+		fileName:             fileName,
+	}
+}
+
+var (
+	//path2 = "./test_pictures/example_floorplan.png"
+	path2     = "./test_pictures/floor.png"
+	n         = 16
+	koofStone = 0.85
+)
+
+func (d drawImage) DrawOnImage() error {
+	im, err := gg.LoadPNG(d.fileName)
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
+	var x, y, r float64 = 900, 900, 500
 	var rotation float64 = 20
-	var r float64 = 200
 	angle := 2 * math.Pi / float64(n)
 	rotation -= math.Pi / 2
-	if n%2 == 0 {
-		rotation += angle / 2
-	}
-	dc.NewSubPath()
-	for i := 0; i < n; i++ {
-		a := rotation + angle*float64(i)
-		_, err := detectColorOfPixel(infile, x+r*math.Cos(a), y+r*math.Sin(a))
-		if err != nil {
-			logrus.Fatal(err)
+	colorAndRangeShape := NewColorAndRadius(r)
+	ctx := gg.NewContextForImage(im)
+	var rNew float64
+	var rPromej float64
+	for j := 0; j < len(colorAndRangeShape); j++ {
+		for a := 0; a < 2; a++ {
+			ctx.NewSubPath()
+			if a == 1 {
+				x, y, r = 300, 300, 50
+			} else {
+				x, y, r = 900, 900, 500
+			}
+			ctx.DrawCircle(x, y, 10)
+			for i := 0; i <= n; i++ {
+				r = colorAndRangeShape[j].Radius
+				rNew = r
+				rPromej = r
+				colorPixels := colorAndRangeShape[j].Color
+				a := angle * float64(i)
+				for h := 0; float64(h) < r; h++ {
+					xH := x + float64(h)*math.Cos(a)
+					yH := y + float64(h)*math.Sin(a)
+					colorCheck, _ := detectColorOfPixel(im, xH, yH)
+					if !colorCheck {
+						rT := getRadius(x, y, xH, yH)
+						if rT < rNew {
+							rNew = rT + (rPromej-rT)*koofStone
+							rPromej = rNew
+							h += 5
+						}
+
+					}
+				}
+				cosX := x + rNew*math.Cos(a)
+				sinY := y + rNew*math.Sin(a)
+				if i == 0 {
+					ctx.MoveTo(x+rNew, y)
+					continue
+				}
+				ctx.LineTo(cosX, sinY)
+				ctx.SetRGBA255(int(colorPixels.R), int(colorPixels.G), int(colorPixels.B), int(colorPixels.A))
+				as := gg.NewSolidPattern(color.Black)
+				ctx.SetStrokeStyle(as)
+			}
+			ctx.SetLineWidth(5)
+			ctx.FillPreserve()
+			ctx.Stroke()
 		}
-		//if !color {
-		//	logrus.Info("1qwe")
-		//	logrus.Info(x+r*math.Cos(a), y+r*math.Sin(a))
-		//	logrus.Info("2qwe")
-		//	//dc.SetRGBA255(255, 0, 0, 150)
-		//	//dc.LineTo(x+r*math.Cos(a), y+r*math.Sin(a))
-		//	continue
-		//}
-		logrus.Info(x+r*math.Cos(a), y+r*math.Sin(a))
-		dc.LineTo(x+r*math.Cos(a), y+r*math.Sin(a))
-		dc.SetRGBA255(0, 255, 0, 150)
 	}
-	dc.ClosePath()
+	ctx.SavePNG("gradient-conic.png")
+}
+
+func getRadius(x0, y0, x1, y1 float64) float64 {
+	var x0x1 float64
+	var y0y1 float64
+	if x1-x0 >= 0 {
+		x0x1 = x1 - x0
+	} else {
+		x0x1 = x0 - x1
+	}
+	if y1-y0 >= 0 {
+		y0y1 = y1 - y0
+	} else {
+		y0y1 = y0 - y1
+	}
+	return math.Sqrt(math.Pow(x0x1, 2) + math.Pow(y0y1, 2))
+}
+
+type ColorAndRadius struct {
+	Color  color.RGBA
+	Radius float64
+}
+
+func NewColorAndRadius(radius float64) []ColorAndRadius {
+	a := uint8(220)
+	var kof2 float64 = 0.5
+	var kof3 float64 = 0.4
+	var kof4 float64 = 0.3
+	var kof5 float64 = 0.25
+	var kof6 float64 = 0.2
+	var kof7 float64 = 0.15
+	var kof8 float64 = 0.1
+	colorArr := make([]ColorAndRadius, 9, 11)
+	colorArr[0].Color = color.RGBA{A: a, R: 220, G: 0, B: 0}
+	colorArr[0].Radius = radius
+	colorArr[1].Color = color.RGBA{A: a, R: 223, G: 106, B: 78}
+	colorArr[1].Radius = radius * kof2
+	colorArr[2].Color = color.RGBA{A: a, R: 227, G: 138, B: 80}
+	colorArr[2].Radius = radius * kof3
+	colorArr[3].Color = color.RGBA{A: a, R: 234, G: 170, B: 82}
+	colorArr[3].Radius = radius * kof4
+	colorArr[4].Color = color.RGBA{A: a, R: 190, G: 255, B: 92}
+	colorArr[4].Radius = radius * kof5
+	colorArr[5].Color = color.RGBA{A: a, R: 140, G: 255, B: 91}
+	colorArr[5].Radius = radius * kof6
+	colorArr[6].Color = color.RGBA{A: a, R: 110, G: 255, B: 91}
+	colorArr[6].Radius = radius * kof7
+	colorArr[7].Color = color.RGBA{A: a, R: 92, G: 255, B: 90}
+	colorArr[7].Radius = radius * kof8
+	return colorArr
 }
 
 func detectColorOfPixel(img image.Image, x, y float64) (bool, error) {
 	pixel, err := getPixels(img, x, y)
+	if pixel.R == 0 && pixel.G == 0 && pixel.B == 0 {
+		return false, err
+	}
 	if err != nil {
 		return false, err
 	}
