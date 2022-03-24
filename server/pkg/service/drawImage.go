@@ -3,7 +3,6 @@ package service
 import (
 	"github.com/PutskouDzmitry/GraduateWork/server/pkg/model"
 	"github.com/fogleman/gg"
-	"github.com/sirupsen/logrus"
 	"image"
 	"image/color"
 	"math"
@@ -12,47 +11,41 @@ import (
 type drawImage struct {
 	fileName             string
 	coordinatesOfRouters []model.RouterSettings
-	radius               []float64
 }
 
-func NewDrawImage(coordinatesOfRouters []model.RouterSettings, radius []float64, fileName string) *drawImage {
+func NewDrawImage(coordinatesOfRouters []model.RouterSettings, fileName string) *drawImage {
 	return &drawImage{
 		coordinatesOfRouters: coordinatesOfRouters,
-		radius:               radius,
 		fileName:             fileName,
 	}
 }
 
 var (
-	//path2 = "./test_pictures/example_floorplan.png"
 	path2     = "./test_pictures/floor.png"
 	n         = 16
-	koofStone = 0.85
+	koofStone = 0.6
 )
 
 func (d drawImage) DrawOnImage() error {
 	im, err := gg.LoadPNG(d.fileName)
 	if err != nil {
-		logrus.Fatal(err)
+		return err
 	}
 
-	var x, y, r float64 = 900, 900, 500
 	var rotation float64 = 20
 	angle := 2 * math.Pi / float64(n)
 	rotation -= math.Pi / 2
-	colorAndRangeShape := NewColorAndRadius(r)
 	ctx := gg.NewContextForImage(im)
 	var rNew float64
 	var rPromej float64
-	for j := 0; j < len(colorAndRangeShape); j++ {
-		for a := 0; a < 2; a++ {
+	for j := 0; j < 8; j++ {
+		for a := 0; a < len(d.coordinatesOfRouters); a++ {
 			ctx.NewSubPath()
-			if a == 1 {
-				x, y, r = 300, 300, 50
-			} else {
-				x, y, r = 900, 900, 500
+			x, y, r, err := d.getXYR(a)
+			colorAndRangeShape := NewColorAndRadius(r)
+			if err != nil {
+				return err
 			}
-			ctx.DrawCircle(x, y, 10)
 			for i := 0; i <= n; i++ {
 				r = colorAndRangeShape[j].Radius
 				rNew = r
@@ -90,6 +83,15 @@ func (d drawImage) DrawOnImage() error {
 		}
 	}
 	ctx.SavePNG("gradient-conic.png")
+	return nil
+}
+
+func (d drawImage) getXYR(i int) (float64, float64, float64, error) {
+	r, err := CalculationOfValues(d.coordinatesOfRouters[i])
+	if err != nil {
+		return -1, -1, -1, err
+	}
+	return d.coordinatesOfRouters[i].CoordinatesOfRouter.X, d.coordinatesOfRouters[i].CoordinatesOfRouter.Y, r, nil
 }
 
 func getRadius(x0, y0, x1, y1 float64) float64 {

@@ -19,7 +19,7 @@ func (h Handler) calculationOfValues(c *gin.Context) {
 	}
 	logrus.Info("start data from front-end ", routers)
 
-	file, header, err := c.Request.FormFile("upload")
+	file, header, err := c.Request.FormFile("file")
 	logrus.Info(file)
 	filename := header.Filename
 	fmt.Println(header.Filename)
@@ -34,23 +34,14 @@ func (h Handler) calculationOfValues(c *gin.Context) {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
-	distances := make([]float64, 10, 10)
-	for _, router := range routers {
-		distance, err := service.CalculationOfValues(router)
-		if err != nil {
-			newErrorResponse(c, http.StatusInternalServerError, err.Error())
-		}
-		distances = append(distances, distance)
-	}
-	draw := service.NewDrawImage(routers, distances, filename)
+	draw := service.NewDrawImage(routers, filename)
 	err = draw.DrawOnImage()
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
-	logrus.Info("response date for front-end ", responseCoordinates)
-
-	c.JSON(http.StatusOK, responseCoordinates)
+	filepath := "http://localhost:8080/file/" + filename
+	c.JSON(http.StatusOK, gin.H{"filepath": filepath})
 }
 
 func (h Handler) saveData(c *gin.Context) {
