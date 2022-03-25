@@ -2,8 +2,8 @@ package service
 
 import (
 	"fmt"
-	"github.com/PutskouDzmitry/GraduateWork/server/pkg/data"
-	"github.com/PutskouDzmitry/GraduateWork/server/pkg/model"
+	"github.com/PutskouDzmitry/GraduateWork-Team/server/pkg/data"
+	"github.com/PutskouDzmitry/GraduateWork-Team/server/pkg/model"
 	"github.com/sirupsen/logrus"
 	"math"
 )

@@ -1,7 +1,7 @@
 package api
 
 import (
-	"github.com/PutskouDzmitry/GraduateWork/server/pkg/service"
+	"github.com/PutskouDzmitry/GraduateWork-Team/server/pkg/service"
 	"github.com/gin-gonic/gin"
 )
 

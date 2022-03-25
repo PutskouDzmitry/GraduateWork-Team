@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/PutskouDzmitry/GraduateWork/server/pkg/api"
-	"github.com/PutskouDzmitry/GraduateWork/server/pkg/data"
-	"github.com/PutskouDzmitry/GraduateWork/server/pkg/service"
+	"github.com/PutskouDzmitry/GraduateWork-Team/server/pkg/api"
+	"github.com/PutskouDzmitry/GraduateWork-Team/server/pkg/data"
+	"github.com/PutskouDzmitry/GraduateWork-Team/server/pkg/service"
 	"github.com/sirupsen/logrus"
 	"log"
 	"os"

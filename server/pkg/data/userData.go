@@ -2,7 +2,7 @@ package data
 
 import (
 	"fmt"
-	"github.com/PutskouDzmitry/GraduateWork/server/pkg/model"
+	"github.com/PutskouDzmitry/GraduateWork-Team/server/pkg/model"
 	"github.com/go-redis/redis"
 	"gorm.io/gorm"
 	"strconv"

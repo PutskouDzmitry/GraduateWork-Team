@@ -2,8 +2,8 @@ package api
 
 import (
 	"fmt"
-	"github.com/PutskouDzmitry/GraduateWork/server/pkg/model"
-	"github.com/PutskouDzmitry/GraduateWork/server/pkg/service"
+	"github.com/PutskouDzmitry/GraduateWork-Team/server/pkg/model"
+	"github.com/PutskouDzmitry/GraduateWork-Team/server/pkg/service"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"io"
