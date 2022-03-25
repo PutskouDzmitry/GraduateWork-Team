@@ -22,9 +22,11 @@ build_server:
 
 .PHONY: build_client
 build_client:
+	npm i
 
 .PHONE: run_client
 run_client:
+	npm start
 
 .PHONY: build
 build: build_db
