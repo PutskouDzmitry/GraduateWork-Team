@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"github.com/PutskouDzmitry/GraduateWork-Team/server/pkg/model"
 	"github.com/PutskouDzmitry/GraduateWork-Team/server/pkg/service"
 	"github.com/gin-gonic/gin"
@@ -11,42 +12,35 @@ import (
 	"os"
 )
 
-type T struct {
-	file string `json:"file"`
-}
-
 func (h Handler) calculationOfValues(c *gin.Context) {
 	var routers []model.RouterSettings
-	var t T
-	if err := c.BindJSON(&t); err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
-		return
+	if err := c.BindJSON(&routers); err != nil {
+		//newErrorResponse(c, http.StatusBadRequest, err.Error())
+		//return
 	}
-	logrus.Info("start data from front-end ", routers)
 
-	response, e := http.Get(t.file)
-	if e != nil {
-		log.Fatal(e)
-	}
-	defer response.Body.Close()
-	out, err := os.Create("filename" + ".png")
+	file, header, err := c.Request.FormFile("file")
 	if err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		c.String(http.StatusBadRequest, fmt.Sprintf("file err : %s", err.Error()))
 		return
+	}
+	filename := header.Filename
+	out, err := os.Create("public/" + filename)
+	if err != nil {
+		log.Fatal(err)
 	}
 	defer out.Close()
-	_, err = io.Copy(out, response.Body)
+	_, err = io.Copy(out, file)
 	if err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
-		return
+		log.Fatal(err)
 	}
-	draw := service.NewDrawImage(routers, "filename"+".png")
+	draw := service.NewDrawImage(routers, filename)
 	err = draw.DrawOnImage()
 	if err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
-		return
+		//newErrorResponse(c, http.StatusBadRequest, err.Error())
+		//return
 	}
-	filepath := "http://localhost:8080/file/" + "qwe"
+	filepath := "http://localhost:8080/file/" + filename
 	c.JSON(http.StatusOK, gin.H{"filepath": filepath})
 }
 
