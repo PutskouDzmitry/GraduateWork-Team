@@ -10,8 +10,9 @@ function Main() {
   const canvas = useRef(null);
   const [isUploaded, setIsUploaded] = useState(false);
   const [routers, setRouters] = useState([]);
+  const [formData, setFormData] = useState(new FormData());
 
-  const handleChange = (file) => {
+  const handleChange = async (file) => {
     canvas.current.getContext("2d").clearRect(0, 0, 600, 400);
     let ctx = canvas.current.getContext("2d");
     let url = URL.createObjectURL(file[0]);
@@ -20,7 +21,15 @@ function Main() {
       ctx.drawImage(img, 0, 0);
     };
     img.src = url;
+
+    let imageBlob = await new Promise((resolve) =>
+      canvas.current.toBlob(resolve, "image/png")
+    );
+    let formData = new FormData();
+    formData.append("file", imageBlob, file[0].name);
+    console.log(formData);
     setIsUploaded(true);
+    setFormData(formData);
   };
 
   useEffect(() => {
@@ -71,6 +80,17 @@ function Main() {
         name="file"
         types={fileTypes}
       />
+      <button
+        onClick={async () => {
+          const picture = await fetch("http://localhost:8080/api/wifi/kek", {
+            method: "POST",
+            body: formData,
+          }).then((response) => response.json());
+          console.log(picture);
+        }}
+      >
+        Kek
+      </button>
     </div>
   );
 }
