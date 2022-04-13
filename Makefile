@@ -16,10 +16,6 @@ run_docker_redis:
 .PHONY: run_db
 run_db: run_docker_postgres run_docker_redis
 
-.PHONY: build_server
-build_server:
-	docker build -t docker_server -f ./docker/db.dockerfile .
-
 .PHONY: build_client
 build_client:
 	npm i
@@ -33,3 +29,7 @@ build: build_db
 
 .PHONY: run
 run: run_db
+
+
+.PHONY: run_kek
+run_kek: build_server run_server

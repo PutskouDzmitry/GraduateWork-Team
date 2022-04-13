@@ -44,7 +44,7 @@ func (h Handler) InitRoutes() *gin.Engine {
 
 	apiWifi := router.Group("/api/wifi") //h.userIdentity)
 	{
-		apiWifi.POST("/kek", h.calculationOfValues)
+		apiWifi.POST("/calculation", h.calculationOfValues)
 		//apiWifi.POST("/", h.saveData)
 		//apiWifi.POST("/", h.loadData)
 	}

@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"github.com/PutskouDzmitry/GraduateWork-Team/server/pkg/model"
 	"github.com/fogleman/gg"
 	"image"
@@ -9,49 +10,63 @@ import (
 )
 
 type drawImage struct {
-	fileName             string
+	filePathInput        string
+	filePathOutput       string
 	coordinatesOfRouters []model.RouterSettings
 }
 
-func NewDrawImage(coordinatesOfRouters []model.RouterSettings, fileName string) *drawImage {
+func NewDrawImage(coordinatesOfRouters []model.RouterSettings, filePathInput string, filePathOutput string) *drawImage {
 	return &drawImage{
 		coordinatesOfRouters: coordinatesOfRouters,
-		fileName:             fileName,
+		filePathInput:        filePathInput,
+		filePathOutput:       filePathOutput,
 	}
 }
 
 var (
-	path2     = "./test_pictures/floor.png"
-	n         = 16
-	koofStone = 0.6
+	pathTest          = "./test_pictures/floor.png"
+	n                 = 16
+	koofStone         = 0.6
+	rotation  float64 = 20
+	angle             = 2 * math.Pi / float64(n)
 )
 
 func (d drawImage) DrawOnImage() error {
-	im, err := gg.LoadPNG(d.fileName)
+	im, err := gg.LoadPNG(d.filePathInput)
 	if err != nil {
-		return err
+		return fmt.Errorf("error with load png file: %w", err)
 	}
 
-	var rotation float64 = 20
-	angle := 2 * math.Pi / float64(n)
+	radiuses := make([]float64, 0, len(d.coordinatesOfRouters))
+	for _, value := range d.coordinatesOfRouters {
+		radius, err := CalculationOfValues(value)
+		if err != nil {
+			return err
+		}
+		radius /= value.Scale
+		radiuses = append(radiuses, radius)
+	}
+
 	rotation -= math.Pi / 2
 	ctx := gg.NewContextForImage(im)
+
 	var rNew float64
 	var rPromej float64
+	// draw all rings
 	for j := 0; j < 8; j++ {
+		//отрисовка по одному кругу покрытия каждого роутера
 		for a := 0; a < len(d.coordinatesOfRouters); a++ {
 			ctx.NewSubPath()
-			x, y, r, err := d.getXYR(a)
+			x, y, r := d.coordinatesOfRouters[a].CoordinatesOfRouter.X, d.coordinatesOfRouters[a].CoordinatesOfRouter.Y, radiuses[a]
 			colorAndRangeShape := NewColorAndRadius(r)
-			if err != nil {
-				return err
-			}
+			//отрисовка по линиям
 			for i := 0; i <= n; i++ {
 				r = colorAndRangeShape[j].Radius
 				rNew = r
 				rPromej = r
 				colorPixels := colorAndRangeShape[j].Color
 				a := angle * float64(i)
+				// расчет длины сигнала(поиск препядствий)
 				for h := 0; float64(h) < r; h++ {
 					xH := x + float64(h)*math.Cos(a)
 					yH := y + float64(h)*math.Sin(a)
@@ -82,7 +97,7 @@ func (d drawImage) DrawOnImage() error {
 			ctx.Stroke()
 		}
 	}
-	ctx.SavePNG("gradient-conic.png")
+	ctx.SavePNG(d.filePathOutput)
 	return nil
 }
 

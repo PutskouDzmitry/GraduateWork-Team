@@ -4,8 +4,11 @@ import (
 	"fmt"
 	"github.com/PutskouDzmitry/GraduateWork-Team/server/pkg/data"
 	"github.com/PutskouDzmitry/GraduateWork-Team/server/pkg/model"
-	"github.com/sirupsen/logrus"
 	"math"
+)
+
+var (
+	COM float64 = 10
 )
 
 type wifi struct {
@@ -18,7 +21,6 @@ type wifi struct {
 }
 
 func CalculationOfValues(coordinates model.RouterSettings) (float64, error) {
-	var COM float64 = 10
 
 	sensitivity := getSensitivityVersusBaudRate(coordinates.Speed)
 	if sensitivity == -1 {
@@ -35,21 +37,18 @@ func CalculationOfValues(coordinates model.RouterSettings) (float64, error) {
 		coordinates.SignalLossTransmitting, coordinates.SignalLossReceiving)
 	FSL := wifiSignal.getTotalSystemGain(COM)
 	distance := wifiSignal.getCommunicationRange(FSL, numberOfChannel)
-	logrus.Info("distance: ", distance)
-	return distance, nil
+	return distance * 1000, nil
 }
 
 func (w wifi) getTotalSystemGain(COM float64) float64 {
+	//logrus.Info(w.transmitterPower, w.gainOfTransmittingAntenna, w.gainOfReceivingAntenna, w.receiverSensitivity, w.signalLossTransmitting, w.signalLossReceiving)
 	return w.transmitterPower + w.gainOfTransmittingAntenna + w.gainOfReceivingAntenna - w.receiverSensitivity - w.signalLossTransmitting - w.signalLossReceiving - COM
 }
 
 func (w wifi) getCommunicationRange(FSL, F float64) float64 {
 	FAfterLog := math.Log10(F)
-	logrus.Info("F ", FAfterLog)
 	number := (FSL-33)/20 - FAfterLog
-	logrus.Info("Number", number)
 	return math.Pow(10, number)
-
 }
 
 func getSensitivityVersusBaudRate(speed int) float64 {
@@ -71,7 +70,7 @@ func getSensitivityVersusBaudRate(speed int) float64 {
 	case 6:
 		return -87
 	default:
-		return -1
+		return float64(speed)
 	}
 }
 
@@ -126,8 +125,18 @@ type wifiService struct {
 }
 
 type WifiService interface {
+	SaveData() error
+	GetData() error
 }
 
 func NewWifiService(wifi data.WifiData) WifiService {
 	return &wifiService{wifi: wifi}
+}
+
+func (w wifiService) SaveData() error {
+	return w.wifi.SaveData(model.Wifi{})
+}
+
+func (w wifiService) GetData() error {
+	return w.wifi.GetData()
 }
