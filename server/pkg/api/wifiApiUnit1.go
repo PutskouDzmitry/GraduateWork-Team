@@ -28,30 +28,20 @@ func testValue() []model.RouterSettings {
 				X: 200,
 				Y: 300,
 			},
-			TransmitterPower:          200,
-			GainOfTransmittingAntenna: 1,
-			GainOfReceivingAntenna:    2,
-			Speed:                     48,
-			SignalLossTransmitting:    0,
-			SignalLossReceiving:       0,
-			NumberOfChannels:          2,
-			Scale:                     7,
-			Thickness:                 10,
-		},
-		{
-			CoordinatesOfRouter: model.CoordinatesPoints{
-				X: 100,
-				Y: 200,
-			},
-			TransmitterPower:          0,
-			GainOfTransmittingAntenna: 0,
-			GainOfReceivingAntenna:    0,
-			Speed:                     48,
-			SignalLossTransmitting:    0,
-			SignalLossReceiving:       0,
-			NumberOfChannels:          3,
-			Scale:                     7,
-			Thickness:                 5,
+			//мощность передатчика P
+			TransmitterPower: 18,
+			//коэффициент усиления передающей антенны Gt
+			GainOfTransmittingAntenna: 5,
+			//коэффициент усиления приемной антенны GT
+			GainOfReceivingAntenna: 4,
+			//чувствительность приемника на данной скорости Pmin
+			Speed: 54,
+			//потери сигнала в коаксиальном кабеле и разъемах передающего тракта Lt
+			SignalLossTransmitting: -1,
+			//потери сигнала в коаксиальном кабеле и разъемах приемного тракта LT
+			SignalLossReceiving: -1,
+			NumberOfChannels:    13,
+			Scale:               1,
 		},
 	}
 }
@@ -88,7 +78,7 @@ func (h Handler) calculationOfValues(c *gin.Context) {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
-	fileBytes, err := ioutil.ReadFile(pathOfOutImage + filePathOutput)
+	fileBytes, err := ioutil.ReadFile("gradient-conic.png")
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -130,7 +120,7 @@ func getImageFromContext(c *gin.Context) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("error with get file from form: %w", err)
 	}
-	filename := pathOfOutImage + header.Filename
+	filename := header.Filename
 	out, err := os.Create(filename)
 	if err != nil {
 		return "", err

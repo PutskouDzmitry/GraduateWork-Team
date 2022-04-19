@@ -97,7 +97,7 @@ func (d drawImage) DrawOnImage() error {
 			ctx.Stroke()
 		}
 	}
-	ctx.SavePNG(d.filePathOutput)
+	ctx.SavePNG("gradient-conic.png")
 	return nil
 }
 
