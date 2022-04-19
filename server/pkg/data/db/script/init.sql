@@ -5,6 +5,13 @@ CREATE TABLE "wifi_data_models"
   path char(1000)
 );
 
+CREATE TABLE "users"
+(
+    id serial not null unique,
+    username CHAR(50) NOT NULL,
+    password CHAR(5000) NOT NULL
+);
+
 CREATE TABLE "wifi_user_models"
 (
     user_model_id serial not null unique,

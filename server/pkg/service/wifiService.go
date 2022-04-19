@@ -21,7 +21,6 @@ type wifi struct {
 }
 
 func CalculationOfValues(coordinates model.RouterSettings) (float64, error) {
-
 	sensitivity := getSensitivityVersusBaudRate(coordinates.Speed)
 	if sensitivity == -1 {
 		return -1, fmt.Errorf("this program doesn't supposed this speed: %v", coordinates.Speed)
@@ -134,7 +133,7 @@ func NewWifiService(wifi data.WifiData) WifiService {
 }
 
 func (w wifiService) SaveData() error {
-	return w.wifi.SaveData(model.Wifi{})
+	return w.wifi.SaveData(data.WifiDataModel{})
 }
 
 func (w wifiService) GetData() error {
