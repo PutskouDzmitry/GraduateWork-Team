@@ -1,0 +1,57 @@
+@import "../../styles/constants.scss";
+
+.sidebar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  left: -405px;
+  top: 0;
+  height: 100%;
+  z-index: 9999;
+
+  &_opened {
+    left: 0;
+  }
+
+  &__body {
+    height: 100%;
+    width: 400px;
+    background-color: white;
+    border-right: 5px solid $light-blue;
+
+    &_opened {
+    }
+  }
+
+  &__button {
+    background-color: transparent;
+    color: $light-blue;
+    border: 2px solid transparent;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    margin: 5px 0;
+    padding: 5px 5px 1px 5px;
+    outline: none;
+
+    & i {
+      font-size: 38px;
+    }
+
+    &:hover {
+      background-color: $light-blue;
+      color: white;
+    }
+
+    &_opened {
+      background-color: $light-blue;
+      color: white;
+
+      &:hover {
+        background-color: transparent;
+        color: $light-blue;
+      }
+    }
+  }
+}

@@ -1,0 +1,39 @@
+@import "../../styles/constants.scss";
+
+.main-block {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex: 1 0 auto;
+
+  .help-text {
+    display: block;
+    color: gray;
+    margin-bottom: 5px;
+  }
+
+  .help-text_hidden {
+    display: none;
+    color: gray;
+    margin-bottom: 5px;
+  }
+}
+
+.canvas-wrapper {
+  display: block;
+  position: relative;
+  width: 600px;
+  height: 400px;
+  margin-bottom: 10px;
+
+  &_hidden {
+    display: none;
+  }
+}
+
+.canvas {
+  &_hidden {
+    display: none;
+  }
+}
