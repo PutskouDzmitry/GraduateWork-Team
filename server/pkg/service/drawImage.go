@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/PutskouDzmitry/GraduateWork-Team/server/pkg/model"
 	"github.com/fogleman/gg"
+	"github.com/sirupsen/logrus"
 	"image"
 	"image/color"
 	"math"
@@ -33,10 +34,10 @@ var (
 
 func (d drawImage) DrawOnImage() error {
 	im, err := gg.LoadPNG(d.filePathInput)
+	arrayXY := detectColor(im)
 	if err != nil {
 		return fmt.Errorf("error with load png file: %w", err)
 	}
-
 	radiuses := make([]float64, 0, len(d.coordinatesOfRouters))
 	for _, value := range d.coordinatesOfRouters {
 		radius, err := CalculationOfValues(value)
@@ -44,7 +45,7 @@ func (d drawImage) DrawOnImage() error {
 			return err
 		}
 		radius /= value.Scale
-		radiuses = append(radiuses, radius)
+		radiuses = append(radiuses, 250)
 	}
 
 	rotation -= math.Pi / 2
@@ -70,15 +71,15 @@ func (d drawImage) DrawOnImage() error {
 				for h := 0; float64(h) < r; h++ {
 					xH := x + float64(h)*math.Cos(a)
 					yH := y + float64(h)*math.Sin(a)
-					colorCheck, _ := detectColorOfPixel(im, xH, yH)
-					if !colorCheck {
-						rT := getRadius(x, y, xH, yH)
-						if rT < rNew {
-							rNew = rT + (rPromej-rT)*koofStone
-							rPromej = rNew
-							h += 5
+					for k := 0; k < len(arrayXY); k++ {
+						if float64(int64(xH)) == arrayXY[k].x && float64(int64(yH)) == arrayXY[k].y {
+							rT := getRadius(x, y, xH, yH)
+							if rT < rNew {
+								rNew = rT + (rPromej-rT)*koofStone
+								rPromej = rNew
+								h += 30
+							}
 						}
-
 					}
 				}
 				cosX := x + rNew*math.Cos(a)
@@ -92,12 +93,12 @@ func (d drawImage) DrawOnImage() error {
 				as := gg.NewSolidPattern(color.Black)
 				ctx.SetStrokeStyle(as)
 			}
-			ctx.SetLineWidth(5)
+			ctx.SetLineWidth(1)
 			ctx.FillPreserve()
 			ctx.Stroke()
 		}
 	}
-	ctx.SavePNG("gradient-conic.png")
+	ctx.SavePNG("./test_pictures/" + d.filePathOutput + "output.png")
 	return nil
 }
 
@@ -131,7 +132,7 @@ type ColorAndRadius struct {
 }
 
 func NewColorAndRadius(radius float64) []ColorAndRadius {
-	a := uint8(220)
+	a := uint8(100)
 	var kof2 float64 = 0.5
 	var kof3 float64 = 0.4
 	var kof4 float64 = 0.3
@@ -161,7 +162,10 @@ func NewColorAndRadius(radius float64) []ColorAndRadius {
 
 func detectColorOfPixel(img image.Image, x, y float64) (bool, error) {
 	pixel, err := getPixels(img, x, y)
-	if pixel.R == 0 && pixel.G == 0 && pixel.B == 0 {
+	if pixel.R != 255 {
+		logrus.Info(pixel)
+	}
+	if pixel.R == 178 && pixel.G == 178 && pixel.B == 178 {
 		return false, err
 	}
 	if err != nil {
@@ -186,4 +190,30 @@ type Pixel struct {
 	G int
 	B int
 	A int
+}
+
+type XY struct {
+	x float64
+	y float64
+}
+
+func detectColor(im image.Image) []XY {
+	getXYArray := make([]XY, 0, 10)
+	getXY := XY{}
+	for x := 0; x < 600; x++ {
+		for y := 0; y < 400; y++ {
+			pixel, err := getPixels(im, float64(x), float64(y))
+			if err != nil {
+				logrus.Fatal(err)
+			}
+			if pixel.B != 255 && pixel.R != 255 {
+				getXY = XY{
+					x: float64(x),
+					y: float64(y),
+				}
+				getXYArray = append(getXYArray, getXY)
+			}
+		}
+	}
+	return getXYArray
 }

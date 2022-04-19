@@ -1,4 +1,4 @@
-package test_code
+package main
 
 //
 //import (

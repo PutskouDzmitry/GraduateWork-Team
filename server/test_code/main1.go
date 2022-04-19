@@ -1,4 +1,4 @@
-package test_code
+package main
 
 import (
 	"github.com/fogleman/gg"
@@ -9,10 +9,10 @@ import (
 )
 
 var (
-	//path2 = "./test_pictures/example_floorplan.png"
-	path2     = "./test_pictures/floor.png"
+	path1     = "1_example_ready.png"
+	path2     = "1_example_ready (1).png"
 	n         = 16
-	koofStone = 0.85
+	koofStone = 0.4
 )
 
 type Coordinates struct {
@@ -25,11 +25,12 @@ type Coordinates struct {
 
 func main() {
 	im, err := gg.LoadPNG(path2)
+	arrayXY := detectColor(im)
 	if err != nil {
 		logrus.Fatal(err)
 	}
 
-	var x, y, r float64 = 900, 900, 500
+	var x, y, r float64 = 300, 150, 200
 	var rotation float64 = 20
 	angle := 2 * math.Pi / float64(n)
 	rotation -= math.Pi / 2
@@ -38,13 +39,8 @@ func main() {
 	var rNew float64
 	var rPromej float64
 	for j := 0; j < len(colorAndRangeShape); j++ {
-		for a := 0; a < 2; a++ {
+		for a := 0; a < 1; a++ {
 			ctx.NewSubPath()
-			if a == 1 {
-				x, y, r = 300, 300, 50
-			} else {
-				x, y, r = 900, 900, 500
-			}
 			ctx.DrawCircle(x, y, 10)
 			for i := 0; i <= n; i++ {
 				r = colorAndRangeShape[j].Radius
@@ -55,16 +51,25 @@ func main() {
 				for h := 0; float64(h) < r; h++ {
 					xH := x + float64(h)*math.Cos(a)
 					yH := y + float64(h)*math.Sin(a)
-					colorCheck, _ := detectColorOfPixel(im, xH, yH)
-					if !colorCheck {
-						rT := getRadius(x, y, xH, yH)
-						if rT < rNew {
-							rNew = rT + (rPromej-rT)*koofStone
-							rPromej = rNew
-							h += 5
+					for k := 0; k < len(arrayXY); k++ {
+						if float64(int64(xH)) == arrayXY[k].x && float64(int64(yH)) == arrayXY[k].y {
+							rT := getRadius(x, y, xH, yH)
+							if rT < rNew {
+								rNew = rT + (rPromej-rT)*koofStone
+								rPromej = rNew
+								h += 30
+							}
 						}
-
 					}
+					//colorCheck, _ := detectColorOfPixel(im, xH, yH)
+					//if !colorCheck {
+					//	rT := getRadius(x, y, xH, yH)
+					//	if rT < rNew {
+					//		rNew = rT + (rPromej-rT)*koofStone
+					//		rPromej = rNew
+					//		h += 5
+					//	}
+					//}
 				}
 				cosX := x + rNew*math.Cos(a)
 				sinY := y + rNew*math.Sin(a)
@@ -77,12 +82,38 @@ func main() {
 				as := gg.NewSolidPattern(color.Black)
 				ctx.SetStrokeStyle(as)
 			}
-			ctx.SetLineWidth(5)
+			ctx.SetLineWidth(1)
 			ctx.FillPreserve()
 			ctx.Stroke()
 		}
 	}
-	ctx.SavePNG("gradient-conic.png")
+	ctx.SavePNG("gradient-conic.png1.png")
+}
+
+type XY struct {
+	x float64
+	y float64
+}
+
+func detectColor(im image.Image) []XY {
+	getXYArray := make([]XY, 0, 10)
+	getXY := XY{}
+	for x := 0; x < 600; x++ {
+		for y := 0; y < 400; y++ {
+			pixel, err := getPixels(im, float64(x), float64(y))
+			if err != nil {
+				logrus.Fatal(err)
+			}
+			if pixel.B != 255 && pixel.R != 255 {
+				getXY = XY{
+					x: float64(x),
+					y: float64(y),
+				}
+				getXYArray = append(getXYArray, getXY)
+			}
+		}
+	}
+	return getXYArray
 }
 
 func getRadius(x0, y0, x1, y1 float64) float64 {

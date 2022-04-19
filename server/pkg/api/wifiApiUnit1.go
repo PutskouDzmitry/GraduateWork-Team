@@ -5,6 +5,7 @@ import (
 	"github.com/PutskouDzmitry/GraduateWork-Team/server/pkg/model"
 	"github.com/PutskouDzmitry/GraduateWork-Team/server/pkg/service"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -25,8 +26,8 @@ func testValue() []model.RouterSettings {
 	return []model.RouterSettings{
 		{
 			CoordinatesOfRouter: model.CoordinatesPoints{
-				X: 200,
-				Y: 300,
+				X: 300,
+				Y: 200,
 			},
 			//мощность передатчика P
 			TransmitterPower: 18,
@@ -57,16 +58,20 @@ func (h Handler) calculationOfValues(c *gin.Context) {
 	//	//newErrorResponse(c, http.StatusBadRequest, err.Error())
 	//	//return
 	//}
+	userId := "wqid1239821jowe1w"
 	routers = testValue()
-	filePathInput, err := getImageFromContext(c)
+	filePathInput, err := getImageFromContext(c, userId)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 	// validation
+	err = service.ValidationOfPlaceRouter(filePathInput, routers)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
 	validationStartValue(&routers)
-	// username
-	var userId string = "Dima"
 	filePathOutput, err := generateFilePathOutput(userId, pathOfOutImage)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
@@ -78,13 +83,13 @@ func (h Handler) calculationOfValues(c *gin.Context) {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
-	fileBytes, err := ioutil.ReadFile("gradient-conic.png")
+	fileBytes, err := ioutil.ReadFile("./test_pictures/" + filePathOutput + "output.png")
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 	c.Writer.WriteHeader(http.StatusOK)
-	c.Writer.Header().Set("Content-Type", "application/octet-stream")
+	c.Writer.Header().Set("Content-Type", "text/plain")
 	c.Writer.Write(fileBytes)
 }
 
@@ -112,15 +117,17 @@ func validationStartValue(routers *[]model.RouterSettings) {
 }
 
 func generateFilePathOutput(userId, pathOfOutImage string) (string, error) {
-	return userId, nil
+	return userId + "output.png", nil
 }
 
-func getImageFromContext(c *gin.Context) (string, error) {
-	file, header, err := c.Request.FormFile("file")
+func getImageFromContext(c *gin.Context, userId string) (string, error) {
+	file, _, err := c.Request.FormFile("file")
+	t := c.Request.FormValue("testInput")
+	logrus.Info(t)
 	if err != nil {
 		return "", fmt.Errorf("error with get file from form: %w", err)
 	}
-	filename := header.Filename
+	filename := "./test_pictures/" + userId + "input.png"
 	out, err := os.Create(filename)
 	if err != nil {
 		return "", err
@@ -131,6 +138,10 @@ func getImageFromContext(c *gin.Context) (string, error) {
 		return "", fmt.Errorf("error with copy file: %w", err)
 	}
 	return filename, nil
+}
+
+func getDataFromForm() {
+
 }
 
 func (h Handler) saveData(c *gin.Context) {
