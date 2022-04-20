@@ -201,5 +201,17 @@ func (h Handler) saveData(c *gin.Context) {
 }
 
 func (h Handler) loadData(c *gin.Context) {
-
+	var routers model.User
+	if err := c.BindJSON(&routers); err != nil {
+		//newErrorResponse(c, http.StatusBadRequest, err.Error())
+		//return
+	}
+	var userId = 1
+	data, err := h.wifiService.GetData(int64(userId))
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	logrus.Info(data)
+	c.JSON(http.StatusOK, "data is loaded")
 }

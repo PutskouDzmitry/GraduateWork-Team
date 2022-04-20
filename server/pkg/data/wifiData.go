@@ -3,6 +3,7 @@ package data
 import (
 	"fmt"
 	"github.com/PutskouDzmitry/GraduateWork-Team/server/pkg/model"
+	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
@@ -59,7 +60,7 @@ type wifiData struct {
 
 type WifiData interface {
 	SaveData(wifiSettings []model.RouterSettings, userId int64, filePath string) error
-	GetData() error
+	GetData(userId int64) (model.Wifi, error)
 }
 
 func NewWifiData(postgres *gorm.DB) WifiData {
@@ -101,6 +102,7 @@ func (w wifiData) addDataIntoDb(wifiSettings []model.RouterSettings, userId int6
 		if result.Error != nil {
 			return result.Error
 		}
+		logrus.Info(router)
 
 		wifiModel := createWifiModels(router[i].IdRouter, userId, filePath)
 		result = w.postgres.Create(wifiModel)
@@ -140,7 +142,66 @@ func createWifiModels(routersID int64, userID int64, path string) WifiDataModel 
 	}
 }
 
-func (w wifiData) GetData() error {
+func (w wifiData) GetData(userId int64) (model.Wifi, error) {
+	var newUser model.User
+	result := w.postgres.Where("id=?", userId).Find(&newUser)
+	if result.Error != nil && newUser.Id != 0 {
+		return model.Wifi{}, fmt.Errorf("user doesn't find: %w", result.Error)
+	}
+	dataResult, err := w.getDataFromDb(userId)
+	if err != nil {
+		return model.Wifi{}, err
+	}
+	return dataResult, nil
+}
 
-	return nil
+func (w wifiData) getDataFromDb(userId int64) (model.Wifi, error) {
+	var wifiDataModel []WifiDataModel
+	result := w.postgres.Table("wifi_data_models").Where("id_user_data=?", userId).Find(&wifiDataModel)
+	if result.Error != nil {
+		return model.Wifi{}, result.Error
+	}
+	routers := make([]RouterDataModel, 0, 10)
+	var router RouterDataModel
+	for _, value := range wifiDataModel {
+		result = w.postgres.Table("router_data_models").Where("id_router=?", value.IdRouterWifi).Find(&router)
+		if result.Error != nil {
+			return model.Wifi{}, result.Error
+		}
+		routers = append(routers, router)
+	}
+	routerSettings := make([]model.RouterSettings, 0, 10)
+	for _, value := range routers {
+		var coordPoint CoordinatesPoints
+		result = w.postgres.Table("coordinates_points").Where("id=?", value.CoordinatesOfRouterID).Find(&coordPoint)
+		if result.Error != nil {
+			return model.Wifi{}, result.Error
+		}
+		routerSetting := convertRouterDataModelToRouterSettings(value, coordPoint)
+		routerSettings = append(routerSettings, routerSetting)
+	}
+	return model.Wifi{
+		User:   userId,
+		Router: routerSettings,
+		Path:   wifiDataModel[0].Path,
+	}, nil
+}
+
+func convertRouterDataModelToRouterSettings(router RouterDataModel, point CoordinatesPoints) model.RouterSettings {
+	return model.RouterSettings{
+		CoordinatesOfRouter: model.CoordinatesPoints{
+			X: point.X,
+			Y: point.Y,
+		},
+		TransmitterPower:          router.TransmitterPower,
+		GainOfTransmittingAntenna: router.GainOfTransmittingAntenna,
+		GainOfReceivingAntenna:    router.GainOfReceivingAntenna,
+		Speed:                     router.Speed,
+		SignalLossTransmitting:    router.SignalLossTransmitting,
+		SignalLossReceiving:       router.SignalLossReceiving,
+		NumberOfChannels:          router.NumberOfChannels,
+		Scale:                     router.Scale,
+		Thickness:                 router.Thickness,
+		COM:                       router.COM,
+	}
 }

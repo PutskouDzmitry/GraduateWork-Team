@@ -15,8 +15,8 @@ type RouterSettings struct {
 }
 
 type Wifi struct {
-	User   string
-	Router RouterSettings
+	User   int64
+	Router []RouterSettings
 	Path   string
 }
 
