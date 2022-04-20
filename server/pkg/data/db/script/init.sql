@@ -9,14 +9,7 @@ CREATE TABLE "users"
 (
     id serial not null unique,
     username CHAR(50) NOT NULL,
-    password CHAR(5000) NOT NULL
-);
-
-CREATE TABLE "wifi_user_models"
-(
-    user_model_id serial not null unique,
-    username CHAR(50) NOT NULL,
-    password CHAR(50) NOT NULL
+    password CHAR(100) NOT NULL
 );
 
 CREATE TABLE "router_data_models"
@@ -37,7 +30,7 @@ CREATE TABLE "router_data_models"
 
 CREATE TABLE "coordinates_points"
 (
-  id serial not null unique,
+  id SERIAL NOT NULL UNIQUE,
   x INT NOT NULL,
   y INT NOT NULL
 );

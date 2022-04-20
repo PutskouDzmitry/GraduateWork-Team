@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/PutskouDzmitry/GraduateWork-Team/server/pkg/model"
 	"github.com/go-redis/redis"
+	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 	"strconv"
 	"time"
@@ -78,14 +79,17 @@ func (a userData) CreateUser(dataUser model.User) (string, error) {
 	if result.Error != nil {
 		return "", result.Error
 	}
+	logrus.Info(newUser.Id)
 	return strconv.Itoa(newUser.Id), nil
 }
 
 func (a userData) GetUser(id int, username string, password string) (model.User, error) {
 	var newUser model.User
+	id = 1
 	result := a.postgres.Where("id=?", id).Find(&newUser)
 	if result.Error != nil {
 		return newUser, result.Error
 	}
+	logrus.Info(newUser)
 	return newUser, nil
 }

@@ -98,7 +98,7 @@ func (d drawImage) DrawOnImage() error {
 			ctx.Stroke()
 		}
 	}
-	ctx.SavePNG("./test_pictures/" + d.filePathOutput + "output.png")
+	ctx.SavePNG(d.filePathOutput)
 	return nil
 }
 

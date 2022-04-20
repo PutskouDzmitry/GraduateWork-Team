@@ -22,6 +22,12 @@ var (
 	com                    = 10
 )
 
+//detect path of pictures
+var (
+	inputPathFile  = "./users_images/input/"
+	outputPathFile = "./users_images/output/"
+)
+
 func testValue() []model.RouterSettings {
 	return []model.RouterSettings{
 		{
@@ -72,18 +78,14 @@ func (h Handler) calculationOfValues(c *gin.Context) {
 		return
 	}
 	validationStartValue(&routers)
-	filePathOutput, err := generateFilePathOutput(userId, pathOfOutImage)
-	if err != nil {
-		newErrorResponse(c, http.StatusInternalServerError, err.Error())
-		return
-	}
+	filePathOutput := service.GenerateFullPathOfFile(outputPathFile, userId)
 	drawImage := service.NewDrawImage(routers, filePathInput, filePathOutput)
 	err = drawImage.DrawOnImage()
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
-	fileBytes, err := ioutil.ReadFile("./test_pictures/" + filePathOutput + "output.png")
+	fileBytes, err := ioutil.ReadFile(service.GenerateFullPathOfFile(outputPathFile, userId))
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -116,10 +118,6 @@ func validationStartValue(routers *[]model.RouterSettings) {
 	}
 }
 
-func generateFilePathOutput(userId, pathOfOutImage string) (string, error) {
-	return userId + "output.png", nil
-}
-
 func getImageFromContext(c *gin.Context, userId string) (string, error) {
 	file, _, err := c.Request.FormFile("file")
 	t := c.Request.FormValue("testInput")
@@ -127,7 +125,7 @@ func getImageFromContext(c *gin.Context, userId string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("error with get file from form: %w", err)
 	}
-	filename := "./test_pictures/" + userId + "input.png"
+	filename := service.GenerateFullPathOfFile(inputPathFile, userId)
 	out, err := os.Create(filename)
 	if err != nil {
 		return "", err
@@ -145,12 +143,56 @@ func getDataFromForm() {
 }
 
 func (h Handler) saveData(c *gin.Context) {
-	var routers []model.RouterSettings
+	var routers model.RouterSettings
 	if err := c.BindJSON(&routers); err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
-		return
+		//newErrorResponse(c, http.StatusBadRequest, err.Error())
+		//return
 	}
-	err := h.wifiService.SaveData()
+	userId := 1
+	filePath := "kek"
+	routerss := []model.RouterSettings{
+		{
+			CoordinatesOfRouter: model.CoordinatesPoints{
+				X: 200,
+				Y: 300,
+			},
+			//мощность передатчика P
+			TransmitterPower: 18,
+			//коэффициент усиления передающей антенны Gt
+			GainOfTransmittingAntenna: 5,
+			//коэффициент усиления приемной антенны GT
+			GainOfReceivingAntenna: 4,
+			//чувствительность приемника на данной скорости Pmin
+			Speed: 54,
+			//потери сигнала в коаксиальном кабеле и разъемах передающего тракта Lt
+			SignalLossTransmitting: -1,
+			//потери сигнала в коаксиальном кабеле и разъемах приемного тракта LT
+			SignalLossReceiving: -1,
+			NumberOfChannels:    13,
+			Scale:               1,
+		},
+		{
+			CoordinatesOfRouter: model.CoordinatesPoints{
+				X: 200,
+				Y: 600,
+			},
+			//мощность передатчика P
+			TransmitterPower: 180,
+			//коэффициент усиления передающей антенны Gt
+			GainOfTransmittingAntenna: 50,
+			//коэффициент усиления приемной антенны GT
+			GainOfReceivingAntenna: 40,
+			//чувствительность приемника на данной скорости Pmin
+			Speed: 540,
+			//потери сигнала в коаксиальном кабеле и разъемах передающего тракта Lt
+			SignalLossTransmitting: -1,
+			//потери сигнала в коаксиальном кабеле и разъемах приемного тракта LT
+			SignalLossReceiving: -1,
+			NumberOfChannels:    13,
+			Scale:               1,
+		},
+	}
+	err := h.wifiService.SaveData(routerss, int64(userId), filePath)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return

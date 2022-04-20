@@ -11,7 +11,7 @@ run_docker_postgres:
 
 .PHONY: run_docker_redis
 run_docker_redis:
-	docker run --name my-redis-db -p 6379:6379 -d redis
+	docker run --name my-redis-db-12 -p 6379:6379 -d redis
 
 .PHONY: run_db
 run_db: run_docker_postgres run_docker_redis

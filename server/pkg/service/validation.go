@@ -63,3 +63,7 @@ func ValidationOfPlaceRouter(filePath string, routers []model.RouterSettings) er
 	}
 	return nil
 }
+
+func GenerateFullPathOfFile(path, userId string) string {
+	return path + userId + ".png"
+}

@@ -42,10 +42,10 @@ func (h Handler) InitRoutes() *gin.Engine {
 		auth.GET("/refresh", h.refresh)
 	}
 
-	apiWifiUnit1 := router.Group("/api/unit1") //h.userIdentity)
+	apiWifiMap := router.Group("/api/unit1") //h.userIdentity)
 	{
-		apiWifiUnit1.POST("/calculation", h.calculationOfValues)
-		//apiWifi.POST("/", h.saveData)
+		apiWifiMap.POST("/calculation", h.calculationOfValues)
+		apiWifiMap.POST("/save", h.saveData)
 		//apiWifi.POST("/", h.loadData)
 	}
 
