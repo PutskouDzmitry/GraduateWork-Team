@@ -99,7 +99,7 @@ types={fileTypes}
 /> */}
         <form
             ref={form}
-            action="http://localhost:8080/api/unit1/calculation"
+            action="http://localhost:8080/api/map/calculation"
             encType="multipart/form-data"
             method="POST"
             // target="_blank"

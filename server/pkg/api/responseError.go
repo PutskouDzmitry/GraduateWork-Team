@@ -3,7 +3,6 @@ package api
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
-	"net/http"
 )
 
 type ErrorMessage struct {
@@ -12,6 +11,6 @@ type ErrorMessage struct {
 
 func newErrorResponse(c *gin.Context, statusCode int, message string) {
 	logrus.Error(message)
-	//c.AbortWithStatusJSON(statusCode, ErrorMessage{message})
-	c.Redirect(http.StatusMovedPermanently, "http://localhost:3000/")
+	c.AbortWithStatusJSON(statusCode, ErrorMessage{message})
+	//c.Redirect(http.StatusMovedPermanently, "http://localhost:3000/")
 }

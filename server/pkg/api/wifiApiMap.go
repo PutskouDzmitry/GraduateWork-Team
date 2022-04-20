@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strings"
 )
 
 var (
@@ -58,13 +59,24 @@ var (
 	pathOfOutImage = "./pictures/"
 )
 
+type us struct {
+	Name string
+	Age  int64
+}
+
 func (h Handler) calculationOfValues(c *gin.Context) {
 	var routers []model.RouterSettings
-	//if err := c.BindJSON(&routers); err != nil {
-	//	//newErrorResponse(c, http.StatusBadRequest, err.Error())
-	//	//return
+	//var u us
+	//if err := c.BindJSON(&u); err != nil {
+	//newErrorResponse(c, http.StatusBadRequest, err.Error())
+	//return
 	//}
-	userId := "wqid1239821jowe1w"
+	header := c.GetHeader(authorizationHeader)
+	userId, err := h.getUserId(header)
+	if err != nil {
+		//newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		//return
+	}
 	routers = testValue()
 	filePathInput, err := getImageFromContext(c, userId)
 	if err != nil {
@@ -95,6 +107,18 @@ func (h Handler) calculationOfValues(c *gin.Context) {
 	c.Writer.Write(fileBytes)
 }
 
+func (h Handler) getUserId(header string) (string, error) {
+	headerParts := strings.Split(header, " ")
+	if len(headerParts) != 2 {
+		return "", fmt.Errorf("invalid auth header")
+	}
+	userId, err := h.authService.ParseAccessToken(headerParts[1])
+	if err != nil {
+		return "", err
+	}
+	return userId, nil
+}
+
 func validationStartValue(routers *[]model.RouterSettings) {
 	for _, value := range *routers {
 		if value.NumberOfChannels == -1 {
@@ -118,10 +142,60 @@ func validationStartValue(routers *[]model.RouterSettings) {
 	}
 }
 
+func getFile(c *gin.Context) {
+	path := "C://Users/Dzmitry_Putskou/go/src/github.com/PutskouDzmitry/GraduateWork-Team/users_images/"
+	mr, err := c.Request.MultipartReader()
+	if err != nil {
+		fmt.Println("err", err)
+		return
+	}
+	fileName := "dima"
+
+	filename := service.GenerateFullPathOfFile(inputPathFile, "1")
+	out, err := os.Create(filename)
+	if err != nil {
+		return
+	}
+	defer out.Close()
+	for {
+		part, err := mr.NextPart()
+
+		//Break, if no more file
+		if err == io.EOF {
+			break
+		}
+		//Get File Name attribute
+		fileName = part.FileName()
+
+		//Open the file, Create file if it's not existing
+		dst, err := os.OpenFile(path+fileName, os.O_WRONLY|os.O_CREATE, 0644)
+		if err != nil {
+			return
+		}
+
+		for {
+			//Create and read the file into temparory byte array
+			buffer := make([]byte, 1)
+			cBytes, err := part.Read(buffer)
+
+			//break when the reading process is finished
+			if err == io.EOF {
+				break
+			}
+
+			//Write into the file from byte array
+			dst.Write(buffer[0:cBytes])
+		}
+		defer dst.Close()
+	}
+
+}
+
 func getImageFromContext(c *gin.Context, userId string) (string, error) {
-	file, _, err := c.Request.FormFile("file")
-	t := c.Request.FormValue("testInput")
-	logrus.Info(t)
+	c.Request.ParseMultipartForm(10 * 1024 * 1024)
+	file, _, err := c.Request.FormFile("myFile")
+	//t := c.Request.FormValue("testInput")
+	//logrus.Info(t)
 	if err != nil {
 		return "", fmt.Errorf("error with get file from form: %w", err)
 	}

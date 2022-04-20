@@ -56,7 +56,7 @@ func (a authService) GenerateTokenAccessToken(id int, username string, password 
 	if err != nil {
 		return "", err
 	}
-	err = a.user.SetAccessToken(tokenStr, strconv.Itoa(id))
+	err = a.user.SetAccessToken(tokenStr, strconv.Itoa(user.Id))
 	if err != nil {
 		return "", err
 	}
