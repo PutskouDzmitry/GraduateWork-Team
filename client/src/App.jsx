@@ -4,6 +4,7 @@ import Main from "./components/Main";
 import Footer from "./components/Footer";
 import Sidebar from "./components/Sidebar";
 import LogInForm from "./components/LogInForm";
+import RouterSettings from "./components/RouterSettings";
 
 import "./styles/common.scss";
 
@@ -20,6 +21,7 @@ function App() {
             <Header />
             <Main />
             <Footer />
+            <RouterSettings />
           </Route>
         </Switch>
       </>

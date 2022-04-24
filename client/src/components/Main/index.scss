@@ -21,10 +21,9 @@
 }
 
 .canvas-wrapper {
-  display: block;
+  display: flex;
+  flex-direction: row;
   position: relative;
-  width: 600px;
-  height: 400px;
   margin-bottom: 10px;
 
   &_hidden {

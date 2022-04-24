@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	b64 "encoding/base64"
 )
 
 var (
@@ -98,13 +99,13 @@ func (h Handler) calculationOfValues(c *gin.Context) {
 		return
 	}
 	fileBytes, err := ioutil.ReadFile(service.GenerateFullPathOfFile(outputPathFile, userId))
-	if err != nil {
-		newErrorResponse(c, http.StatusInternalServerError, err.Error())
-		return
-	}
-	c.Writer.WriteHeader(http.StatusOK)
-	c.Writer.Header().Set("Content-Type", "text/plain")
-	c.Writer.Write(fileBytes)
+if err != nil {
+newErrorResponse(c, http.StatusInternalServerError, err.Error())
+return
+}
+s := string(fileBytes)
+sEnc := b64.StdEncoding.EncodeToString([]byte(s))
+c.Writer.WriteString(sEnc)
 }
 
 func (h Handler) getUserId(header string) (string, error) {

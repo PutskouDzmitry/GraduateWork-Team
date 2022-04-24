@@ -1,41 +1,52 @@
 import { useState, useRef, useEffect } from "react";
-import { FileUploader } from "react-drag-drop-files";
 import Router from "../Router";
 
 import "./index.scss";
 
-const fileTypes = ["JPG", "JPEG", "PNG", "GIF"];
-
 function Main() {
-  const canvas = useRef(null);
-  const form = useRef(null);
+  const canvasOld = useRef(null);
+  const canvasNew = useRef(null);
+  const fileInput = useRef(null);
+  const [isChanged, setIsChanged] = useState(false);
   const [isUploaded, setIsUploaded] = useState(false);
   const [routers, setRouters] = useState([]);
-// const [formData, setFormData] = useState(new FormData());
 
-  const handleChange = async (file) => {
-    console.log(file.target.files[0]);
-    canvas.current.getContext("2d").clearRect(0, 0, 600, 400);
-    let ctx = canvas.current.getContext("2d");
-    let url = URL.createObjectURL(file.target.files[0]);
+  const handleChange = async () => {
+    canvasOld.current.getContext("2d").clearRect(0, 0, 600, 400);
+    let ctx = canvasOld.current.getContext("2d");
+    let url = URL.createObjectURL(fileInput.current.files[0]);
     let img = new Image();
     img.onload = function () {
       ctx.drawImage(img, 0, 0);
     };
     img.src = url;
+    setIsChanged(true);
+  };
 
-// let imageBlob = await new Promise((resolve) =>
-// canvas.current.toBlob(resolve, "image/png")
-// );
-// let formData = new FormData();
-// formData.append("file", imageBlob, file[0].name);
-// console.log(formData);
-// setFormData(formData);
-    setIsUploaded(true);
+  const handleUpload = async () => {
+    let formData = new FormData();
+    let file = fileInput.current.files[0];
+    formData.append("myFile", file);
+
+    var xhr = new XMLHttpRequest();
+    xhr.onload = function () {
+      canvasNew.current.getContext("2d").clearRect(0, 0, 600, 400);
+      let ctx = canvasNew.current.getContext("2d");
+      let url = `data:image/png;base64,${xhr.response}`;
+      let img = new Image();
+      img.onload = function () {
+        ctx.drawImage(img, 0, 0);
+      };
+      img.src = url;
+      setIsUploaded(true);
+    };
+
+    xhr.open("POST", "http://localhost:8080/api/map/calculation", true);
+    xhr.send(formData);
   };
 
   useEffect(() => {
-    const currentCanvas = canvas.current;
+    const currentCanvas = canvasOld.current;
 
     const clickListener = (e) => {
       let left = e.offsetX;
@@ -52,74 +63,45 @@ function Main() {
     };
   });
 
-  const handleForm = async (form) => {
-// let imageBlob = await new Promise((resolve) =>
-// canvas.current.toBlob(resolve, "image/png")
-// );
-// let formData = new FormData();
-// formData.append("image", imageBlob, "image.png");
-
-// const picture = await fetch("http://localhost:8080/api/wifi/kek", {
-// method: "POST",
-// body: formData,
-// }).then((response) => response.json());
-// console.log(picture);
-    console.log(form);
-  };
-
   return (
-      <div className="main-block">
-        {isUploaded ? (
-            <p className={isUploaded ? "help-text" : "help-text_hidden"}>
-              Click anywhere on the picture to add a router
-            </p>
-        ) : (
-            <p className={isUploaded ? "help-text_hidden" : "help-text"}>
-              Add a building plan to start working
-            </p>
-        )}
-        <div className={isUploaded ? "canvas-wrapper" : "canvas-wrapper_hidden"}>
-          <canvas
-              width="600px"
-              height="400px"
-              className={isUploaded ? "canvas" : "canvas canvas_hidden"}
-              ref={canvas}
-          ></canvas>
-          {routers.map((router) => {
-            return (
-                <Router coords={router.coords} id={router.id} key={router.id} />
-            );
-          })}
-        </div>
-        {/* <FileUploader
-multiple={true}
-handleChange={handleChange}
-name="file"
-types={fileTypes}
-/> */}
-        <form
-            ref={form}
-            action="http://localhost:8080/api/map/calculation"
-            encType="multipart/form-data"
-            method="POST"
-            // target="_blank"
-        >
-          <input name="testInput" type="text" placeholder="test" />
-          <input type="file" name="file" accept="*" onChange={handleChange} />
-          <button type="submit">submit</button>
-        </form>
-        {/* <button
-onClick={async () => {
-const picture = await fetch("http://localhost:8080/api/wifi/kek", {
-method: "POST",
-body: formData,
-}).then((response) => response.json());
-console.log(picture);
-}}
->
-Kek
-</button> */}
+    <div className="main-block">
+      {isChanged ? (
+        <p className={isChanged ? "help-text" : "help-text_hidden"}>
+          Click anywhere on the picture to add a router
+        </p>
+      ) : (
+        <p className={isChanged ? "help-text_hidden" : "help-text"}>
+          Add a building plan to start working
+        </p>
+      )}
+      <div className={isChanged ? "canvas-wrapper" : "canvas-wrapper_hidden"}>
+        <canvas
+          width="600px"
+          height="400px"
+          className={isChanged ? "canvas" : "canvas canvas_hidden"}
+          ref={canvasOld}
+        ></canvas>
+        <canvas
+          width="600px"
+          height="400px"
+          className={isUploaded ? "canvas" : "canvas canvas_hidden"}
+          ref={canvasNew}
+        ></canvas>
+        {routers.map((router) => {
+          return (
+            <Router coords={router.coords} id={router.id} key={router.id} />
+          );
+        })}
       </div>
+      <input
+        ref={fileInput}
+        type="file"
+        name="file"
+        accept="*"
+        onChange={handleChange}
+      />
+      <button onClick={handleUpload}>submit</button>
+    </div>
   );
 }
 

@@ -1,0 +1,26 @@
+@import "../../styles/constants.scss";
+
+.settings {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: brightness(50%);
+  z-index: 1000;
+
+  &_hidden {
+    display: none;
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    padding: 50px;
+  }
+}
