@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { routerModalOpen } from "../../store/actions/modalActions";
+import {
+  setCurrentRouterId,
+  setCurrentRouterSettings,
+} from "../../store/actions/routerActions";
 import PropTypes from "prop-types";
 
 import "./index.scss";
@@ -8,9 +12,7 @@ import "./index.scss";
 function Router({ coords, id }) {
   const dispatch = useDispatch();
   const [hovered, setHovered] = useState(false);
-  const routerModalOpened = useSelector(
-    (state) => state.modals.routerModalOpened
-  );
+  const routers = useSelector((state) => state.routers.routersList);
 
   const mouseEnterHandler = () => {
     setHovered(true);
@@ -20,13 +22,24 @@ function Router({ coords, id }) {
     setHovered(false);
   };
 
-  const clickHandler = () => {
+  const clickHandler = (e) => {
+    let currentRouterId = e.nativeEvent.path.find((el) => {
+      return el.getAttribute("name") == "router";
+    }).id;
+    let currentRouterSettings = routers.find((router) => {
+      return router.id == currentRouterId;
+    }).settings;
+    console.log(currentRouterSettings);
+
+    dispatch(setCurrentRouterId(currentRouterId));
+    dispatch(setCurrentRouterSettings(currentRouterSettings));
     dispatch(routerModalOpen());
   };
 
   return (
     <>
       <div
+        name="router"
         className="router"
         style={{ left: `${coords.left}px`, top: `${coords.top}px` }}
         id={id}

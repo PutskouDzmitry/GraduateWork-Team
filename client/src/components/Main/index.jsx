@@ -1,15 +1,18 @@
 import { useState, useRef, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { addRouter } from "../../store/actions/routerActions";
 import Router from "../Router";
 
 import "./index.scss";
 
 function Main() {
+  const dispatch = useDispatch();
   const canvasOld = useRef(null);
   const canvasNew = useRef(null);
   const fileInput = useRef(null);
   const [isChanged, setIsChanged] = useState(false);
   const [isUploaded, setIsUploaded] = useState(false);
-  const [routers, setRouters] = useState([]);
+  const routers = useSelector((state) => state.routers.routersList);
 
   const handleChange = async () => {
     canvasOld.current.getContext("2d").clearRect(0, 0, 600, 400);
@@ -51,10 +54,13 @@ function Main() {
     const clickListener = (e) => {
       let left = e.offsetX;
       let top = e.offsetY;
-      console.log(e);
-      let newRouters = routers.slice();
-      newRouters.push({ coords: { left, top }, id: Date.now() });
-      setRouters(newRouters);
+      let id = Date.now();
+      let coords = { left, top };
+      let settings = {
+        val1: "",
+        val2: 0,
+      };
+      dispatch(addRouter(id, coords, settings));
     };
     currentCanvas.addEventListener("click", clickListener);
 
