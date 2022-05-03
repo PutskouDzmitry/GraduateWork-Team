@@ -30,6 +30,7 @@ function Main() {
     let formData = new FormData();
     let file = fileInput.current.files[0];
     formData.append("myFile", file);
+    formData.append("data", JSON.stringify(routers));
 
     var xhr = new XMLHttpRequest();
     xhr.onload = function () {

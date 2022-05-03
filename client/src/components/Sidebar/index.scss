@@ -19,7 +19,7 @@
     height: 100%;
     width: 400px;
     background-color: white;
-    border-right: 5px solid $light-blue;
+    border-right: 5px solid $blue;
 
     &_opened {
     }
@@ -27,7 +27,7 @@
 
   &__button {
     background-color: transparent;
-    color: $light-blue;
+    color: $blue;
     border: 2px solid transparent;
     border-top-right-radius: 5px;
     border-bottom-right-radius: 5px;
@@ -40,17 +40,17 @@
     }
 
     &:hover {
-      background-color: $light-blue;
+      background-color: $blue;
       color: white;
     }
 
     &_opened {
-      background-color: $light-blue;
+      background-color: $blue;
       color: white;
 
       &:hover {
         background-color: transparent;
-        color: $light-blue;
+        color: $blue;
       }
     }
   }

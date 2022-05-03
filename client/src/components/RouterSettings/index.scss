@@ -21,7 +21,46 @@
     display: flex;
     flex-direction: column;
     background-color: white;
-    padding: 50px;
+    padding: 15px;
     width: 350px;
+    box-shadow: 5px 5px 20px 5px rgba(0, 0, 0, 0.5);
+    border: 5px outset $blue;
+
+    &__block {
+      padding: 0 0 10px 10px;
+      border: 3px solid $light-blue;
+      display: flex;
+      flex-direction: column;
+
+      &:nth-child(odd) {
+        background-color: $light-blue;
+      }
+
+      &__label {
+        font-size: 18px;
+        margin-top: 5px;
+      }
+
+      &__input {
+        font-size: 18px;
+        width: 320px;
+        border: 2px solid transparent;
+        border-bottom: 2px solid $gray;
+        background-color: transparent;
+        outline: none;
+
+        &:active,
+        &:focus {
+          border: 2px solid black;
+        }
+      }
+    }
+
+    &__buttons {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      margin-top: 15px;
+    }
   }
 }

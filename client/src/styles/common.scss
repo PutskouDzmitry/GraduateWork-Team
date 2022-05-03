@@ -24,8 +24,8 @@ body {
   font-family: $font-default;
   font-weight: 400;
   font-size: 24px;
-  border: 2px solid $light-blue;
-  color: $light-blue;
+  border: 2px solid $blue;
+  color: $blue;
   background-color: white;
   padding: 2px 7px;
   margin: 5px;
@@ -33,21 +33,45 @@ body {
   width: 100px;
 
   &:hover {
-    border: 2px solid $light-blue;
+    border: 2px solid $blue;
     color: white;
-    background-color: $light-blue;
+    background-color: $blue;
   }
 
   &.button_alt {
     font-size: 20px;
     border: 2px solid white;
     color: white;
-    background-color: $light-blue;
+    background-color: $blue;
 
     &:hover {
       border: 2px solid white;
-      color: $light-blue;
+      color: $blue;
       background-color: white;
+    }
+  }
+
+  &.button_red {
+    border: 2px solid $red;
+    color: $red;
+    background-color: white;
+
+    &:hover {
+      border: 2px solid $red;
+      color: white;
+      background-color: $red;
+    }
+  }
+
+  &.button_gray {
+    border: 2px solid $gray;
+    color: $gray;
+    background-color: white;
+
+    &:hover {
+      border: 2px solid $blue;
+      color: white;
+      background-color: $blue;
     }
   }
 }

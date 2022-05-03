@@ -14,12 +14,18 @@ function LogInForm(props) {
   }
 
   return (
-    <div>
-      Log In
-      <input type="text" />
-      <input type="password" />
-      <button onClick={handleLogIn}>Submit</button>
-    </div>
+    <>
+      <div>
+        Log In
+        <input type="text" />
+        <input type="password" />
+        <button onClick={handleLogIn}>Submit</button>
+      </div>
+      <div>
+        <a href="http://localhost:8080/auth/loginTest">Google log In</a>
+      </div>
+      <form action=""></form>
+    </>
   );
 }
 

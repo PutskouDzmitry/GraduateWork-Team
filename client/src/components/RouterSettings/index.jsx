@@ -9,6 +9,7 @@ import "./index.scss";
 function RouterSettings({}) {
   const dispatch = useDispatch();
   const settingsForm = useRef(null);
+  const submitButton = useRef(null);
   const routerModalOpened = useSelector(
     (state) => state.modals.routerModalOpened
   );
@@ -52,7 +53,7 @@ function RouterSettings({}) {
   }, [routerModalOpened]);
 
   const handleSubmit = (e) => {
-    e.preventDefault();
+    e?.preventDefault();
     let {
       transmitterPower,
       gainOfTransmittingAntenna,
@@ -76,6 +77,12 @@ function RouterSettings({}) {
     dispatch(routerModalClose());
   };
 
+  const handleKeyPress = (e) => {
+    if (e.charCode === 13) {
+      handleSubmit();
+    }
+  };
+
   const handleRemove = (e) => {
     e.preventDefault();
     dispatch(removeRouter(currentRouterId));
@@ -87,26 +94,57 @@ function RouterSettings({}) {
     dispatch(routerModalClose());
   };
 
+  const toNormalString = (camelCaseString) => {
+    const normalString = camelCaseString
+      .replace(/([A-Z])/g, " $1")
+      .replace(/^./, function (str) {
+        return str.toUpperCase();
+      });
+    return normalString;
+  };
+
   return (
     <div className={routerModalOpened ? "settings" : "settings_hidden"}>
       <form className="settings__form" ref={settingsForm}>
         {Object.keys(settings).map((key) => {
           return (
-            <input
-              key={key}
-              type="number"
-              name={`${key}`}
-              placeholder={`${key}`}
-              value={settings[key]}
-              onChange={(e) =>
-                setSettings({ ...settings, [key]: e.target.value })
-              }
-            />
+            <div key={key} className="settings__form__block">
+              <label
+                htmlFor={`${key}`}
+                className="settings__form__block__label"
+              >
+                {toNormalString(key)}
+              </label>
+              <input
+                type="number"
+                className="settings__form__block__input"
+                name={`${key}`}
+                placeholder={`${key}`}
+                value={settings[key]}
+                onChange={(e) =>
+                  setSettings({ ...settings, [key]: e.target.value })
+                }
+                onKeyPress={handleKeyPress}
+              />
+            </div>
           );
         })}
-        <button onClick={handleSubmit}>submit</button>
-        <button onClick={handleClose}>close</button>
-        <button onClick={handleRemove}>remove router</button>
+        <div className="settings__form__buttons">
+          <button className="button button_gray" onClick={handleClose}>
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+          <button className="button button_red" onClick={handleRemove}>
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+          <button
+            ref={submitButton}
+            className="button"
+            onClick={handleSubmit}
+            type="submit"
+          >
+            <i class="fa-solid fa-check"></i>
+          </button>
+        </div>
       </form>
     </div>
   );
