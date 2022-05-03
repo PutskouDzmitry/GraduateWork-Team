@@ -1,5 +1,26 @@
 package model
 
+type RequestRouters struct {
+	Id       int64           `json:"id"`
+	Coords   CoordsRouters   `json:"coords"`
+	Settings SettingsRouters `json:"settings"`
+}
+
+type SettingsRouters struct {
+	TransmitterPower          string `json:"transmitterPower"`
+	GainOfTransmittingAntenna string `json:"gainOfTransmittingAntenna"`
+	GainOfReceivingAntenna    string `json:"gainOfReceivingAntenna"`
+	Speed                     string `json:"speed"`
+	SignalLossTransmitting    string `json:"signalLossTransmitting"`
+	SignalLossReceiving       string `json:"signalLossReceiving"`
+	NumberOfChannels          string `json:"numberOfChannels"`
+}
+
+type CoordsRouters struct {
+	X float64 `json:"left"`
+	Y float64 `json:"top"`
+}
+
 type RouterSettings struct {
 	CoordinatesOfRouter       CoordinatesPoints `json:"coordinates_of_router"`
 	TransmitterPower          float64           `json:"transmitter_power"`

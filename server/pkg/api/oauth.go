@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/PutskouDzmitry/GraduateWork-Team/server/pkg/model"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
@@ -26,17 +25,13 @@ var (
 	randomState = "random"
 )
 
-func (h Handler) homeTest(c *gin.Context) {
-	var html = `<html><body><a href="/auth/loginTest"> Google log In</a></body></html>`
-	fmt.Fprint(c.Writer, html)
-}
-
 func (h Handler) loginTest(c *gin.Context) {
 	url := googleOauthConfig.AuthCodeURL(randomState)
 	http.Redirect(c.Writer, c.Request, url, http.StatusTemporaryRedirect)
 }
 
 func (h Handler) callback(c *gin.Context) {
+	logrus.Info("kek")
 	if c.Request.FormValue("state") != randomState {
 		logrus.Error("error with read value state")
 		http.Redirect(c.Writer, c.Request, "/", http.StatusTemporaryRedirect)

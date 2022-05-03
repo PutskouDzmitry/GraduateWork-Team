@@ -112,9 +112,6 @@ func ValidationValues(routers []model.RouterSettings) []model.RouterSettings {
 		} else {
 			newRouters[i].COM = value.COM
 		}
-		if value.TypeOfDevice == 0 {
-
-		}
 	}
 	return newRouters
 }

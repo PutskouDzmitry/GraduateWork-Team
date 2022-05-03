@@ -2,6 +2,7 @@ package api
 
 import (
 	b64 "encoding/base64"
+	"encoding/json"
 	"fmt"
 	"github.com/PutskouDzmitry/GraduateWork-Team/server/pkg/model"
 	"github.com/PutskouDzmitry/GraduateWork-Team/server/pkg/service"
@@ -11,17 +12,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
-)
-
-var (
-	// basic values for router
-	numberOfChannels       = 1
-	signalLossTransmitting = 0
-	signalLossReceiving    = 0
-	scale                  = 5
-	thickness              = 10
-	com                    = 10
 )
 
 //detect path of pictures
@@ -106,7 +98,6 @@ type us struct {
 }
 
 func (h Handler) calculationOfValues(c *gin.Context) {
-	var routersOld []model.RouterSettings
 	//var u us
 	//if err := c.BindJSON(&u); err != nil {
 	//newErrorResponse(c, http.StatusBadRequest, err.Error())
@@ -119,7 +110,11 @@ func (h Handler) calculationOfValues(c *gin.Context) {
 	//	//return
 	//}
 	userId := "2"
-	routersOld = testValue()
+
+	routersOld, err := getValues(c)
+	if err != nil {
+		logrus.Error(err)
+	}
 	filePathInput, err := getImageFromContext(c, userId)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
@@ -164,11 +159,39 @@ func (h Handler) getUserId(c *gin.Context, header string) (string, error) {
 	return userId, nil
 }
 
+func getValues(c *gin.Context) ([]model.RouterSettings, error) {
+	ss := c.Request.FormValue("data")
+	var settings []model.RequestRouters
+	by := []byte(ss)
+	err := json.Unmarshal(by, &settings)
+	if err != nil {
+		return nil, err
+	}
+	routerSettings := make([]model.RouterSettings, len(settings), len(settings)+1)
+	for i, value := range settings {
+		routerSettings[i].CoordinatesOfRouter.X = value.Coords.X
+		routerSettings[i].CoordinatesOfRouter.Y = value.Coords.Y
+		transmitterPower, _ := strconv.ParseFloat(value.Settings.TransmitterPower, 8)
+		routerSettings[i].TransmitterPower = transmitterPower
+		gainOfTransmittingAntenna, _ := strconv.ParseFloat(value.Settings.GainOfTransmittingAntenna, 8)
+		routerSettings[i].GainOfTransmittingAntenna = gainOfTransmittingAntenna
+		gainOfReceivingAntenna, _ := strconv.ParseFloat(value.Settings.GainOfReceivingAntenna, 8)
+		routerSettings[i].GainOfReceivingAntenna = gainOfReceivingAntenna
+		speed, _ := strconv.Atoi(value.Settings.Speed)
+		routerSettings[i].Speed = speed
+		signalLossTransmitting, _ := strconv.ParseFloat(value.Settings.SignalLossTransmitting, 8)
+		routerSettings[i].SignalLossTransmitting = signalLossTransmitting
+		signalLossReceiving, _ := strconv.ParseFloat(value.Settings.SignalLossReceiving, 8)
+		routerSettings[i].SignalLossReceiving = signalLossReceiving
+		numberOfChannels, _ := strconv.Atoi(value.Settings.NumberOfChannels)
+		routerSettings[i].NumberOfChannels = numberOfChannels
+	}
+	return routerSettings, nil
+}
+
 func getImageFromContext(c *gin.Context, userId string) (string, error) {
 	c.Request.ParseMultipartForm(10 * 1024 * 1024)
 	file, _, err := c.Request.FormFile("myFile")
-	//t := c.Request.FormValue("testInput")
-	//logrus.Info(t)
 	if err != nil {
 		return "", fmt.Errorf("error with get file from form: %w", err)
 	}
