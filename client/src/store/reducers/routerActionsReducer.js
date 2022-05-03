@@ -5,8 +5,13 @@ let initialState = {
   currentRouter: {
     id: "",
     settings: {
-      val1: "",
-      val2: 0,
+      transmitterPower: 0,
+      gainOfTransmittingAntenna: 0,
+      gainOfReceivingAntenna: 0,
+      speed: 0,
+      signalLossTransmitting: 0,
+      signalLossReceiving: 0,
+      numberOfChannels: 0,
     },
   },
 };

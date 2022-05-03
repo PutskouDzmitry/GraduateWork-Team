@@ -29,7 +29,6 @@ function Router({ coords, id }) {
     let currentRouterSettings = routers.find((router) => {
       return router.id == currentRouterId;
     }).settings;
-    console.log(currentRouterSettings);
 
     dispatch(setCurrentRouterId(currentRouterId));
     dispatch(setCurrentRouterSettings(currentRouterSettings));

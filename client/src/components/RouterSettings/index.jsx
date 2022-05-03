@@ -18,20 +18,59 @@ function RouterSettings({}) {
   const currentRouterSettings = useSelector(
     (state) => state.routers.currentRouter.settings
   );
-  const [val1, setVal1] = useState(currentRouterSettings.val1);
-  const [val2, setVal2] = useState(currentRouterSettings.val2);
+
+  const [settings, setSettings] = useState({
+    transmitterPower: 0,
+    gainOfTransmittingAntenna: 0,
+    gainOfReceivingAntenna: 0,
+    speed: 0,
+    signalLossTransmitting: 0,
+    signalLossReceiving: 0,
+    numberOfChannels: 0,
+  });
 
   useEffect(() => {
-    setVal1(currentRouterSettings.val1);
-    setVal2(currentRouterSettings.val2);
+    const {
+      transmitterPower,
+      gainOfTransmittingAntenna,
+      gainOfReceivingAntenna,
+      speed,
+      signalLossTransmitting,
+      signalLossReceiving,
+      numberOfChannels,
+    } = currentRouterSettings;
+
+    setSettings({
+      transmitterPower,
+      gainOfTransmittingAntenna,
+      gainOfReceivingAntenna,
+      speed,
+      signalLossTransmitting,
+      signalLossReceiving,
+      numberOfChannels,
+    });
   }, [routerModalOpened]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    let { field1, field2 } = settingsForm.current;
+    let {
+      transmitterPower,
+      gainOfTransmittingAntenna,
+      gainOfReceivingAntenna,
+      speed,
+      signalLossTransmitting,
+      signalLossReceiving,
+      numberOfChannels,
+    } = settingsForm.current;
+
     const settings = {
-      val1: field1.value,
-      val2: field2.value,
+      transmitterPower: transmitterPower.value,
+      gainOfTransmittingAntenna: gainOfTransmittingAntenna.value,
+      gainOfReceivingAntenna: gainOfReceivingAntenna.value,
+      speed: speed.value,
+      signalLossTransmitting: signalLossTransmitting.value,
+      signalLossReceiving: signalLossReceiving.value,
+      numberOfChannels: numberOfChannels.value,
     };
     dispatch(updateRouter(currentRouterId, settings));
     dispatch(routerModalClose());
@@ -51,20 +90,20 @@ function RouterSettings({}) {
   return (
     <div className={routerModalOpened ? "settings" : "settings_hidden"}>
       <form className="settings__form" ref={settingsForm}>
-        <input
-          type="text"
-          name="field1"
-          placeholder="val1"
-          value={val1}
-          onChange={(e) => setVal1(e.target.value)}
-        />
-        <input
-          type="number"
-          name="field2"
-          placeholder="val2"
-          value={val2}
-          onChange={(e) => setVal2(e.target.value)}
-        />
+        {Object.keys(settings).map((key) => {
+          return (
+            <input
+              key={key}
+              type="number"
+              name={`${key}`}
+              placeholder={`${key}`}
+              value={settings[key]}
+              onChange={(e) =>
+                setSettings({ ...settings, [key]: e.target.value })
+              }
+            />
+          );
+        })}
         <button onClick={handleSubmit}>submit</button>
         <button onClick={handleClose}>close</button>
         <button onClick={handleRemove}>remove router</button>

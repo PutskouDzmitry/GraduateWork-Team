@@ -57,8 +57,13 @@ function Main() {
       let id = Date.now();
       let coords = { left, top };
       let settings = {
-        val1: "",
-        val2: 0,
+        transmitterPower: 0,
+        gainOfTransmittingAntenna: 0,
+        gainOfReceivingAntenna: 0,
+        speed: 0,
+        signalLossTransmitting: 0,
+        signalLossReceiving: 0,
+        numberOfChannels: 0,
       };
       dispatch(addRouter(id, coords, settings));
     };
