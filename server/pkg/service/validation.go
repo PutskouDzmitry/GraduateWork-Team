@@ -6,6 +6,16 @@ import (
 	"github.com/fogleman/gg"
 )
 
+var (
+	// basic values for router
+	numberOfChannels       = 1
+	signalLossTransmitting = 0
+	signalLossReceiving    = 0
+	scale                  = 5
+	thickness              = 10
+	com                    = 10
+)
+
 func ValidationOfPlaceRouter(filePath string, routers []model.RouterSettings) error {
 	im, err := gg.LoadPNG(filePath)
 	if err != nil {
@@ -66,4 +76,45 @@ func ValidationOfPlaceRouter(filePath string, routers []model.RouterSettings) er
 
 func GenerateFullPathOfFile(path, userId string) string {
 	return path + userId + ".png"
+}
+
+func ValidationValues(routers []model.RouterSettings) []model.RouterSettings {
+	newRouters := make([]model.RouterSettings, len(routers), len(routers)+1)
+	for i, value := range routers {
+		newRouters[i].CoordinatesOfRouter = value.CoordinatesOfRouter
+		if value.NumberOfChannels == -1 {
+			newRouters[i].NumberOfChannels = numberOfChannels
+		} else {
+			newRouters[i].NumberOfChannels = value.NumberOfChannels
+		}
+		if value.SignalLossTransmitting == -1 {
+			newRouters[i].SignalLossTransmitting = float64(signalLossTransmitting)
+		} else {
+			newRouters[i].SignalLossTransmitting = value.SignalLossTransmitting
+		}
+		if value.SignalLossReceiving == -1 {
+			newRouters[i].SignalLossReceiving = float64(signalLossReceiving)
+		} else {
+			newRouters[i].SignalLossReceiving = value.SignalLossReceiving
+		}
+		if value.Scale == -1 {
+			newRouters[i].Scale = float64(scale)
+		} else {
+			newRouters[i].Scale = value.Scale
+		}
+		if value.Thickness == -1 {
+			newRouters[i].Thickness = float64(thickness)
+		} else {
+			newRouters[i].Thickness = value.Thickness
+		}
+		if value.COM == -1 {
+			newRouters[i].COM = float64(com)
+		} else {
+			newRouters[i].COM = value.COM
+		}
+		if value.TypeOfDevice == 0 {
+
+		}
+	}
+	return newRouters
 }

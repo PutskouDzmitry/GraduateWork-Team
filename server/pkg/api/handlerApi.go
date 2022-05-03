@@ -20,7 +20,6 @@ func NewHandler(authService service.AuthService, wifiService service.WifiService
 }
 
 func (h Handler) InitRoutes() *gin.Engine {
-
 	router := gin.New()
 
 	router.Use(cors.New(cors.Config{
@@ -35,15 +34,25 @@ func (h Handler) InitRoutes() *gin.Engine {
 		MaxAge: 12 * time.Hour,
 	}))
 
+	apiNotAuth := router.Group("/")
+	{
+		apiNotAuth.POST("/getResult", h.calculationOfValues)
+	}
+
 	auth := router.Group("/auth")
 	{
 		auth.POST("/sing-up", h.signUp)
 		auth.POST("/login", h.login)
 		auth.GET("/refresh", h.refresh)
+
+		auth.GET("/homeTest", h.homeTest)
+		auth.GET("/loginTest", h.loginTest)
+		auth.GET("/callback", h.callback)
 	}
 
 	apiWifiMap := router.Group("/api/map") //, h.userIdentity)
 	{
+		apiWifiMap.GET("/home")
 		apiWifiMap.POST("/calculation", h.calculationOfValues)
 		apiWifiMap.POST("/save", h.saveData)
 		apiWifiMap.POST("/load", h.loadData)

@@ -1,6 +1,7 @@
 package api
 
 import (
+	b64 "encoding/base64"
 	"fmt"
 	"github.com/PutskouDzmitry/GraduateWork-Team/server/pkg/model"
 	"github.com/PutskouDzmitry/GraduateWork-Team/server/pkg/service"
@@ -11,7 +12,6 @@ import (
 	"net/http"
 	"os"
 	"strings"
-	b64 "encoding/base64"
 )
 
 var (
@@ -52,6 +52,46 @@ func testValue() []model.RouterSettings {
 			NumberOfChannels:    13,
 			Scale:               1,
 		},
+		{
+			CoordinatesOfRouter: model.CoordinatesPoints{
+				X: 350,
+				Y: 300,
+			},
+			//мощность передатчика P
+			TransmitterPower: 18,
+			//коэффициент усиления передающей антенны Gt
+			GainOfTransmittingAntenna: 5,
+			//коэффициент усиления приемной антенны GT
+			GainOfReceivingAntenna: 4,
+			//чувствительность приемника на данной скорости Pmin
+			Speed: 54,
+			//потери сигнала в коаксиальном кабеле и разъемах передающего тракта Lt
+			SignalLossTransmitting: -1,
+			//потери сигнала в коаксиальном кабеле и разъемах приемного тракта LT
+			SignalLossReceiving: -1,
+			NumberOfChannels:    13,
+			Scale:               1,
+		},
+		{
+			CoordinatesOfRouter: model.CoordinatesPoints{
+				X: 200,
+				Y: 300,
+			},
+			//мощность передатчика P
+			TransmitterPower: 18,
+			//коэффициент усиления передающей антенны Gt
+			GainOfTransmittingAntenna: 5,
+			//коэффициент усиления приемной антенны GT
+			GainOfReceivingAntenna: 4,
+			//чувствительность приемника на данной скорости Pmin
+			Speed: 54,
+			//потери сигнала в коаксиальном кабеле и разъемах передающего тракта Lt
+			SignalLossTransmitting: -1,
+			//потери сигнала в коаксиальном кабеле и разъемах приемного тракта LT
+			SignalLossReceiving: -1,
+			NumberOfChannels:    13,
+			Scale:               1,
+		},
 	}
 }
 
@@ -66,31 +106,32 @@ type us struct {
 }
 
 func (h Handler) calculationOfValues(c *gin.Context) {
-	var routers []model.RouterSettings
+	var routersOld []model.RouterSettings
 	//var u us
 	//if err := c.BindJSON(&u); err != nil {
 	//newErrorResponse(c, http.StatusBadRequest, err.Error())
 	//return
 	//}
-	header := c.GetHeader(authorizationHeader)
-	userId, err := h.getUserId(header)
-	if err != nil {
-		//newErrorResponse(c, http.StatusInternalServerError, err.Error())
-		//return
-	}
-	routers = testValue()
+	//header := c.GetHeader(authorizationHeader)
+	//userId, err := h.getUserId(header)
+	//if err != nil {
+	//	//newErrorResponse(c, http.StatusInternalServerError, err.Error())
+	//	//return
+	//}
+	userId := "2"
+	routersOld = testValue()
 	filePathInput, err := getImageFromContext(c, userId)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 	// validation
-	err = service.ValidationOfPlaceRouter(filePathInput, routers)
+	err = service.ValidationOfPlaceRouter(filePathInput, routersOld)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
-	validationStartValue(&routers)
+	routers := service.ValidationValues(routersOld)
 	filePathOutput := service.GenerateFullPathOfFile(outputPathFile, userId)
 	drawImage := service.NewDrawImage(routers, filePathInput, filePathOutput)
 	err = drawImage.DrawOnImage()
@@ -99,16 +140,19 @@ func (h Handler) calculationOfValues(c *gin.Context) {
 		return
 	}
 	fileBytes, err := ioutil.ReadFile(service.GenerateFullPathOfFile(outputPathFile, userId))
-if err != nil {
-newErrorResponse(c, http.StatusInternalServerError, err.Error())
-return
-}
-s := string(fileBytes)
-sEnc := b64.StdEncoding.EncodeToString([]byte(s))
-c.Writer.WriteString(sEnc)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	sEnc := b64.StdEncoding.EncodeToString(fileBytes)
+	c.Writer.Header().Set("Authorization", "Bearer "+"qwewqeewq")
+	c.Writer.WriteString(sEnc)
 }
 
-func (h Handler) getUserId(header string) (string, error) {
+func (h Handler) getUserId(c *gin.Context, header string) (string, error) {
+	if c.Request.URL.String() != "/api/map/calculation" {
+		return "200", nil
+	}
 	headerParts := strings.Split(header, " ")
 	if len(headerParts) != 2 {
 		return "", fmt.Errorf("invalid auth header")
@@ -118,78 +162,6 @@ func (h Handler) getUserId(header string) (string, error) {
 		return "", err
 	}
 	return userId, nil
-}
-
-func validationStartValue(routers *[]model.RouterSettings) {
-	for _, value := range *routers {
-		if value.NumberOfChannels == -1 {
-			value.NumberOfChannels = numberOfChannels
-		}
-		if value.SignalLossTransmitting == -1 {
-			value.SignalLossTransmitting = float64(signalLossTransmitting)
-		}
-		if value.SignalLossReceiving == -1 {
-			value.SignalLossReceiving = float64(signalLossReceiving)
-		}
-		if value.Scale == -1 {
-			value.Scale = float64(scale)
-		}
-		if value.Thickness == -1 {
-			value.Thickness = float64(thickness)
-		}
-		if value.COM == -1 {
-			value.COM = float64(com)
-		}
-	}
-}
-
-func getFile(c *gin.Context) {
-	path := "C://Users/Dzmitry_Putskou/go/src/github.com/PutskouDzmitry/GraduateWork-Team/users_images/"
-	mr, err := c.Request.MultipartReader()
-	if err != nil {
-		fmt.Println("err", err)
-		return
-	}
-	fileName := "dima"
-
-	filename := service.GenerateFullPathOfFile(inputPathFile, "1")
-	out, err := os.Create(filename)
-	if err != nil {
-		return
-	}
-	defer out.Close()
-	for {
-		part, err := mr.NextPart()
-
-		//Break, if no more file
-		if err == io.EOF {
-			break
-		}
-		//Get File Name attribute
-		fileName = part.FileName()
-
-		//Open the file, Create file if it's not existing
-		dst, err := os.OpenFile(path+fileName, os.O_WRONLY|os.O_CREATE, 0644)
-		if err != nil {
-			return
-		}
-
-		for {
-			//Create and read the file into temparory byte array
-			buffer := make([]byte, 1)
-			cBytes, err := part.Read(buffer)
-
-			//break when the reading process is finished
-			if err == io.EOF {
-				break
-			}
-
-			//Write into the file from byte array
-			dst.Write(buffer[0:cBytes])
-		}
-		defer dst.Close()
-	}
-
 }
 
 func getImageFromContext(c *gin.Context, userId string) (string, error) {

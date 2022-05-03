@@ -18,10 +18,6 @@ func (h *Handler) userIdentity(c *gin.Context) {
 		return
 	}
 	headerParts := strings.Split(header, " ")
-	if len(headerParts) != 2 {
-		newErrorResponse(c, http.StatusUnauthorized, "invalid auth header")
-		return
-	}
 	userId, err := h.authService.ParseAccessToken(headerParts[1])
 	if err != nil {
 		refreshToken, err := c.Cookie("refreshToken")
@@ -37,7 +33,7 @@ func (h *Handler) userIdentity(c *gin.Context) {
 		if err != nil {
 			newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		}
-		accessToken, err := h.authService.GenerateTokenAccessToken(id, "test", "test")
+		accessToken, err := h.authService.GenerateTokenAccessToken(id, "id", "password")
 		if err != nil {
 			newErrorResponse(c, http.StatusUnauthorized, err.Error())
 			return

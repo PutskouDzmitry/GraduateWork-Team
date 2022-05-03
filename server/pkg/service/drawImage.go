@@ -53,6 +53,8 @@ func (d drawImage) DrawOnImage() error {
 
 	var rNew float64
 	var rPromej float64
+	//var oldPixel Pixel
+	//var countOfThickness int64
 	// draw all rings
 	for j := 0; j < 8; j++ {
 		//отрисовка по одному кругу покрытия каждого роутера
@@ -73,27 +75,38 @@ func (d drawImage) DrawOnImage() error {
 					yH := y + float64(h)*math.Sin(a)
 					for k := 0; k < len(arrayXY); k++ {
 						if float64(int64(xH)) == arrayXY[k].x && float64(int64(yH)) == arrayXY[k].y {
+							attenuationOfSignal := signalAttenuation(im, xH, yH)
+							//currentPixel, _ := getPixels(im ,xH, yH)
 							rT := getRadius(x, y, xH, yH)
+							//if oldPixel.R == currentPixel.R && oldPixel.B == currentPixel.B && oldPixel.G == currentPixel.G {
+							//	countOfThickness++
+							//	continue
+							//}
 							if rT < rNew {
-								rNew = rT + (rPromej-rT)*koofStone
+								rNew = rT + (rPromej-rT)*attenuationOfSignal
 								rPromej = rNew
-								h += 30
+								h += 30 // delete after decommissioning comments
 							}
+							//oldPixel = currentPixel
 						}
 					}
+					//countOfThickness = 0
 				}
 				cosX := x + rNew*math.Cos(a)
 				sinY := y + rNew*math.Sin(a)
+				detectOutPositionOfSignal(im, cosX, sinY)
 				if i == 0 {
 					ctx.MoveTo(x+rNew, y)
 					continue
 				}
 				ctx.LineTo(cosX, sinY)
+				//xNext, yNext, colorNext := calculateNextCircle(im, colorAndRangeShape, j, x, y, )
+				//gg.NewLinearGradient()
 				ctx.SetRGBA255(int(colorPixels.R), int(colorPixels.G), int(colorPixels.B), int(colorPixels.A))
-				as := gg.NewSolidPattern(color.Black)
-				ctx.SetStrokeStyle(as)
+				//as := gg.NewSolidPattern(color.Black)
+				//ctx.SetStrokeStyle(as)
 			}
-			ctx.SetLineWidth(1)
+			//ctx.SetLineWidth(1)
 			ctx.FillPreserve()
 			ctx.Stroke()
 		}
@@ -101,6 +114,44 @@ func (d drawImage) DrawOnImage() error {
 	ctx.SavePNG(d.filePathOutput)
 	return nil
 }
+
+//func calculateNextCircle(im image.Image, colorAndRangeShape []ColorAndRadius, j int64, x, y float64, i int64, arrayXY []XY) (float64, float64, color.RGBA) {
+//	x, y, r := d.coordinatesOfRouters[a].CoordinatesOfRouter.X, d.coordinatesOfRouters[a].CoordinatesOfRouter.Y, radiuses[a]
+//	if j == 7 {
+//		return -1, -1, color.RGBA{}
+//	}
+//	r := colorAndRangeShape[j + 1].Radius
+//	rNew := r
+//	rPromej := r
+//	colorPixels := colorAndRangeShape[j + 1].Color
+//	a := angle * float64(i)
+//	// расчет длины сигнала(поиск препядствий)
+//	for h := 0; float64(h) < r; h++ {
+//		xH := x + float64(h)*math.Cos(a)
+//		yH := y + float64(h)*math.Sin(a)
+//		for k := 0; k < len(arrayXY); k++ {
+//			if float64(int64(xH)) == arrayXY[k].x && float64(int64(yH)) == arrayXY[k].y {
+//				attenuationOfSignal := signalAttenuation(im, xH, yH)
+//				//currentPixel, _ := getPixels(im ,xH, yH)
+//				rT := getRadius(x, y, xH, yH)
+//				//if oldPixel.R == currentPixel.R && oldPixel.B == currentPixel.B && oldPixel.G == currentPixel.G {
+//				//	countOfThickness++
+//				//	continue
+//				//}
+//				if rT < rNew {
+//					rNew = rT + (rPromej-rT)*attenuationOfSignal
+//					rPromej = rNew
+//					h += 30 // delete after decommissioning comments
+//				}
+//				//oldPixel = currentPixel
+//			}
+//		}
+//		//countOfThickness = 0
+//	}
+//	cosX := x + rNew*math.Cos(a)
+//	sinY := y + rNew*math.Sin(a)
+//	return cosX, sinY, colorPixels
+//}
 
 func (d drawImage) getXYR(i int) (float64, float64, float64, error) {
 	r, err := CalculationOfValues(d.coordinatesOfRouters[i])
@@ -160,23 +211,6 @@ func NewColorAndRadius(radius float64) []ColorAndRadius {
 	return colorArr
 }
 
-func detectColorOfPixel(img image.Image, x, y float64) (bool, error) {
-	pixel, err := getPixels(img, x, y)
-	if pixel.R != 255 {
-		logrus.Info(pixel)
-	}
-	if pixel.R == 178 && pixel.G == 178 && pixel.B == 178 {
-		return false, err
-	}
-	if err != nil {
-		return false, err
-	}
-	if pixel.R == 0 && pixel.G == 0 && pixel.B == 0 && pixel.A == 0 {
-		return false, nil
-	}
-	return true, nil
-}
-
 func getPixels(img image.Image, x, y float64) (Pixel, error) {
 	return rgbaToPixel(img.At(int(x), int(y)).RGBA()), nil
 }
@@ -216,4 +250,63 @@ func detectColor(im image.Image) []XY {
 		}
 	}
 	return getXYArray
+}
+
+func detectOutPositionOfSignal(im image.Image, x, y float64) {
+	for j := 0; j < 600; j++ {
+		if x+float64(j) >= 600 {
+			//logrus.Info("out of border")
+			break
+		}
+		pixel, err := getPixels(im, x+float64(j), y)
+		if err != nil {
+			//logrus.Info("out of border")
+			break
+		}
+		if pixel.G != 255 && pixel.B != 255 {
+			break
+		}
+	}
+	for j := 0; j < 600; j++ {
+		if x-float64(j) <= 0 {
+			//logrus.Info("out of border")
+			break
+		}
+		pixel, err := getPixels(im, x-float64(j), y)
+		if err != nil {
+			//logrus.Info("out of border")
+			break
+		}
+		if pixel.G != 255 && pixel.B != 255 {
+			break
+		}
+	}
+	for j := 0; j < 400; j++ {
+		if y+float64(j) >= 400 {
+			//logrus.Info("out of border")
+			break
+		}
+		pixel, err := getPixels(im, x, y+float64(j))
+		if err != nil {
+			//logrus.Info("out of border")
+			break
+		}
+		if pixel.G != 255 && pixel.B != 255 {
+			break
+		}
+	}
+	for j := 0; j < 400; j++ {
+		if y-float64(j) <= 0 {
+			//logrus.Info("out of border")
+			break
+		}
+		pixel, err := getPixels(im, x+float64(j), y-float64(j))
+		if err != nil {
+			//logrus.Info("out of border")
+			break
+		}
+		if pixel.G != 255 && pixel.B != 255 {
+			break
+		}
+	}
 }

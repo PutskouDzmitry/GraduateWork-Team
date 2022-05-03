@@ -29,6 +29,7 @@ type AuthService interface {
 	ParseRefreshToken(token string) (string, error)
 	CreateUser(user model.User) (string, error)
 	GeneratePasswordHash(password string) string
+	CheckUser(user model.User) bool
 }
 
 func NewAuthService(user data.UserData) AuthService {
@@ -131,6 +132,14 @@ func (a authService) ParseRefreshToken(token string) (string, error) {
 func (a authService) CreateUser(user model.User) (string, error) {
 	user.Password = a.GeneratePasswordHash(user.Password)
 	return a.user.CreateUser(user)
+}
+
+func (a authService) CheckUser(user model.User) bool {
+	user, err := a.user.GetUser(user.Id, user.Username, a.GeneratePasswordHash(user.Password))
+	if err != nil {
+		return false
+	}
+	return true
 }
 
 func (a authService) GeneratePasswordHash(password string) string {
