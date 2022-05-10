@@ -86,7 +86,7 @@ func (h Handler) callback(c *gin.Context) {
 	//c.JSON(http.StatusOK, map[string]interface{}{
 	//	"id": userAccessToken,
 	//})
-	redirectResponse(c, "", "http://localhost:3000/api/map/home", userAccessToken)
+	redirectResponse(c, "http://localhost:3000/api/map/home", userAccessToken)
 }
 
 func changeIdToInt(id string) (int, error) {

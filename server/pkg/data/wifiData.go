@@ -61,6 +61,7 @@ type wifiData struct {
 type WifiData interface {
 	SaveData(wifiSettings []model.RouterSettings, userId int64, filePath string) error
 	GetData(userId int64) (model.Wifi, error)
+	PreloadData(userId int) (model.Wifi, error)
 }
 
 func NewWifiData(postgres *gorm.DB) WifiData {
@@ -204,4 +205,8 @@ func convertRouterDataModelToRouterSettings(router RouterDataModel, point Coordi
 		Thickness:                 router.Thickness,
 		COM:                       router.COM,
 	}
+}
+
+func (w wifiData) PreloadData(userId int) (model.Wifi, error) {
+	return model.Wifi{}, nil
 }

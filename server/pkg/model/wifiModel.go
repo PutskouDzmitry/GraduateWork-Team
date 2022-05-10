@@ -22,6 +22,7 @@ type CoordsRouters struct {
 }
 
 type RouterSettings struct {
+	RouterName                string            `json:"router_name"`
 	CoordinatesOfRouter       CoordinatesPoints `json:"coordinates_of_router"`
 	TransmitterPower          float64           `json:"transmitter_power"`
 	GainOfTransmittingAntenna float64           `json:"gain_of_transmitting_antenna"`
@@ -48,4 +49,17 @@ type CoordinatesPoints struct {
 }
 
 type Response struct {
+}
+
+type ResponseInfoPoint struct {
+	InfoPoint []InfoOfPoint
+}
+
+type InfoOfPoint struct {
+	NameOfRouter   string
+	CurrentSpeed   int64
+	MaxSpeed       int64
+	SignalStrength float64
+	SignalQuality  int64
+	Channel        int64
 }

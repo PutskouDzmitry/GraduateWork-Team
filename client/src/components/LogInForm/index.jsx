@@ -8,24 +8,25 @@ function LogInForm(props) {
   const dispatch = useDispatch();
   const history = useHistory();
 
-  function handleLogIn() {
-    dispatch(userLogIn());
-    history.push("/");
+  const handleLogIn = async () => {
+      var xhr = new XMLHttpRequest();
+      let formData = new FormData();
+      const username = document.getElementById('login').value;
+      const password = document.getElementById('password').value;
+      console.log(username, password)
+      formData.append("login", username);
+      formData.append("password", password);
+      xhr.open("POST", "http://localhost:8080/auth/login", true);
+      xhr.send(formData);
   }
 
   return (
-    <>
-      <div>
+    <div>
         Log In
-        <input type="text" />
-        <input type="password" />
+        <input type="text" id="login" placeholder="Login" />
+        <input type="password" id="password" placeholder="Password" />
         <button onClick={handleLogIn}>Submit</button>
-      </div>
-      <div>
-        <a href="http://localhost:8080/auth/loginTest">Google log In</a>
-      </div>
-      <form action=""></form>
-    </>
+    </div>
   );
 }
 

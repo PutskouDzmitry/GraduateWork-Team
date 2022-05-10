@@ -98,6 +98,11 @@ type us struct {
 }
 
 func (h Handler) calculationOfValues(c *gin.Context) {
+	//_, err := h.GetUserFromToken(c.GetHeader(authorizationHeader))
+	//if err != nil {
+	//	newErrorResponse(c, http.StatusUnauthorized, err.Error())
+	//}
+
 	//var u us
 	//if err := c.BindJSON(&u); err != nil {
 	//newErrorResponse(c, http.StatusBadRequest, err.Error())
@@ -140,7 +145,6 @@ func (h Handler) calculationOfValues(c *gin.Context) {
 		return
 	}
 	sEnc := b64.StdEncoding.EncodeToString(fileBytes)
-	c.Writer.Header().Set("Authorization", "Bearer "+"qwewqeewq")
 	c.Writer.WriteString(sEnc)
 }
 
@@ -160,10 +164,10 @@ func (h Handler) getUserId(c *gin.Context, header string) (string, error) {
 }
 
 func getValues(c *gin.Context) ([]model.RouterSettings, error) {
-	ss := c.Request.FormValue("data")
+	data := c.Request.FormValue("data")
 	var settings []model.RequestRouters
-	by := []byte(ss)
-	err := json.Unmarshal(by, &settings)
+	dataInByte := []byte(data)
+	err := json.Unmarshal(dataInByte, &settings)
 	if err != nil {
 		return nil, err
 	}
@@ -208,80 +212,32 @@ func getImageFromContext(c *gin.Context, userId string) (string, error) {
 	return filename, nil
 }
 
-func getDataFromForm() {
-
-}
-
-func (h Handler) saveData(c *gin.Context) {
-	var routers model.RouterSettings
-	if err := c.BindJSON(&routers); err != nil {
-		//newErrorResponse(c, http.StatusBadRequest, err.Error())
-		//return
-	}
-	userId := 1
-	filePath := "kek"
-	routerss := []model.RouterSettings{
-		{
-			CoordinatesOfRouter: model.CoordinatesPoints{
-				X: 200,
-				Y: 300,
-			},
-			//мощность передатчика P
-			TransmitterPower: 18,
-			//коэффициент усиления передающей антенны Gt
-			GainOfTransmittingAntenna: 5,
-			//коэффициент усиления приемной антенны GT
-			GainOfReceivingAntenna: 4,
-			//чувствительность приемника на данной скорости Pmin
-			Speed: 54,
-			//потери сигнала в коаксиальном кабеле и разъемах передающего тракта Lt
-			SignalLossTransmitting: -1,
-			//потери сигнала в коаксиальном кабеле и разъемах приемного тракта LT
-			SignalLossReceiving: -1,
-			NumberOfChannels:    13,
-			Scale:               1,
-		},
-		{
-			CoordinatesOfRouter: model.CoordinatesPoints{
-				X: 200,
-				Y: 600,
-			},
-			//мощность передатчика P
-			TransmitterPower: 180,
-			//коэффициент усиления передающей антенны Gt
-			GainOfTransmittingAntenna: 50,
-			//коэффициент усиления приемной антенны GT
-			GainOfReceivingAntenna: 40,
-			//чувствительность приемника на данной скорости Pmin
-			Speed: 540,
-			//потери сигнала в коаксиальном кабеле и разъемах передающего тракта Lt
-			SignalLossTransmitting: -1,
-			//потери сигнала в коаксиальном кабеле и разъемах приемного тракта LT
-			SignalLossReceiving: -1,
-			NumberOfChannels:    13,
-			Scale:               1,
-		},
-	}
-	err := h.wifiService.SaveData(routerss, int64(userId), filePath)
+func (h Handler) getInfo(c *gin.Context) {
+	jsonData, err := json.Marshal(mockDataGetInfo())
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
-	c.JSON(http.StatusOK, "data is saved")
+	c.JSON(http.StatusOK, jsonData)
 }
 
-func (h Handler) loadData(c *gin.Context) {
-	var routers model.User
-	if err := c.BindJSON(&routers); err != nil {
-		//newErrorResponse(c, http.StatusBadRequest, err.Error())
-		//return
-	}
-	var userId = 1
-	data, err := h.wifiService.GetData(int64(userId))
-	if err != nil {
-		newErrorResponse(c, http.StatusInternalServerError, err.Error())
-		return
-	}
-	logrus.Info(data)
-	c.JSON(http.StatusOK, "data is loaded")
+func mockDataGetInfo() model.ResponseInfoPoint {
+	infoOfPoint := make([]model.InfoOfPoint, 2, 2)
+	infoOfPoint = append(infoOfPoint, model.InfoOfPoint{
+		NameOfRouter:   "test 1",
+		CurrentSpeed:   24,
+		MaxSpeed:       54,
+		SignalStrength: -50,
+		SignalQuality:  40,
+		Channel:        2,
+	})
+	infoOfPoint = append(infoOfPoint, model.InfoOfPoint{
+		NameOfRouter:   "test 2",
+		CurrentSpeed:   30,
+		MaxSpeed:       64,
+		SignalStrength: -20,
+		SignalQuality:  80,
+		Channel:        5,
+	})
+	return model.ResponseInfoPoint{InfoPoint: infoOfPoint}
 }

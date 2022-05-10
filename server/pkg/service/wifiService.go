@@ -126,6 +126,7 @@ type wifiService struct {
 type WifiService interface {
 	SaveData(routers []model.RouterSettings, userId int64, path string) error
 	GetData(userId int64) (model.Wifi, error)
+	PreloadData(userId int) (model.Wifi, error)
 }
 
 func NewWifiService(wifi data.WifiData) WifiService {
@@ -138,4 +139,8 @@ func (w wifiService) SaveData(routers []model.RouterSettings, userId int64, path
 
 func (w wifiService) GetData(userId int64) (model.Wifi, error) {
 	return w.wifi.GetData(userId)
+}
+
+func (w wifiService) PreloadData(userId int) (model.Wifi, error) {
+	return w.wifi.PreloadData(userId)
 }
