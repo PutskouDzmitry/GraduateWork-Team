@@ -14,79 +14,34 @@ type attenuation struct {
 func initCoefficient() []attenuation {
 	coeff := make([]attenuation, 1, 10)
 	coeff = append(coeff, attenuation{
-		name:        "",
-		pixel:       Pixel{},
-		coefficient: 0,
+		name:        "window without",
+		pixel:       Pixel{R: 204, G: 242, B: 255},
+		coefficient: 0.7,
 	})
 	coeff = append(coeff, attenuation{
-		name:        "",
-		pixel:       Pixel{},
-		coefficient: 0,
+		name:        "window with",
+		pixel:       Pixel{R: 0, G: 172, B: 230},
+		coefficient: 0.5,
 	})
 	coeff = append(coeff, attenuation{
-		name:        "",
-		pixel:       Pixel{},
-		coefficient: 0,
+		name:        "wood",
+		pixel:       Pixel{R: 138, G: 73, B: 40},
+		coefficient: 0.3,
 	})
 	coeff = append(coeff, attenuation{
-		name:        "",
-		pixel:       Pixel{},
-		coefficient: 0,
+		name:        "between",
+		pixel:       Pixel{R: 255, G: 191, B: 0},
+		coefficient: 0.15,
 	})
 	coeff = append(coeff, attenuation{
-		name:        "",
-		pixel:       Pixel{},
-		coefficient: 0,
+		name:        "main",
+		pixel:       Pixel{R: 0, G: 153, B: 51},
+		coefficient: 0.1,
 	})
 	coeff = append(coeff, attenuation{
-		name:        "",
-		pixel:       Pixel{},
-		coefficient: 0,
-	})
-	coeff = append(coeff, attenuation{
-		name:        "",
-		pixel:       Pixel{},
-		coefficient: 0,
-	})
-	coeff = append(coeff, attenuation{
-		name:        "",
-		pixel:       Pixel{},
-		coefficient: 0,
-	})
-	coeff = append(coeff, attenuation{
-		name:        "",
-		pixel:       Pixel{},
-		coefficient: 0,
-	})
-	coeff = append(coeff, attenuation{
-		name:        "",
-		pixel:       Pixel{},
-		coefficient: 0,
-	})
-	coeff = append(coeff, attenuation{
-		name:        "",
-		pixel:       Pixel{},
-		coefficient: 0,
-	})
-	coeff = append(coeff, attenuation{
-		name:        "",
-		pixel:       Pixel{},
-		coefficient: 0,
-	})
-	coeff = append(coeff, attenuation{
-		name:        "",
-		pixel:       Pixel{},
-		coefficient: 0,
-	})
-	coeff = append(coeff, attenuation{
-		name:        "",
-		pixel:       Pixel{},
-		coefficient: 0,
-	})
-	coeff = append(coeff, attenuation{
-		name:        "",
-		pixel:       Pixel{},
-		coefficient: 0,
+		name:        "fish",
+		pixel:       Pixel{R: 0, G: 230, B: 230},
+		coefficient: 0.0000001,
 	})
 	return coeff
 }

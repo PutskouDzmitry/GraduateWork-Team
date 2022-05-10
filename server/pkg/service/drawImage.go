@@ -53,8 +53,8 @@ func (d drawImage) DrawOnImage() error {
 
 	var rNew float64
 	var rPromej float64
-	//var oldPixel Pixel
-	//var countOfThickness int64
+	var oldPixel Pixel
+	var countOfThickness int64
 	// draw all rings
 	for j := 0; j < 8; j++ {
 		//отрисовка по одному кругу покрытия каждого роутера
@@ -76,21 +76,21 @@ func (d drawImage) DrawOnImage() error {
 					for k := 0; k < len(arrayXY); k++ {
 						if float64(int64(xH)) == arrayXY[k].x && float64(int64(yH)) == arrayXY[k].y {
 							attenuationOfSignal := signalAttenuation(im, xH, yH)
-							//currentPixel, _ := getPixels(im ,xH, yH)
+							currentPixel, _ := getPixels(im, xH, yH)
 							rT := getRadius(x, y, xH, yH)
-							//if oldPixel.R == currentPixel.R && oldPixel.B == currentPixel.B && oldPixel.G == currentPixel.G {
-							//	countOfThickness++
-							//	continue
-							//}
+							if oldPixel.R == currentPixel.R && oldPixel.B == currentPixel.B && oldPixel.G == currentPixel.G {
+								countOfThickness++
+								continue
+							}
 							if rT < rNew {
 								rNew = rT + (rPromej-rT)*attenuationOfSignal
 								rPromej = rNew
-								h += 30 // delete after decommissioning comments
+								//h += 30 // delete after decommissioning comments
 							}
-							//oldPixel = currentPixel
+							oldPixel = currentPixel
 						}
 					}
-					//countOfThickness = 0
+					countOfThickness = 0
 				}
 				cosX := x + rNew*math.Cos(a)
 				sinY := y + rNew*math.Sin(a)
@@ -100,11 +100,11 @@ func (d drawImage) DrawOnImage() error {
 					continue
 				}
 				ctx.LineTo(cosX, sinY)
-				//xNext, yNext, colorNext := calculateNextCircle(im, colorAndRangeShape, j, x, y, )
-				//gg.NewLinearGradient()
+				// //xNext, yNext, colorNext := calculateNextCircle(im, colorAndRangeShape, j, x, y, )
+				// //gg.NewLinearGradient()
 				ctx.SetRGBA255(int(colorPixels.R), int(colorPixels.G), int(colorPixels.B), int(colorPixels.A))
-				//as := gg.NewSolidPattern(color.Black)
-				//ctx.SetStrokeStyle(as)
+				// //as := gg.NewSolidPattern(color.Black)
+				// //ctx.SetStrokeStyle(as)
 			}
 			//ctx.SetLineWidth(1)
 			ctx.FillPreserve()
