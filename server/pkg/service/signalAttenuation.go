@@ -61,15 +61,12 @@ func signalAttenuation(img image.Image, x, y float64) float64 {
 		logrus.Fatal(err)
 	}
 	coeff := getCoefficient(pixel)
+
 	if coeff == -1 {
 		logrus.Error("something wrong in getCoefficient")
 	}
 	if coeff == 0 || coeff == -1 {
-		return 0.6
+		return 1
 	}
 	return coeff
-}
-
-func detectSizeOfAttenuation() {
-
 }

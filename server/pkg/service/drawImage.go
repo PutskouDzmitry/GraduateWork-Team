@@ -26,7 +26,7 @@ func NewDrawImage(coordinatesOfRouters []model.RouterSettings, filePathInput str
 
 var (
 	pathTest          = "./test_pictures/floor.png"
-	n                 = 16
+	n                 = 64
 	koofStone         = 0.6
 	rotation  float64 = 20
 	angle             = 2 * math.Pi / float64(n)
