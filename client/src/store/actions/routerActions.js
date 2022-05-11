@@ -18,6 +18,10 @@ export const removeRouter = (id) => ({
   id,
 });
 
+export const removeAllRouters = () => ({
+  type: routerActionTypes.REMOVE_ALL_ROUTERS,
+});
+
 export const setCurrentRouterId = (id) => ({
   type: routerActionTypes.SET_CURRENT_ROUTER_ID,
   id,

@@ -55,7 +55,13 @@ const modalActionsReducer = (state = initialState, action) => {
           return router.id != action.id;
         }),
       };
-      console.log(newState);
+      return newState;
+
+    case routerActionTypes.REMOVE_ALL_ROUTERS:
+      newState = {
+        ...state,
+        routersList: [],
+      };
       return newState;
 
     case routerActionTypes.SET_CURRENT_ROUTER_ID:

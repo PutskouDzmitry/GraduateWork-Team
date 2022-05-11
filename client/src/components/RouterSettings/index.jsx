@@ -131,10 +131,10 @@ function RouterSettings({}) {
         })}
         <div className="settings__form__buttons">
           <button className="button button_gray" onClick={handleClose}>
-            <i class="fa-solid fa-xmark"></i>
+            <i className="fa-solid fa-xmark"></i>
           </button>
           <button className="button button_red" onClick={handleRemove}>
-            <i class="fa-solid fa-trash-can"></i>
+            <i className="fa-solid fa-trash-can"></i>
           </button>
           <button
             ref={submitButton}
@@ -142,7 +142,7 @@ function RouterSettings({}) {
             onClick={handleSubmit}
             type="submit"
           >
-            <i class="fa-solid fa-check"></i>
+            <i className="fa-solid fa-check"></i>
           </button>
         </div>
       </form>

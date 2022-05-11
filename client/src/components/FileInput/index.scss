@@ -1,0 +1,45 @@
+@import "../../styles/constants.scss";
+
+// .file-input::file-selector-button {
+//   font-family: $font-default;
+//   font-weight: 400;
+//   font-size: 24px;
+//   border: 2px solid $blue;
+//   color: $blue;
+//   background-color: white;
+//   padding: 2px 7px;
+//   margin: 5px;
+//   outline: none;
+//   transition: 0.2s;
+
+//   &:hover {
+//     border: 2px solid $blue;
+//     color: white;
+//     background-color: $blue;
+//   }
+// }
+
+.file-input {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+
+  &__button {
+    font-family: $font-default;
+    font-weight: 400;
+    font-size: 24px;
+    border: 2px solid $blue;
+    color: $blue;
+    background-color: white;
+    padding: 2px 7px;
+    margin: 5px;
+    outline: none;
+
+    &:hover {
+      border: 2px solid $blue;
+      color: white;
+      background-color: $blue;
+    }
+  }
+}
