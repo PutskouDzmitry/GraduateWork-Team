@@ -17,20 +17,34 @@ function LogInForm({ type }) {
   const handleLogIn = async () => {
     var xhr = new XMLHttpRequest();
     let formData = new FormData();
-    // const username = document.getElementById("login").value;
-    // const password = document.getElementById("password").value;
     const username = loginUsername.current.value;
     const password = loginPassword.current.value;
     console.log(username, password);
     formData.append("login", username);
     formData.append("password", password);
+    xhr.onload = () => {
+      dispatch(userLogIn());
+      history.push("/");
+    };
     xhr.open("POST", "http://localhost:8080/auth/login", true);
     xhr.send(formData);
   };
 
-  const handleGoogleLogIn = async () => {};
-
-  const handleSignIn = async () => {};
+  const handleSignIn = async () => {
+    var xhr = new XMLHttpRequest();
+    let formData = new FormData();
+    const username = signinUsername.current.value;
+    const password = signinPassword.current.value;
+    console.log(username, password);
+    formData.append("login", username);
+    formData.append("password", password);
+    xhr.onload = () => {
+      dispatch(userLogIn());
+      history.push("/");
+    };
+    xhr.open("POST", "http://localhost:8080/auth/sign-up", true);
+    xhr.send(formData);
+  };
 
   return (
     <div className="main-block">
@@ -80,12 +94,18 @@ function LogInForm({ type }) {
             </div>
             <div className="block-divider small"></div>
             <div className="login-block secondary">
-              <button
+              {/* <button
                 className="button login-block__button single-button"
                 onClick={handleGoogleLogIn}
               >
                 Log in with <i className="fa-brands fa-google"></i>
-              </button>
+              </button> */}
+              <a
+                className="button login-block__button single-button link"
+                href="http://localhost:8080/auth/google"
+              >
+                Log in with <i className="fa-brands fa-google"></i>
+              </a>
             </div>
           </div>
         </>

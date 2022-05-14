@@ -44,9 +44,6 @@ function Main() {
 
   const handleUpload = async () => {
     let formData = new FormData();
-    // let file = fileInput.current.files[0];
-    // formData.append("myFile", file);
-    // formData.append("data", JSON.stringify(routers));
 
     const file = dataURLtoBlob(canvasOld.current.toDataURL());
     formData.append("myFile", file);
