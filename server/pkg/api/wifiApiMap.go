@@ -115,7 +115,6 @@ func (h Handler) calculationOfValues(c *gin.Context) {
 	//	//return
 	//}
 	userId := "2"
-
 	routersOld, err := getValues(c)
 	if err != nil {
 		logrus.Error(err)
@@ -131,7 +130,7 @@ func (h Handler) calculationOfValues(c *gin.Context) {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
-	routers := service.ValidationValues(routersOld)
+	routers := routersOld //service.ValidationValues(routersOld)
 	filePathOutput := service.GenerateFullPathOfFile(outputPathFile, userId)
 	drawImage := service.NewDrawImage(routers, filePathInput, filePathOutput)
 	err = drawImage.DrawOnImage()
@@ -189,6 +188,9 @@ func getValues(c *gin.Context) ([]model.RouterSettings, error) {
 		routerSettings[i].SignalLossReceiving = signalLossReceiving
 		numberOfChannels, _ := strconv.Atoi(value.Settings.NumberOfChannels)
 		routerSettings[i].NumberOfChannels = numberOfChannels
+		routerSettings[i].Scale = 1
+		routerSettings[i].Thickness = 4
+		routerSettings[i].COM = 10
 	}
 	return routerSettings, nil
 }

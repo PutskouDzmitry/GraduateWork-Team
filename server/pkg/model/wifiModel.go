@@ -34,7 +34,6 @@ type RouterSettings struct {
 	Scale                     float64           `json:"scale"`
 	Thickness                 float64           `json:"thickness"`
 	COM                       float64           `json:"com"`
-	TypeOfDevice              int64             `json:"type_of_device"`
 }
 
 type Wifi struct {

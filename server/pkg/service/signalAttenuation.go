@@ -41,7 +41,7 @@ func initCoefficient() []attenuation {
 	coeff = append(coeff, attenuation{
 		name:        "fish",
 		pixel:       Pixel{R: 0, G: 230, B: 230},
-		coefficient: 0.0000001,
+		coefficient: 0.001,
 	})
 	return coeff
 }
@@ -66,7 +66,7 @@ func signalAttenuation(img image.Image, x, y float64) float64 {
 		logrus.Error("something wrong in getCoefficient")
 	}
 	if coeff == 0 || coeff == -1 {
-		return 1
+		return 2
 	}
 	return coeff
 }

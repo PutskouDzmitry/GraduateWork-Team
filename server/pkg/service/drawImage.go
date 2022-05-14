@@ -25,72 +25,62 @@ func NewDrawImage(coordinatesOfRouters []model.RouterSettings, filePathInput str
 }
 
 var (
-	pathTest          = "./test_pictures/floor.png"
-	n                 = 64
-	koofStone         = 0.6
-	rotation  float64 = 20
-	angle             = 2 * math.Pi / float64(n)
+	n                = 16
+	rotation float64 = 20
+	angle            = 2 * math.Pi / float64(n)
 )
 
 func (d drawImage) DrawOnImage() error {
 	im, err := gg.LoadPNG(d.filePathInput)
-	arrayXY := detectColor(im)
+	arrayCoordinatesOfPoint := detectColor(im)
 	if err != nil {
 		return fmt.Errorf("error with load png file: %w", err)
 	}
-	radiuses := make([]float64, 0, len(d.coordinatesOfRouters))
+	radii := make([]float64, 0, len(d.coordinatesOfRouters))
 	for _, value := range d.coordinatesOfRouters {
 		radius, err := CalculationOfValues(value)
 		if err != nil {
 			return err
 		}
 		radius /= value.Scale
-		radiuses = append(radiuses, 250)
+		radii = append(radii, radius)
 	}
 
 	rotation -= math.Pi / 2
 	ctx := gg.NewContextForImage(im)
-
 	var rNew float64
-	var rPromej float64
-	var oldPixel Pixel
-	var countOfThickness int64
-	// draw all rings
-	for j := 0; j < 8; j++ {
+	var checkSignal float64
+	//draw all rings
+	for j := 0; j < 7; j++ {
 		//отрисовка по одному кругу покрытия каждого роутера
 		for a := 0; a < len(d.coordinatesOfRouters); a++ {
 			ctx.NewSubPath()
-			x, y, r := d.coordinatesOfRouters[a].CoordinatesOfRouter.X, d.coordinatesOfRouters[a].CoordinatesOfRouter.Y, radiuses[a]
+			x, y, r := d.coordinatesOfRouters[a].CoordinatesOfRouter.X, d.coordinatesOfRouters[a].CoordinatesOfRouter.Y, radii[a]
 			colorAndRangeShape := NewColorAndRadius(r)
+			chooseColor := colorAndRangeShape[j].Color
 			//отрисовка по линиям
 			for i := 0; i <= n; i++ {
 				r = colorAndRangeShape[j].Radius
 				rNew = r
-				rPromej = r
-				colorPixels := colorAndRangeShape[j].Color
+				//rPromej = r
 				a := angle * float64(i)
 				// расчет длины сигнала(поиск препядствий)
 				for h := 0; float64(h) < r; h++ {
 					xH := x + float64(h)*math.Cos(a)
 					yH := y + float64(h)*math.Sin(a)
-					for k := 0; k < len(arrayXY); k++ {
-						if float64(int64(xH)) == arrayXY[k].x && float64(int64(yH)) == arrayXY[k].y {
+					for k := 0; k < len(arrayCoordinatesOfPoint); k++ {
+						if float64(int64(xH)) == arrayCoordinatesOfPoint[k].x && float64(int64(yH)) == arrayCoordinatesOfPoint[k].y {
 							attenuationOfSignal := signalAttenuation(im, xH, yH)
-							currentPixel, _ := getPixels(im, xH, yH)
-							rT := getRadius(x, y, xH, yH)
-							if oldPixel.R == currentPixel.R && oldPixel.B == currentPixel.B && oldPixel.G == currentPixel.G {
-								countOfThickness++
+							if attenuationOfSignal == 2 {
 								continue
 							}
-							if rT < rNew {
-								rNew = rT + (rPromej-rT)*attenuationOfSignal
-								rPromej = rNew
-								//h += 30 // delete after decommissioning comments
+							if checkSignal != attenuationOfSignal {
+								rNew = float64(h) + (r-float64(h))*attenuationOfSignal
+								checkSignal = attenuationOfSignal
 							}
-							oldPixel = currentPixel
 						}
 					}
-					countOfThickness = 0
+					checkSignal = 3
 				}
 				cosX := x + rNew*math.Cos(a)
 				sinY := y + rNew*math.Sin(a)
@@ -100,60 +90,18 @@ func (d drawImage) DrawOnImage() error {
 					continue
 				}
 				ctx.LineTo(cosX, sinY)
-				// //xNext, yNext, colorNext := calculateNextCircle(im, colorAndRangeShape, j, x, y, )
-				// //gg.NewLinearGradient()
-				ctx.SetRGBA255(int(colorPixels.R), int(colorPixels.G), int(colorPixels.B), int(colorPixels.A))
-				// //as := gg.NewSolidPattern(color.Black)
-				// //ctx.SetStrokeStyle(as)
 			}
-			//ctx.SetLineWidth(1)
-			ctx.FillPreserve()
-			ctx.Stroke()
+			ctx.SetRGBA255(int(chooseColor.R), int(chooseColor.G), int(chooseColor.B), int(chooseColor.A))
 		}
+		ctx.SetLineWidth(0)
+		ctx.FillPreserve()
+		ctx.Stroke()
 	}
 	ctx.SavePNG(d.filePathOutput)
 	return nil
 }
 
-//func calculateNextCircle(im image.Image, colorAndRangeShape []ColorAndRadius, j int64, x, y float64, i int64, arrayXY []XY) (float64, float64, color.RGBA) {
-//	x, y, r := d.coordinatesOfRouters[a].CoordinatesOfRouter.X, d.coordinatesOfRouters[a].CoordinatesOfRouter.Y, radiuses[a]
-//	if j == 7 {
-//		return -1, -1, color.RGBA{}
-//	}
-//	r := colorAndRangeShape[j + 1].Radius
-//	rNew := r
-//	rPromej := r
-//	colorPixels := colorAndRangeShape[j + 1].Color
-//	a := angle * float64(i)
-//	// расчет длины сигнала(поиск препядствий)
-//	for h := 0; float64(h) < r; h++ {
-//		xH := x + float64(h)*math.Cos(a)
-//		yH := y + float64(h)*math.Sin(a)
-//		for k := 0; k < len(arrayXY); k++ {
-//			if float64(int64(xH)) == arrayXY[k].x && float64(int64(yH)) == arrayXY[k].y {
-//				attenuationOfSignal := signalAttenuation(im, xH, yH)
-//				//currentPixel, _ := getPixels(im ,xH, yH)
-//				rT := getRadius(x, y, xH, yH)
-//				//if oldPixel.R == currentPixel.R && oldPixel.B == currentPixel.B && oldPixel.G == currentPixel.G {
-//				//	countOfThickness++
-//				//	continue
-//				//}
-//				if rT < rNew {
-//					rNew = rT + (rPromej-rT)*attenuationOfSignal
-//					rPromej = rNew
-//					h += 30 // delete after decommissioning comments
-//				}
-//				//oldPixel = currentPixel
-//			}
-//		}
-//		//countOfThickness = 0
-//	}
-//	cosX := x + rNew*math.Cos(a)
-//	sinY := y + rNew*math.Sin(a)
-//	return cosX, sinY, colorPixels
-//}
-
-func (d drawImage) getXYR(i int) (float64, float64, float64, error) {
+func (d drawImage) getCoordinatesOfPointR(i int) (float64, float64, float64, error) {
 	r, err := CalculationOfValues(d.coordinatesOfRouters[i])
 	if err != nil {
 		return -1, -1, -1, err
@@ -183,31 +131,28 @@ type ColorAndRadius struct {
 }
 
 func NewColorAndRadius(radius float64) []ColorAndRadius {
-	a := uint8(100)
+	a := uint8(180)
 	var kof2 float64 = 0.5
 	var kof3 float64 = 0.4
 	var kof4 float64 = 0.3
 	var kof5 float64 = 0.25
 	var kof6 float64 = 0.2
 	var kof7 float64 = 0.15
-	var kof8 float64 = 0.1
 	colorArr := make([]ColorAndRadius, 9, 11)
-	colorArr[0].Color = color.RGBA{A: a, R: 220, G: 0, B: 0}
+	colorArr[0].Color = color.RGBA{A: a, R: 100, G: 123, B: 251}
 	colorArr[0].Radius = radius
-	colorArr[1].Color = color.RGBA{A: a, R: 223, G: 106, B: 78}
+	colorArr[1].Color = color.RGBA{A: a, R: 107, G: 184, B: 240}
 	colorArr[1].Radius = radius * kof2
-	colorArr[2].Color = color.RGBA{A: a, R: 227, G: 138, B: 80}
+	colorArr[2].Color = color.RGBA{A: a, R: 120, G: 245, B: 242}
 	colorArr[2].Radius = radius * kof3
-	colorArr[3].Color = color.RGBA{A: a, R: 234, G: 170, B: 82}
+	colorArr[3].Color = color.RGBA{A: a, R: 115, G: 246, B: 105}
 	colorArr[3].Radius = radius * kof4
-	colorArr[4].Color = color.RGBA{A: a, R: 190, G: 255, B: 92}
+	colorArr[4].Color = color.RGBA{A: a, R: 237, G: 247, B: 123}
 	colorArr[4].Radius = radius * kof5
-	colorArr[5].Color = color.RGBA{A: a, R: 140, G: 255, B: 91}
+	colorArr[5].Color = color.RGBA{A: a, R: 243, G: 187, B: 115}
 	colorArr[5].Radius = radius * kof6
-	colorArr[6].Color = color.RGBA{A: a, R: 110, G: 255, B: 91}
+	colorArr[6].Color = color.RGBA{A: a, R: 239, G: 117, B: 109}
 	colorArr[6].Radius = radius * kof7
-	colorArr[7].Color = color.RGBA{A: a, R: 92, G: 255, B: 90}
-	colorArr[7].Radius = radius * kof8
 	return colorArr
 }
 
@@ -226,14 +171,14 @@ type Pixel struct {
 	A int
 }
 
-type XY struct {
+type CoordinatesOfPoint struct {
 	x float64
 	y float64
 }
 
-func detectColor(im image.Image) []XY {
-	getXYArray := make([]XY, 0, 10)
-	getXY := XY{}
+func detectColor(im image.Image) []CoordinatesOfPoint {
+	getCoordinatesOfPointArray := make([]CoordinatesOfPoint, 0, 10)
+	getCoordinatesOfPoint := CoordinatesOfPoint{}
 	for x := 0; x < 600; x++ {
 		for y := 0; y < 400; y++ {
 			pixel, err := getPixels(im, float64(x), float64(y))
@@ -241,15 +186,15 @@ func detectColor(im image.Image) []XY {
 				logrus.Fatal(err)
 			}
 			if pixel.B != 255 && pixel.R != 255 {
-				getXY = XY{
+				getCoordinatesOfPoint = CoordinatesOfPoint{
 					x: float64(x),
 					y: float64(y),
 				}
-				getXYArray = append(getXYArray, getXY)
+				getCoordinatesOfPointArray = append(getCoordinatesOfPointArray, getCoordinatesOfPoint)
 			}
 		}
 	}
-	return getXYArray
+	return getCoordinatesOfPointArray
 }
 
 func detectOutPositionOfSignal(im image.Image, x, y float64) {
