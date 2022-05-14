@@ -14,14 +14,21 @@ function App() {
       <>
         <Switch>
           <Route path="/login">
-            <LogInForm />
+            <Header withLoginButton={false} />
+            <LogInForm type={"login"} />
+            <Footer />
+          </Route>
+          <Route path="/register">
+            <Header withLoginButton={false} />
+            <LogInForm type={"signin"} />
+            <Footer />
           </Route>
           <Route path="/">
+            <Header withLoginButton={true} />
             <Sidebar />
-            <Header />
             <Main />
-            <Footer />
             <RouterSettings />
+            <Footer />
           </Route>
         </Switch>
       </>
