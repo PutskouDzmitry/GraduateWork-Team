@@ -189,7 +189,6 @@ func getValues(c *gin.Context) ([]model.RouterSettings, error) {
 		numberOfChannels, _ := strconv.Atoi(value.Settings.NumberOfChannels)
 		routerSettings[i].NumberOfChannels = numberOfChannels
 		routerSettings[i].Scale = 1
-		routerSettings[i].Thickness = 4
 		routerSettings[i].COM = 10
 	}
 	return routerSettings, nil

@@ -30,7 +30,7 @@ func initCoefficient() []attenuation {
 	})
 	coeff = append(coeff, attenuation{
 		name:        "between",
-		pixel:       Pixel{R: 255, G: 191, B: 0},
+		pixel:       Pixel{R: 248, G: 191, B: 0},
 		coefficient: 0.15,
 	})
 	coeff = append(coeff, attenuation{
@@ -60,6 +60,7 @@ func signalAttenuation(img image.Image, x, y float64) float64 {
 	if err != nil {
 		logrus.Fatal(err)
 	}
+
 	coeff := getCoefficient(pixel)
 
 	if coeff == -1 {

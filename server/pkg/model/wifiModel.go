@@ -32,7 +32,6 @@ type RouterSettings struct {
 	SignalLossReceiving       float64           `json:"signal_loss_receiving"`
 	NumberOfChannels          int               `json:"number_of_channels"`
 	Scale                     float64           `json:"scale"`
-	Thickness                 float64           `json:"thickness"`
 	COM                       float64           `json:"com"`
 }
 
@@ -45,9 +44,6 @@ type Wifi struct {
 type CoordinatesPoints struct {
 	X float64 `json:"x"`
 	Y float64 `json:"y"`
-}
-
-type Response struct {
 }
 
 type ResponseInfoPoint struct {

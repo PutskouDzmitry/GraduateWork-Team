@@ -45,7 +45,6 @@ func (d drawImage) DrawOnImage() error {
 		radius /= value.Scale
 		radii = append(radii, radius)
 	}
-
 	rotation -= math.Pi / 2
 	ctx := gg.NewContextForImage(im)
 	var rNew float64
@@ -132,12 +131,12 @@ type ColorAndRadius struct {
 
 func NewColorAndRadius(radius float64) []ColorAndRadius {
 	a := uint8(180)
-	var kof2 float64 = 0.5
-	var kof3 float64 = 0.4
-	var kof4 float64 = 0.3
-	var kof5 float64 = 0.25
-	var kof6 float64 = 0.2
-	var kof7 float64 = 0.15
+	var kof2 float64 = 0.8
+	var kof3 float64 = 0.55
+	var kof4 float64 = 0.401
+	var kof5 float64 = 0.32
+	var kof6 float64 = 0.26
+	var kof7 float64 = 0.2
 	colorArr := make([]ColorAndRadius, 9, 11)
 	colorArr[0].Color = color.RGBA{A: a, R: 100, G: 123, B: 251}
 	colorArr[0].Radius = radius
@@ -185,7 +184,7 @@ func detectColor(im image.Image) []CoordinatesOfPoint {
 			if err != nil {
 				logrus.Fatal(err)
 			}
-			if pixel.B != 255 && pixel.R != 255 {
+			if pixel.B != 255 && pixel.G != 255 {
 				getCoordinatesOfPoint = CoordinatesOfPoint{
 					x: float64(x),
 					y: float64(y),

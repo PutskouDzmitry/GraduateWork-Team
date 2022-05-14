@@ -130,7 +130,6 @@ func convertRouterSettingsToRouterDataModel(routers model.RouterSettings, point 
 		SignalLossReceiving:       routers.SignalLossReceiving,
 		NumberOfChannels:          routers.NumberOfChannels,
 		Scale:                     routers.Scale,
-		Thickness:                 routers.Thickness,
 		COM:                       routers.COM,
 	}
 }
@@ -202,7 +201,6 @@ func convertRouterDataModelToRouterSettings(router RouterDataModel, point Coordi
 		SignalLossReceiving:       router.SignalLossReceiving,
 		NumberOfChannels:          router.NumberOfChannels,
 		Scale:                     router.Scale,
-		Thickness:                 router.Thickness,
 		COM:                       router.COM,
 	}
 }

@@ -38,7 +38,6 @@ func (h Handler) InitRoutes() *gin.Engine {
 		auth.POST("/sign-up", h.signUp)
 		auth.POST("/login", h.login)
 		auth.GET("/refresh", h.refresh)
-
 		auth.GET("/google", h.loginTest)
 		auth.GET("/callback", h.callback)
 	}
@@ -52,14 +51,9 @@ func (h Handler) InitRoutes() *gin.Engine {
 		apiWifiMap.POST("/getInfo", h.getInfo)
 	}
 
-	//apiWifiUnit2 := router.Group("/api/unit2")
-	//{
-	//	apiWifiUnit2.POST("/calculation")
-	//}
-	//
-	//apiWifiUnit3 := router.Group("/api/unit3")
-	//{
-	//	apiWifiUnit3.Group("/calculation")
-	//}
+	apiWifiUnit2 := router.Group("/api/unit2")
+	{
+		apiWifiUnit2.POST("/calculation")
+	}
 	return router
 }

@@ -21,7 +21,7 @@ export const objectsInfo = [
     title: "Interior Wall",
     name: "interiorWall",
     icon: <i className="fa-solid fa-table-cells"></i>,
-    color: "#ffbf00",
+    color: "#f8bf00",
   },
   {
     title: "Main Wall",
