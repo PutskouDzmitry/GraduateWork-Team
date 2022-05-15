@@ -30,6 +30,7 @@ type RouterSettings struct {
 	Speed                     int               `json:"speed"`
 	SignalLossTransmitting    float64           `json:"signal_loss_transmitting"`
 	SignalLossReceiving       float64           `json:"signal_loss_receiving"`
+	TypeOfSignal              float64           `json:"type_of_signal"`
 	NumberOfChannels          int               `json:"number_of_channels"`
 	Scale                     float64           `json:"scale"`
 	COM                       float64           `json:"com"`
@@ -57,4 +58,15 @@ type InfoOfPoint struct {
 	SignalStrength float64
 	SignalQuality  int64
 	Channel        int64
+}
+
+type RoutersSettingForMigrator struct {
+	Coordinates              CoordinatesPoints
+	RoutersSettingsMigration []RouterSettingForMigrator
+}
+
+type RouterSettingForMigrator struct {
+	Name  string
+	Power float64
+	MAC   float64
 }

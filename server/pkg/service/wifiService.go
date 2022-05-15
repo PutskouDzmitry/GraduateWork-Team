@@ -18,6 +18,7 @@ type wifi struct {
 	receiverSensitivity       float64
 	signalLossTransmitting    float64
 	signalLossReceiving       float64
+	typeOfSignal              float64
 }
 
 func CalculationOfValues(coordinates model.RouterSettings) (float64, error) {
@@ -26,7 +27,7 @@ func CalculationOfValues(coordinates model.RouterSettings) (float64, error) {
 		return -1, fmt.Errorf("this program doesn't supposed this speed: %v", coordinates.Speed)
 	}
 
-	numberOfChannel := getCenterFrequency(coordinates.NumberOfChannels)
+	numberOfChannel := getCenterFrequency(coordinates.NumberOfChannels, coordinates.TypeOfSignal)
 	if numberOfChannel == -1 {
 		return -1, fmt.Errorf("this program doesn't supposed this number of channel: %v", coordinates.NumberOfChannels)
 	}
@@ -73,38 +74,95 @@ func getSensitivityVersusBaudRate(speed int) float64 {
 	}
 }
 
-func getCenterFrequency(number int) float64 {
-	switch number {
-	case 1:
-		return 2.412
-	case 2:
-		return 2.417
-	case 3:
-		return 2.422
-	case 4:
-		return 2.427
-	case 5:
-		return 2.432
-	case 6:
-		return 2.437
-	case 7:
-		return 2.447
-	case 8:
-		return 2.452
-	case 9:
-		return 2.422
-	case 10:
-		return 2.457
-	case 11:
-		return 2.462
-	case 12:
-		return 2.467
-	case 13:
-		return 2.472
-	case 14:
-		return 2.484
-	default:
-		return -1
+func getCenterFrequency(number int, typeOfSignal float64) float64 {
+	if typeOfSignal == 2.4 {
+		switch number {
+		case 1:
+			return 2.412
+		case 2:
+			return 2.417
+		case 3:
+			return 2.422
+		case 4:
+			return 2.427
+		case 5:
+			return 2.432
+		case 6:
+			return 2.437
+		case 7:
+			return 2.447
+		case 8:
+			return 2.452
+		case 9:
+			return 2.422
+		case 10:
+			return 2.457
+		case 11:
+			return 2.462
+		case 12:
+			return 2.467
+		case 13:
+			return 2.472
+		case 14:
+			return 2.484
+		default:
+			return -1
+		}
+	} else {
+		switch number {
+		case 1:
+			return 5.180
+		case 2:
+			return 5.200
+		case 3:
+			return 5.220
+		case 4:
+			return 5.240
+		case 5:
+			return 5.260
+		case 6:
+			return 5.280
+		case 7:
+			return 5.300
+		case 8:
+			return 5.320
+		case 9:
+			return 5.340
+		case 10:
+			return 5.360
+		case 11:
+			return 5.380
+		case 12:
+			return 5.400
+		case 13:
+			return 5.420
+		case 14:
+			return 5.440
+		case 15:
+			return 5.460
+		case 16:
+			return 5.480
+		case 17:
+			return 5.500
+		case 18:
+			return 5.520
+		case 19:
+			return 5.540
+		case 20:
+			return 5.560
+		case 21:
+			return 5.580
+		case 22:
+			return 5.600
+		case 23:
+			return 5.620
+		case 24:
+			return 5.640
+		case 25:
+			return 5.660
+		default:
+			return -1
+		}
 	}
 }
 

@@ -74,8 +74,20 @@ func ValidationOfPlaceRouter(filePath string, routers []model.RouterSettings) er
 	return nil
 }
 
-func GenerateFullPathOfFile(path, userId string) string {
-	return path + userId + ".png"
+func GenerateFullPathOfFileToMap(path, userId string) string {
+	return path + userId + "-map.png"
+}
+
+func GenerateFullPathOfFileToFlux(path, userId string) string {
+	return path + userId + "-flux.png"
+}
+
+func GenerateFullPathOfFileToAcrylic(path, userId string) string {
+	return path + userId + "-acrylic.png"
+}
+
+func GenerateFullPathOfFileToTelephone(path, userId string) string {
+	return path + userId + "-telephone.png"
 }
 
 //func ValidationValues(routers []model.RouterSettings) []model.RouterSettings {
