@@ -52,16 +52,15 @@ func (d drawImage) DrawOnImage() error {
 	//draw all rings
 	for j := 0; j < 7; j++ {
 		//отрисовка по одному кругу покрытия каждого роутера
-		for a := 0; a < len(d.coordinatesOfRouters); a++ {
+		for line := 0; line < len(d.coordinatesOfRouters); line++ {
 			ctx.NewSubPath()
-			x, y, r := d.coordinatesOfRouters[a].CoordinatesOfRouter.X, d.coordinatesOfRouters[a].CoordinatesOfRouter.Y, radii[a]
+			x, y, r := d.coordinatesOfRouters[line].CoordinatesOfRouter.X, d.coordinatesOfRouters[line].CoordinatesOfRouter.Y, radii[line]
 			colorAndRangeShape := NewColorAndRadius(r)
 			chooseColor := colorAndRangeShape[j].Color
 			//отрисовка по линиям
 			for i := 0; i <= n; i++ {
 				r = colorAndRangeShape[j].Radius
 				rNew = r
-				//rPromej = r
 				a := angle * float64(i)
 				// расчет длины сигнала(поиск препядствий)
 				for h := 0; float64(h) < r; h++ {
@@ -79,7 +78,7 @@ func (d drawImage) DrawOnImage() error {
 							}
 						}
 					}
-					checkSignal = 3
+					checkSignal = -1
 				}
 				cosX := x + rNew*math.Cos(a)
 				sinY := y + rNew*math.Sin(a)
@@ -106,22 +105,6 @@ func (d drawImage) getCoordinatesOfPointR(i int) (float64, float64, float64, err
 		return -1, -1, -1, err
 	}
 	return d.coordinatesOfRouters[i].CoordinatesOfRouter.X, d.coordinatesOfRouters[i].CoordinatesOfRouter.Y, r, nil
-}
-
-func getRadius(x0, y0, x1, y1 float64) float64 {
-	var x0x1 float64
-	var y0y1 float64
-	if x1-x0 >= 0 {
-		x0x1 = x1 - x0
-	} else {
-		x0x1 = x0 - x1
-	}
-	if y1-y0 >= 0 {
-		y0y1 = y1 - y0
-	} else {
-		y0y1 = y0 - y1
-	}
-	return math.Sqrt(math.Pow(x0x1, 2) + math.Pow(y0y1, 2))
 }
 
 type ColorAndRadius struct {
