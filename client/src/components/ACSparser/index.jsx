@@ -1,28 +1,33 @@
 import { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addRouter, removeAllRouters } from "../../store/actions/routerActions";
+import { addStep } from "../../store/actions/stepActions";
 import {
   objectModeOn,
   objectModeOff,
   setCurrentObject,
 } from "../../store/actions/objectActions";
-import Router from "../Router";
-import { objectsInfo, dataURLtoBlob } from "../../constants";
+import Step from "../Step";
+import { objectsInfo, dataURLtoBlob, parseACSfiles } from "../../constants";
 
 import FileInput from "../FileInput";
 
 import "./index.scss";
 
-function Main() {
+function ACSparser() {
   const dispatch = useDispatch();
   const canvasOld = useRef(null);
   const canvasNew = useRef(null);
   const canvasForObjects = useRef(null);
   const fileInput = useRef(null);
+  const acsFileInput = useRef(null);
   const [fileName, setFileName] = useState("No file chosen");
+  const [acsFileName, setAcsFileName] = useState("No ACS files chosen");
+  const [acsParsed, setAcsParsed] = useState([]);
   const [isChanged, setIsChanged] = useState(false);
+  const [isAcsChanged, setIsAcsChanged] = useState(false);
+  const [acsFilesNumber, setAcsFilesNumber] = useState(0);
   const [isUploaded, setIsUploaded] = useState(false);
-  const routers = useSelector((state) => state.routers.routersList);
+  const steps = useSelector((state) => state.steps.stepsList);
   const isObjectModeOn = useSelector(
     (state) => state.objectsInfo.isObjectModeOn
   );
@@ -39,7 +44,14 @@ function Main() {
     img.src = url;
     setIsChanged(true);
     setFileName(fileInput.current.files[0].name);
-    dispatch(removeAllRouters());
+  };
+
+  const acsHandleChange = async () => {
+    const parsedFiles = parseACSfiles(acsFileInput.current.files);
+    setAcsParsed(parsedFiles);
+    setIsAcsChanged(true);
+    setAcsFileName(`${acsFileInput.current.files.length} files chosen`);
+    setAcsFilesNumber(acsFileInput.current.files.length);
   };
 
   const handleUpload = async () => {
@@ -47,7 +59,13 @@ function Main() {
 
     const file = dataURLtoBlob(canvasOld.current.toDataURL());
     formData.append("myFile", file);
-    formData.append("data", JSON.stringify(routers));
+    formData.append(
+      "data",
+      JSON.stringify({
+        steps,
+        acsParsed,
+      })
+    );
 
     var xhr = new XMLHttpRequest();
     xhr.onload = function () {
@@ -130,20 +148,13 @@ function Main() {
     };
 
     const clickListener = (e) => {
-      let left = e.offsetX;
-      let top = e.offsetY;
-      let id = Date.now();
-      let coords = { left, top };
-      let settings = {
-        transmitterPower: 0,
-        gainOfTransmittingAntenna: 0,
-        gainOfReceivingAntenna: 0,
-        speed: 0,
-        signalLossTransmitting: 0,
-        signalLossReceiving: 0,
-        numberOfChannels: 0,
-      };
-      dispatch(addRouter(id, coords, settings));
+      if (acsFilesNumber != steps.length) {
+        let left = e.offsetX;
+        let top = e.offsetY;
+        let coords = { left, top };
+        let id = Date.now();
+        dispatch(addStep(id, coords));
+      }
     };
     currentCanvas.addEventListener("click", clickListener);
     objectsCanvas.addEventListener("click", objectClickListener);
@@ -190,9 +201,17 @@ function Main() {
             </button>
           </>
         ) : (
-          <button className="button button_wide" onClick={toggleObjectMode}>
-            Start drawing objects
-          </button>
+          <>
+            <button className="button button_wide" onClick={toggleObjectMode}>
+              Start drawing objects
+            </button>
+            <FileInput
+              ref={acsFileInput}
+              onChange={acsHandleChange}
+              fileName={acsFileName}
+              multiple={true}
+            />
+          </>
         )}
       </div>
       <div className="main-block__center">
@@ -200,8 +219,10 @@ function Main() {
           {isChanged
             ? isObjectModeOn
               ? "You are currently in object drawing mode"
-              : "Click anywhere on the picture to add a router"
-            : "Add a building plan to start working"}
+              : `${acsFilesNumber} ACS files chosen. ${
+                  acsFilesNumber - steps.length
+                } steps left`
+            : "Add a building plan and ACS files to start working"}
         </p>
         <div className={isChanged ? "canvas-wrapper" : "canvas-wrapper_hidden"}>
           <canvas
@@ -228,10 +249,8 @@ function Main() {
             className={isUploaded ? "canvas" : "canvas_hidden"}
             ref={canvasNew}
           ></canvas>
-          {routers.map((router) => {
-            return (
-              <Router coords={router.coords} id={router.id} key={router.id} />
-            );
+          {steps.map((step) => {
+            return <Step coords={step.coords} id={step.id} key={step.id} />;
           })}
         </div>
         <FileInput
@@ -252,4 +271,4 @@ function Main() {
   );
 }
 
-export default Main;
+export default ACSparser;

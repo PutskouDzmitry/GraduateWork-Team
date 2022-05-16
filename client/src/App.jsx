@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import Header from "./components/Header";
 import Main from "./components/Main";
+import ACSparser from "./components/ACSparser";
 import Footer from "./components/Footer";
 import Sidebar from "./components/Sidebar";
 import LogInForm from "./components/LogInForm";
@@ -21,6 +22,13 @@ function App() {
           <Route path="/register">
             <Header withLoginButton={false} />
             <LogInForm type={"signin"} />
+            <Footer />
+          </Route>
+          <Route path="/acs-parser">
+            <Header withLoginButton={true} />
+            <Sidebar />
+            <ACSparser />
+            <RouterSettings />
             <Footer />
           </Route>
           <Route path="/">

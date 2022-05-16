@@ -48,3 +48,53 @@ export function dataURLtoBlob(dataurl) {
   }
   return new Blob([u8arr], { type: mime });
 }
+
+export function parseACSfiles(fileList) {
+  let result = [];
+
+  for (let i = 0; i < fileList.length; i++) {
+    let reader = new FileReader();
+    let parser = new DOMParser();
+    let file = fileList[i];
+
+    reader.onload = (() => {
+      return (fileContents) => {
+        let resultItem = {
+          id: i,
+          signals: [],
+        };
+        const xmlContents = parser.parseFromString(
+          fileContents.target.result,
+          "text/xml"
+        );
+        const signals = xmlContents.getElementsByTagName("Client");
+        const signalsArray = Array.from(signals);
+
+        for (let j = 0; j < signalsArray.length; j++) {
+          const signal = signalsArray[j];
+          const nodes = Array.from(signal.childNodes);
+          const AT_ID = nodes.find((el) => {
+            return el.tagName === "AT_ID";
+          }).textContent;
+          const MAC = nodes.find((el) => {
+            return el.tagName === "MAC";
+          }).textContent;
+          const LastSignalStrength = nodes.find((el) => {
+            return el.tagName === "LastSignalStrength";
+          }).textContent;
+          const obj = { AT_ID, MAC, LastSignalStrength };
+          resultItem.signals.push({
+            id: j,
+            obj,
+          });
+        }
+
+        result.push(resultItem);
+      };
+    })(file);
+
+    reader.readAsText(file);
+  }
+
+  return result;
+}
