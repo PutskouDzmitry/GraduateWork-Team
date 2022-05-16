@@ -87,27 +87,7 @@ func testValue() []model.RouterSettings {
 	}
 }
 
-var (
-	testFileName   = ""
-	pathOfOutImage = "./pictures/"
-)
-
-type us struct {
-	Name string
-	Age  int64
-}
-
 func (h Handler) calculationOfValues(c *gin.Context) {
-	//_, err := h.GetUserFromToken(c.GetHeader(authorizationHeader))
-	//if err != nil {
-	//	newErrorResponse(c, http.StatusUnauthorized, err.Error())
-	//}
-
-	//var u us
-	//if err := c.BindJSON(&u); err != nil {
-	//newErrorResponse(c, http.StatusBadRequest, err.Error())
-	//return
-	//}
 	//header := c.GetHeader(authorizationHeader)
 	//userId, err := h.getUserId(header)
 	//if err != nil {

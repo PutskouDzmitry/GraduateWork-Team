@@ -25,13 +25,12 @@ var (
 	randomState = "random"
 )
 
-func (h Handler) loginTest(c *gin.Context) {
+func (h Handler) loginWithGoogle(c *gin.Context) {
 	url := googleOauthConfig.AuthCodeURL(randomState)
 	http.Redirect(c.Writer, c.Request, url, http.StatusTemporaryRedirect)
 }
 
 func (h Handler) callback(c *gin.Context) {
-	logrus.Info("kek")
 	if c.Request.FormValue("state") != randomState {
 		logrus.Error("error with read value state")
 		http.Redirect(c.Writer, c.Request, "/", http.StatusTemporaryRedirect)
@@ -83,9 +82,6 @@ func (h Handler) callback(c *gin.Context) {
 	}
 
 	c.SetCookie("refreshToken", userRefreshToken, 20, "/", "localhost", true, true)
-	//c.JSON(http.StatusOK, map[string]interface{}{
-	//	"id": userAccessToken,
-	//})
 	redirectResponse(c, "http://localhost:3000/api/map/home", userAccessToken)
 }
 

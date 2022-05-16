@@ -9,6 +9,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 )
 
 func (h Handler) fluxMigrator(c *gin.Context) {
@@ -29,7 +30,7 @@ func (h Handler) fluxMigrator(c *gin.Context) {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
-	fileBytes, err := ioutil.ReadFile(service.GenerateFullPathOfFileToMap(outputPathFile, userId))
+	fileBytes, err := ioutil.ReadFile(service.GenerateFullPathOfFileToFlux(outputPathFile, userId))
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -40,17 +41,36 @@ func (h Handler) fluxMigrator(c *gin.Context) {
 
 func getValuesToFlux(c *gin.Context) ([]model.RoutersSettingForMigrator, error) {
 	data := c.Request.FormValue("data")
-	var settings []model.RequestRouters
+	var settings model.RequestFlux
 	dataInByte := []byte(data)
 	err := json.Unmarshal(dataInByte, &settings)
+	routers := make([]model.RoutersSettingForMigrator, 0, 10)
+	router := make([]model.RouterSettingForMigrator, 0, 10)
 	if err != nil {
 		return nil, err
 	}
-	return nil, nil
-}
-
-func migrateDataToFlux() {
-
+	for _, value := range settings.Steps {
+		for _, value := range settings.AcsParsed {
+			for _, valueOfPoint := range value.Signals {
+				if s, err := strconv.ParseFloat(valueOfPoint.Obj.LastSignalStrength, 64); err == nil {
+					router = append(router, model.RouterSettingForMigrator{
+						Name:  valueOfPoint.Obj.AdId,
+						Power: s,
+						MAC:   valueOfPoint.Obj.MAC,
+					})
+				}
+			}
+		}
+		routers = append(routers, model.RoutersSettingForMigrator{
+			Coordinates: model.CoordinatesPoints{
+				X: value.Coords.X,
+				Y: value.Coords.Y,
+			},
+			RoutersSettingsMigration: router,
+		})
+	}
+	logrus.Info(len(routers[0].RoutersSettingsMigration))
+	return routers, nil
 }
 
 func (h Handler) acrylicMigrator(c *gin.Context) {
@@ -84,10 +104,6 @@ func getDataToAcrylic(c *gin.Context) ([]model.RoutersSettingForMigrator, error)
 	return nil, nil
 }
 
-func migrateDataToAcrylic() {
-
-}
-
 func (h Handler) telephoneMigrator(c *gin.Context) {
 	userId := "2"
 	dataOfRouters, err := getDataToTelephone(c)
@@ -117,8 +133,4 @@ func (h Handler) telephoneMigrator(c *gin.Context) {
 
 func getDataToTelephone(c *gin.Context) ([]model.RoutersSettingForMigrator, error) {
 	return nil, nil
-}
-
-func migrateDataToPhone() {
-
 }
