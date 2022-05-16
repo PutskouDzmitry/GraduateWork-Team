@@ -131,14 +131,14 @@ func (h Handler) calculationOfValues(c *gin.Context) {
 		return
 	}
 	routers := routersOld //service.ValidationValues(routersOld)
-	filePathOutput := service.GenerateFullPathOfFile(outputPathFile, userId)
+	filePathOutput := service.GenerateFullPathOfFileToMap(outputPathFile, userId)
 	drawImage := service.NewDrawImage(routers, filePathInput, filePathOutput)
 	err = drawImage.DrawOnImage()
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
-	fileBytes, err := ioutil.ReadFile(service.GenerateFullPathOfFile(outputPathFile, userId))
+	fileBytes, err := ioutil.ReadFile(service.GenerateFullPathOfFileToMap(outputPathFile, userId))
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -200,7 +200,7 @@ func getImageFromContext(c *gin.Context, userId string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("error with get file from form: %w", err)
 	}
-	filename := service.GenerateFullPathOfFile(inputPathFile, userId)
+	filename := service.GenerateFullPathOfFileToMap(inputPathFile, userId)
 	out, err := os.Create(filename)
 	if err != nil {
 		return "", err

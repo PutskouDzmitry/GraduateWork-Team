@@ -45,15 +45,14 @@ func (h Handler) InitRoutes() *gin.Engine {
 	apiWifiMap := router.Group("/api/map") //, h.userIdentity)
 	{
 		apiWifiMap.POST("/calculation", h.calculationOfValues)
-		apiWifiMap.POST("/save", h.saveData)
-		apiWifiMap.POST("/load", h.loadData)
-		apiWifiMap.POST("/preload", h.preloadData)
-		apiWifiMap.POST("/getInfo", h.getInfo)
+		//apiWifiMap.POST("/save", h.saveData)
+		//apiWifiMap.POST("/load", h.loadData)
+		//apiWifiMap.POST("/preload", h.preloadData)
+		//apiWifiMap.POST("/getInfo", h.getInfo)
+		apiWifiMap.POST("/fluxMigrator", h.fluxMigrator)
+		apiWifiMap.POST("/acrylicMigrator", h.acrylicMigrator)
+		apiWifiMap.POST("/telephoneMigrator", h.telephoneMigrator)
 	}
 
-	apiWifiUnit2 := router.Group("/api/unit2")
-	{
-		apiWifiUnit2.POST("/calculation")
-	}
 	return router
 }
