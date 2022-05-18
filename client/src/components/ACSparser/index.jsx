@@ -80,7 +80,7 @@ function ACSparser() {
       setIsUploaded(true);
     };
 
-    xhr.open("POST", "http://localhost:8080/api/map/calculation", true);
+    xhr.open("POST", "http://localhost:8080/api/map/fluxMigrator", true);
     xhr.send(formData);
   };
 

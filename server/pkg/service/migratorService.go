@@ -78,28 +78,32 @@ func findMaxPower(powers []float64, routers model.RoutersSettingForMigrator) val
 
 func (d drawImageToMigrator) FluxMigrator() error {
 	powers := make([]float64, 0, 10)
+	powersMin := make([]float64, 0, 10)
+	minPowers := make([]valueOfPowerOnPoint, 0, 10)
 	maxPowers := make([]valueOfPowerOnPoint, 0, 10)
 	for _, value := range d.coordinatesOfRouters {
 		for _, valueOfPoint := range value.RoutersSettingsMigration {
 			powers = append(powers, valueOfPoint.Power)
 		}
 		maxPowers = append(maxPowers, findMaxPower(powers, value))
+
+		maxPowerOnPoint := findMaxPower(powers, value)
+		for _, value := range d.coordinatesOfRouters {
+			for _, valueOfPoint := range value.RoutersSettingsMigration {
+				if valueOfPoint.MAC == maxPowerOnPoint.router.MAC {
+					powersMin = append(powersMin, valueOfPoint.Power)
+				}
+			}
+		}
+		minPowers = append(minPowers, findMinPower(powersMin, value))
 		powers = make([]float64, 0, 10)
+		powersMin = make([]float64, 0, 10)
 	}
 
-	powers = make([]float64, 0, 10)
-	minPowers := make([]valueOfPowerOnPoint, 0, 10)
-	for _, value := range d.coordinatesOfRouters {
-		for _, valueOfPoint := range value.RoutersSettingsMigration {
-			powers = append(powers, valueOfPoint.Power)
-		}
-		maxPowers = append(minPowers, findMinPower(powers, value))
-		powers = make([]float64, 0, 10)
-	}
-	if len(maxPowers) == len(minPowers) {
-		logrus.Info("okey")
+	if len(minPowers) == len(maxPowers) {
+		logrus.Info("ok")
 	} else {
-		logrus.Fatal("kek(")
+		logrus.Info("not ko")
 	}
 
 	distance := make([]radiusOfRouter, 0, 10)
@@ -130,6 +134,9 @@ func (d drawImageToMigrator) drawWifiOnMap(data []radiusOfRouter) error {
 	for _, value := range data {
 		radii = append(radii, value.radius)
 	}
+	//for i, _ := range data {
+	//	radii = append(radii, float64(i + value.radius))
+	//}
 	rotation -= math.Pi / 2
 	ctx := gg.NewContextForImage(im)
 	var rNew float64
@@ -180,6 +187,7 @@ func (d drawImageToMigrator) drawWifiOnMap(data []radiusOfRouter) error {
 		ctx.FillPreserve()
 		ctx.Stroke()
 	}
+	logrus.Info(d.filePathOutput)
 	ctx.SavePNG(d.filePathOutput)
 	return nil
 }

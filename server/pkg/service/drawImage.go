@@ -91,10 +91,10 @@ func (d drawImage) DrawOnImage() error {
 			}
 			ctx.SetRGBA255(int(chooseColor.R), int(chooseColor.G), int(chooseColor.B), int(chooseColor.A))
 		}
-		ctx.SetLineWidth(0)
-		ctx.FillPreserve()
-		ctx.Stroke()
 	}
+	ctx.SetLineWidth(0)
+	ctx.FillPreserve()
+	ctx.Stroke()
 	ctx.SavePNG(d.filePathOutput)
 	return nil
 }
@@ -113,7 +113,7 @@ type ColorAndRadius struct {
 }
 
 func NewColorAndRadius(radius float64) []ColorAndRadius {
-	a := uint8(180)
+	a := uint8(150)
 	var kof2 float64 = 0.8
 	var kof3 float64 = 0.55
 	var kof4 float64 = 0.401
@@ -123,17 +123,17 @@ func NewColorAndRadius(radius float64) []ColorAndRadius {
 	colorArr := make([]ColorAndRadius, 9, 11)
 	colorArr[0].Color = color.RGBA{A: a, R: 100, G: 123, B: 251}
 	colorArr[0].Radius = radius
-	colorArr[1].Color = color.RGBA{A: a, R: 107, G: 184, B: 240}
+	colorArr[1].Color = color.RGBA{A: a / 2, R: 107, G: 184, B: 240}
 	colorArr[1].Radius = radius * kof2
-	colorArr[2].Color = color.RGBA{A: a, R: 120, G: 245, B: 242}
+	colorArr[2].Color = color.RGBA{A: a / 2, R: 120, G: 245, B: 242}
 	colorArr[2].Radius = radius * kof3
-	colorArr[3].Color = color.RGBA{A: a, R: 115, G: 246, B: 105}
+	colorArr[3].Color = color.RGBA{A: a / 2, R: 115, G: 246, B: 105}
 	colorArr[3].Radius = radius * kof4
-	colorArr[4].Color = color.RGBA{A: a, R: 237, G: 247, B: 123}
+	colorArr[4].Color = color.RGBA{A: a / 2, R: 237, G: 247, B: 123}
 	colorArr[4].Radius = radius * kof5
-	colorArr[5].Color = color.RGBA{A: a, R: 243, G: 187, B: 115}
+	colorArr[5].Color = color.RGBA{A: a / 2, R: 243, G: 187, B: 115}
 	colorArr[5].Radius = radius * kof6
-	colorArr[6].Color = color.RGBA{A: a, R: 239, G: 117, B: 109}
+	colorArr[6].Color = color.RGBA{A: a / 2, R: 239, G: 117, B: 109}
 	colorArr[6].Radius = radius * kof7
 	return colorArr
 }

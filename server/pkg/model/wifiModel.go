@@ -6,6 +6,33 @@ type RequestRouters struct {
 	Settings SettingsRouters `json:"settings"`
 }
 
+type RequestFlux struct {
+	Steps     []CoordsForFlux `json:"steps"`
+	AcsParsed []AcsParsed     `json:"acsParsed"`
+}
+
+type CoordsForFlux struct {
+	Id     int64         `json:"id"`
+	Coords CoordsRouters `json:"coords"`
+}
+
+type AcsParsed struct {
+	Id      int64           `json:"id"`
+	Signals []SignalsOnFlux `json:"signals"`
+}
+
+type SignalsOnFlux struct {
+	Id  int64        `json:"id"`
+	Obj SignalOnFlux `json:"obj"`
+}
+
+type SignalOnFlux struct {
+	Id                 int64  `json:"id"`
+	AdId               string `json:"AT_ID"`
+	MAC                string `json:"MAC"`
+	LastSignalStrength string `json:"LastSignalStrength"`
+}
+
 type SettingsRouters struct {
 	TransmitterPower          string `json:"transmitterPower"`
 	GainOfTransmittingAntenna string `json:"gainOfTransmittingAntenna"`
@@ -68,5 +95,5 @@ type RoutersSettingForMigrator struct {
 type RouterSettingForMigrator struct {
 	Name  string
 	Power float64
-	MAC   float64
+	MAC   string
 }
