@@ -106,13 +106,17 @@ export async function recognize(fileList, lang) {
 
   for (let i = 0; i < fileList.length; i++) {
     const file = fileList[i];
+    const id = Date.now();
 
     let parsedText = await Tesseract.recognize(file, lang).then(
       ({ data: { text } }) => {
         return text;
       }
     );
-    parsedArray.push(parsedText);
+    parsedArray.push({
+      id,
+      parsedText,
+    });
   }
   return parsedArray;
 }
