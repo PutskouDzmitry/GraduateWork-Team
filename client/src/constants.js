@@ -1,3 +1,5 @@
+import Tesseract from "tesseract.js";
+
 export const objectsInfo = [
   {
     title: "Window (No Toning)",
@@ -97,4 +99,20 @@ export function parseACSfiles(fileList) {
   }
 
   return result;
+}
+
+export async function recognize(fileList, lang) {
+  let parsedArray = [];
+
+  for (let i = 0; i < fileList.length; i++) {
+    const file = fileList[i];
+
+    let parsedText = await Tesseract.recognize(file, lang).then(
+      ({ data: { text } }) => {
+        return text;
+      }
+    );
+    parsedArray.push(parsedText);
+  }
+  return parsedArray;
 }

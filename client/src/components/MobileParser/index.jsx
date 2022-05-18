@@ -6,26 +6,33 @@ import {
   objectModeOff,
   setCurrentObject,
 } from "../../store/actions/objectActions";
+import {
+  loaderModalOpen,
+  loaderModalClose,
+} from "../../store/actions/modalActions";
 import Step from "../Step";
-import { objectsInfo, dataURLtoBlob, parseACSfiles } from "../../constants";
+import { objectsInfo, dataURLtoBlob } from "../../constants";
+import { recognize } from "../../constants";
 
 import FileInput from "../FileInput";
 
 import "./index.scss";
 
-function ACSparser() {
+function MobileParser() {
   const dispatch = useDispatch();
   const canvasOld = useRef(null);
   const canvasNew = useRef(null);
   const canvasForObjects = useRef(null);
   const fileInput = useRef(null);
-  const acsFileInput = useRef(null);
+  const mobileFileInput = useRef(null);
   const [fileName, setFileName] = useState("No map chosen");
-  const [acsFileName, setAcsFileName] = useState("No ACS files chosen");
-  const [acsParsed, setAcsParsed] = useState([]);
+  const [mobileFileName, setMobileFileName] = useState(
+    "No Mobile pictures chosen"
+  );
+  const [mobileParsed, setMobileParsed] = useState([]);
   const [isChanged, setIsChanged] = useState(false);
-  const [isAcsChanged, setIsAcsChanged] = useState(false);
-  const [acsFilesNumber, setAcsFilesNumber] = useState(0);
+  const [isMobileChanged, setIsMobileChanged] = useState(false);
+  const [mobileFilesNumber, setMobileFilesNumber] = useState(0);
   const [isUploaded, setIsUploaded] = useState(false);
   const steps = useSelector((state) => state.steps.stepsList);
   const isObjectModeOn = useSelector(
@@ -46,27 +53,28 @@ function ACSparser() {
     setFileName(fileInput.current.files[0].name);
   };
 
-  const acsHandleChange = async () => {
-    const parsedFiles = parseACSfiles(acsFileInput.current.files);
-    setAcsParsed(parsedFiles);
-    setIsAcsChanged(true);
-    setAcsFileName(`${acsFileInput.current.files.length} files chosen`);
-    setAcsFilesNumber(acsFileInput.current.files.length);
+  const mobileHandleChange = async () => {
+    dispatch(loaderModalOpen());
+    recognize(mobileFileInput.current.files, "eng").then((text) => {
+      setIsMobileChanged(true);
+      setMobileFileName(`${mobileFileInput.current.files.length} files chosen`);
+      setMobileFilesNumber(mobileFileInput.current.files.length);
+      setMobileParsed(text);
+      dispatch(loaderModalClose());
+    });
   };
 
   const handleUpload = async () => {
     let formData = new FormData();
-
     const file = dataURLtoBlob(canvasOld.current.toDataURL());
     formData.append("myFile", file);
     formData.append(
       "data",
       JSON.stringify({
         steps,
-        acsParsed,
+        mobileParsed,
       })
     );
-
     var xhr = new XMLHttpRequest();
     xhr.onload = function () {
       canvasNew.current.getContext("2d").clearRect(0, 0, 600, 400);
@@ -79,8 +87,7 @@ function ACSparser() {
       img.src = url;
       setIsUploaded(true);
     };
-
-    xhr.open("POST", "http://localhost:8080/api/map/calculation", true);
+    xhr.open("POST", "http://localhost:8080/api/map/mobileMigrator", true);
     xhr.send(formData);
   };
 
@@ -148,7 +155,7 @@ function ACSparser() {
     };
 
     const clickListener = (e) => {
-      if (acsFilesNumber != steps.length) {
+      if (mobileFilesNumber != steps.length) {
         let left = e.offsetX;
         let top = e.offsetY;
         let coords = { left, top };
@@ -206,10 +213,10 @@ function ACSparser() {
               Start drawing objects
             </button>
             <FileInput
-              id="acsInput"
-              ref={acsFileInput}
-              onChange={acsHandleChange}
-              fileName={acsFileName}
+              id="mobileInput"
+              ref={mobileFileInput}
+              onChange={mobileHandleChange}
+              fileName={mobileFileName}
               multiple={true}
             />
           </>
@@ -220,11 +227,11 @@ function ACSparser() {
           {isChanged
             ? isObjectModeOn
               ? "You are currently in object drawing mode"
-              : isAcsChanged
-              ? `${acsFilesNumber} ACS files chosen. ${
-                  acsFilesNumber - steps.length
+              : isMobileChanged
+              ? `${mobileFilesNumber} Mobile files chosen. ${
+                  mobileFilesNumber - steps.length
                 } steps left`
-              : "Add ACS files to continue"
+              : "Add Mobile files to continue"
             : "Add a building plan to start working"}
         </p>
         <div className={isChanged ? "canvas-wrapper" : "canvas-wrapper_hidden"}>
@@ -275,4 +282,4 @@ function ACSparser() {
   );
 }
 
-export default ACSparser;
+export default MobileParser;

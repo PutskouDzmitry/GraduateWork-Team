@@ -19,7 +19,7 @@ function Main() {
   const canvasNew = useRef(null);
   const canvasForObjects = useRef(null);
   const fileInput = useRef(null);
-  const [fileName, setFileName] = useState("No file chosen");
+  const [fileName, setFileName] = useState("No map chosen");
   const [isChanged, setIsChanged] = useState(false);
   const [isUploaded, setIsUploaded] = useState(false);
   const routers = useSelector((state) => state.routers.routersList);
@@ -235,6 +235,7 @@ function Main() {
           })}
         </div>
         <FileInput
+          id="mapInput"
           ref={fileInput}
           onChange={handleChange}
           fileName={fileName}

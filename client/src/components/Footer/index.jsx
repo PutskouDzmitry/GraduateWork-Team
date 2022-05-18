@@ -1,20 +1,17 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { useHistory } from "react-router-dom";
+import RedirectButton from "../RedirectButton";
 
 import "./index.scss";
 
-function Footer(props) {
-  const history = useHistory();
+function Footer() {
   return (
     <div className="footer">
       <>
-        <button
-          className="button button_alt button_footer"
-          onClick={() => history.push("/acs-parser")}
-        >
-          ACS Parser
-        </button>
+        <RedirectButton path={"/"} label="Router Map" />
+        <RedirectButton path={"/acs-parser"} label="ACS Parser" />
+        <RedirectButton path={"/mobile-parser"} label="Mobile Parser" />
+        <RedirectButton path={"/acrylic-parser"} label="Acrylic Parser" />
       </>
     </div>
   );

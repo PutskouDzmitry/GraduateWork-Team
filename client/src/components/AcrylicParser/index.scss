@@ -1,0 +1,77 @@
+@import "../../styles/constants.scss";
+
+.main-block {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  flex: 1 0 auto;
+
+  &__center {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    &_hidden {
+      display: none;
+    }
+  }
+
+  &__side {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 250px;
+
+    &_hidden {
+      display: none;
+    }
+  }
+
+  &__group {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    width: 200px;
+
+    .button_active {
+      border: 2px solid $blue;
+      color: white;
+      background-color: $blue;
+    }
+  }
+
+  .help-text {
+    display: block;
+    color: gray;
+    margin-bottom: 5px;
+  }
+}
+
+.canvas-wrapper {
+  display: flex;
+  flex-direction: row;
+  position: relative;
+  margin-bottom: 10px;
+
+  &_hidden {
+    display: none;
+  }
+}
+
+.canvas {
+  &__objects {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 110;
+  }
+
+  &_hidden {
+    display: none;
+  }
+}

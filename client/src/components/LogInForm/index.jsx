@@ -47,7 +47,7 @@ function LogInForm({ type }) {
   };
 
   return (
-    <div className="main-block">
+    <div className="main-block_login">
       {type === "login" ? (
         <>
           <div className="login-block">
@@ -81,7 +81,7 @@ function LogInForm({ type }) {
             </button>
           </div>
           <div className="block-divider">OR</div>
-          <div className="main-block__part">
+          <div className="main-block_login__part">
             <div className="login-block secondary">
               <p className="login-block__header">First time?</p>
               <hr className="login-block__line" />
@@ -94,12 +94,6 @@ function LogInForm({ type }) {
             </div>
             <div className="block-divider small"></div>
             <div className="login-block secondary">
-              {/* <button
-                className="button login-block__button single-button"
-                onClick={handleGoogleLogIn}
-              >
-                Log in with <i className="fa-brands fa-google"></i>
-              </button> */}
               <a
                 className="button login-block__button single-button link"
                 href="http://localhost:8080/auth/google"
