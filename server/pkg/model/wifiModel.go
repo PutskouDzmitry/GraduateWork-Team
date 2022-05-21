@@ -74,19 +74,6 @@ type CoordinatesPoints struct {
 	Y float64 `json:"y"`
 }
 
-type ResponseInfoPoint struct {
-	InfoPoint []InfoOfPoint
-}
-
-type InfoOfPoint struct {
-	NameOfRouter   string
-	CurrentSpeed   int64
-	MaxSpeed       int64
-	SignalStrength float64
-	SignalQuality  int64
-	Channel        int64
-}
-
 type RoutersSettingForMigrator struct {
 	Coordinates              CoordinatesPoints
 	RoutersSettingsMigration []RouterSettingForMigrator
@@ -96,4 +83,22 @@ type RouterSettingForMigrator struct {
 	Name  string
 	Power float64
 	MAC   string
+}
+
+type ResponseOfGettingStatisticsOnPoint struct {
+	Name          string  `json:"name"`
+	MAC           string  `json:"mac"`
+	SignalStrange float64 `json:"signal_strange"`
+	Frequency     float64 `json:"frequency"`
+	MaxSpeed      float64 `json:"max_speed"`
+}
+
+type RequestAcrylicPicture struct {
+	Steps         []CoordsForFlux `json:"steps"`
+	AcrylicParsed []AcrylicParsed `json:"acrylicParsed"`
+}
+
+type AcrylicParsed struct {
+	Id         int64  `json:"id"`
+	ParsedText string `json:"parsedText"`
 }

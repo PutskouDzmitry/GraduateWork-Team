@@ -16,7 +16,8 @@ func (h Handler) fluxMigrator(c *gin.Context) {
 	userId := "2"
 	dataOfRouters, err := getValuesToFlux(c)
 	if err != nil {
-		logrus.Error(err)
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
 	}
 	filePathInput, err := getImageFromContext(c, userId)
 	if err != nil {
@@ -75,9 +76,10 @@ func getValuesToFlux(c *gin.Context) ([]model.RoutersSettingForMigrator, error) 
 
 func (h Handler) acrylicMigrator(c *gin.Context) {
 	userId := "2"
-	dataOfRouters, err := getDataToAcrylic(c)
+	dataOfRouters, err := getDataAcrylic(c)
 	if err != nil {
-		logrus.Error(err)
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
 	}
 	filePathInput, err := getImageFromContext(c, userId)
 	if err != nil {
@@ -91,7 +93,7 @@ func (h Handler) acrylicMigrator(c *gin.Context) {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
-	fileBytes, err := ioutil.ReadFile(service.GenerateFullPathOfFileToMap(outputPathFile, userId))
+	fileBytes, err := ioutil.ReadFile(service.GenerateFullPathOfFileToAcrylic(outputPathFile, userId))
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -100,29 +102,48 @@ func (h Handler) acrylicMigrator(c *gin.Context) {
 	c.Writer.WriteString(sEnc)
 }
 
-func getDataToAcrylic(c *gin.Context) ([]model.RoutersSettingForMigrator, error) {
-	return nil, nil
+func getDataAcrylic(c *gin.Context) ([]model.RoutersSettingForMigrator, error) {
+	data := c.Request.FormValue("data")
+	var settings model.RequestAcrylicPicture
+	dataInByte := []byte(data)
+	err := json.Unmarshal(dataInByte, &settings)
+	if err != nil {
+		return nil, err
+	}
+
+	routersSettingForMigrator := make([]model.RoutersSettingForMigrator, 0, 10)
+	for i, value := range settings.AcrylicParsed {
+		routersSettingForMigrator = append(routersSettingForMigrator, model.RoutersSettingForMigrator{
+			Coordinates: model.CoordinatesPoints{
+				X: settings.Steps[i].Coords.X,
+				Y: settings.Steps[i].Coords.Y,
+			},
+			RoutersSettingsMigration: service.ValidStringFromImage(value.ParsedText),
+		})
+	}
+	return routersSettingForMigrator, nil
 }
 
-func (h Handler) telephoneMigrator(c *gin.Context) {
+func (h Handler) mobileMigrator(c *gin.Context) {
 	userId := "2"
 	dataOfRouters, err := getDataToTelephone(c)
 	if err != nil {
-		logrus.Error(err)
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
 	}
 	filePathInput, err := getImageFromContext(c, userId)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
-	filePathOutput := service.GenerateFullPathOfFileToTelephone(outputPathFile, userId)
+	filePathOutput := service.GenerateFullPathOfFileToMobile(outputPathFile, userId)
 	drawImage := service.NewDrawImageToMigrator(filePathInput, filePathOutput, dataOfRouters)
 	err = drawImage.TelephoneMigrator()
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
-	fileBytes, err := ioutil.ReadFile(service.GenerateFullPathOfFileToMap(outputPathFile, userId))
+	fileBytes, err := ioutil.ReadFile(service.GenerateFullPathOfFileToMobile(outputPathFile, userId))
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return

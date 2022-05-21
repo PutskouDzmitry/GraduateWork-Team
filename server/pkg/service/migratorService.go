@@ -6,6 +6,9 @@ import (
 	"github.com/fogleman/gg"
 	"github.com/sirupsen/logrus"
 	"math"
+	"regexp"
+	"strconv"
+	"strings"
 )
 
 type drawImageToMigrator struct {
@@ -33,6 +36,40 @@ type radiusOfRouter struct {
 }
 
 func (d drawImageToMigrator) AcrylicMigrator() error {
+	powers := make([]float64, 0, 10)
+	powersMin := make([]float64, 0, 10)
+	minPowers := make([]valueOfPowerOnPoint, 0, 10)
+	maxPowers := make([]valueOfPowerOnPoint, 0, 10)
+	for _, value := range d.coordinatesOfRouters {
+		for _, valueOfPoint := range value.RoutersSettingsMigration {
+			powers = append(powers, valueOfPoint.Power)
+		}
+		maxPowers = append(maxPowers, findMaxPower(powers, value))
+
+		maxPowerOnPoint := findMaxPower(powers, value)
+		for _, value := range d.coordinatesOfRouters {
+			for _, valueOfPoint := range value.RoutersSettingsMigration {
+				if valueOfPoint.MAC == maxPowerOnPoint.router.MAC {
+					powersMin = append(powersMin, valueOfPoint.Power)
+				}
+			}
+		}
+		minPowers = append(minPowers, findMinPower(powersMin, value))
+		powers = make([]float64, 0, 10)
+		powersMin = make([]float64, 0, 10)
+	}
+
+	distance := make([]radiusOfRouter, 0, 10)
+	for i, value := range maxPowers {
+		distance = append(distance, radiusOfRouter{
+			coordinates: value.coordinates,
+			radius:      getRadius(value.coordinates.X, value.coordinates.Y, minPowers[i].coordinates.X, minPowers[i].coordinates.Y),
+		})
+	}
+	err := d.drawWifiOnMap(distance)
+	if err != nil {
+		logrus.Error(err)
+	}
 	return nil
 }
 
@@ -100,12 +137,6 @@ func (d drawImageToMigrator) FluxMigrator() error {
 		powersMin = make([]float64, 0, 10)
 	}
 
-	if len(minPowers) == len(maxPowers) {
-		logrus.Info("ok")
-	} else {
-		logrus.Info("not ko")
-	}
-
 	distance := make([]radiusOfRouter, 0, 10)
 	for i, value := range maxPowers {
 		distance = append(distance, radiusOfRouter{
@@ -134,9 +165,6 @@ func (d drawImageToMigrator) drawWifiOnMap(data []radiusOfRouter) error {
 	for _, value := range data {
 		radii = append(radii, value.radius)
 	}
-	//for i, _ := range data {
-	//	radii = append(radii, float64(i + value.radius))
-	//}
 	rotation -= math.Pi / 2
 	ctx := gg.NewContextForImage(im)
 	var rNew float64
@@ -206,4 +234,56 @@ func getRadius(x0, y0, x1, y1 float64) float64 {
 		y0y1 = y0 - y1
 	}
 	return math.Sqrt(math.Pow(x0x1, 2) + math.Pow(y0y1, 2))
+}
+
+func ValidStringFromImage(str string) []model.RouterSettingForMigrator {
+	var re = regexp.MustCompile(`[[:punct:]]`)
+	str45 := re.ReplaceAllString(str, "")
+	s := strings.Split(str45, "\n")
+	return getBaseInfoFromString(s)
+}
+
+type TestStr struct {
+	name  string
+	power float64
+}
+
+func getBaseInfoFromString(str []string) []model.RouterSettingForMigrator {
+	routerSettingForMigrator := make([]model.RouterSettingForMigrator, 0, 10)
+	for _, value := range str {
+		s := strings.Split(value, " ")
+		var number float64
+		name := s[0]
+		if len(s) < 3 {
+			continue
+		}
+		if _, err := strconv.Atoi(s[1]); err != nil {
+			name += s[1]
+		}
+		if _, err := strconv.Atoi(s[2]); err != nil {
+			name += s[2]
+		}
+		if n, err := strconv.Atoi(s[1]); err == nil {
+			number = float64(n)
+		} else {
+			n, _ := strconv.Atoi(s[2])
+			number = float64(n)
+		}
+		routerSettingForMigrator = append(routerSettingForMigrator, model.RouterSettingForMigrator{
+			Name:  name,
+			Power: checkPower(number) * -1,
+			MAC:   "",
+		})
+	}
+	return routerSettingForMigrator
+}
+
+func checkPower(power float64) float64 {
+	if power > 100 {
+		return power - 20
+	}
+	if power < 40 {
+		return power + 40
+	}
+	return power
 }

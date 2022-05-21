@@ -7,7 +7,6 @@ import (
 	"github.com/PutskouDzmitry/GraduateWork-Team/server/pkg/model"
 	"github.com/PutskouDzmitry/GraduateWork-Team/server/pkg/service"
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -87,7 +86,7 @@ func testValue() []model.RouterSettings {
 	}
 }
 
-func (h Handler) calculationOfValues(c *gin.Context) {
+func (h Handler) handlerMap(c *gin.Context) {
 	//header := c.GetHeader(authorizationHeader)
 	//userId, err := h.getUserId(header)
 	//if err != nil {
@@ -95,9 +94,10 @@ func (h Handler) calculationOfValues(c *gin.Context) {
 	//	//return
 	//}
 	userId := "2"
-	routersOld, err := getValues(c)
+	routersOld, err := getValuesOfRouters(c)
 	if err != nil {
-		logrus.Error(err)
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
 	}
 	filePathInput, err := getImageFromContext(c, userId)
 	if err != nil {
@@ -142,7 +142,7 @@ func (h Handler) getUserId(c *gin.Context, header string) (string, error) {
 	return userId, nil
 }
 
-func getValues(c *gin.Context) ([]model.RouterSettings, error) {
+func getValuesOfRouters(c *gin.Context) ([]model.RouterSettings, error) {
 	data := c.Request.FormValue("data")
 	var settings []model.RequestRouters
 	dataInByte := []byte(data)
@@ -180,7 +180,7 @@ func getImageFromContext(c *gin.Context, userId string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("error with get file from form: %w", err)
 	}
-	filename := service.GenerateFullPathOfFileToMap(inputPathFile, userId)
+	filename := service.GenerateFullPathOfFileToAcrylic(inputPathFile, userId)
 	out, err := os.Create(filename)
 	if err != nil {
 		return "", err
@@ -191,34 +191,4 @@ func getImageFromContext(c *gin.Context, userId string) (string, error) {
 		return "", fmt.Errorf("error with copy file: %w", err)
 	}
 	return filename, nil
-}
-
-func (h Handler) getInfo(c *gin.Context) {
-	jsonData, err := json.Marshal(mockDataGetInfo())
-	if err != nil {
-		newErrorResponse(c, http.StatusInternalServerError, err.Error())
-		return
-	}
-	c.JSON(http.StatusOK, jsonData)
-}
-
-func mockDataGetInfo() model.ResponseInfoPoint {
-	infoOfPoint := make([]model.InfoOfPoint, 2, 2)
-	infoOfPoint = append(infoOfPoint, model.InfoOfPoint{
-		NameOfRouter:   "test 1",
-		CurrentSpeed:   24,
-		MaxSpeed:       54,
-		SignalStrength: -50,
-		SignalQuality:  40,
-		Channel:        2,
-	})
-	infoOfPoint = append(infoOfPoint, model.InfoOfPoint{
-		NameOfRouter:   "test 2",
-		CurrentSpeed:   30,
-		MaxSpeed:       64,
-		SignalStrength: -20,
-		SignalQuality:  80,
-		Channel:        5,
-	})
-	return model.ResponseInfoPoint{InfoPoint: infoOfPoint}
 }

@@ -16,7 +16,7 @@ func (h Handler) saveData(c *gin.Context) {
 	}
 	userId := 1
 	filePath := "kek"
-	routerss := []model.RouterSettings{
+	routers := []model.RouterSettings{
 		{
 			CoordinatesOfRouter: model.CoordinatesPoints{
 				X: 200,
@@ -43,13 +43,13 @@ func (h Handler) saveData(c *gin.Context) {
 				Y: 600,
 			},
 			//мощность передатчика P
-			TransmitterPower: 180,
+			TransmitterPower: 18,
 			//коэффициент усиления передающей антенны Gt
-			GainOfTransmittingAntenna: 50,
+			GainOfTransmittingAntenna: 5,
 			//коэффициент усиления приемной антенны GT
-			GainOfReceivingAntenna: 40,
+			GainOfReceivingAntenna: 4,
 			//чувствительность приемника на данной скорости Pmin
-			Speed: 540,
+			Speed: 54,
 			//потери сигнала в коаксиальном кабеле и разъемах передающего тракта Lt
 			SignalLossTransmitting: -1,
 			//потери сигнала в коаксиальном кабеле и разъемах приемного тракта LT
@@ -58,7 +58,7 @@ func (h Handler) saveData(c *gin.Context) {
 			Scale:               1,
 		},
 	}
-	err = h.wifiService.SaveData(routerss, int64(userId), filePath)
+	err = h.wifiService.SaveData(routers, int64(userId), filePath)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -79,24 +79,6 @@ func (h Handler) loadData(c *gin.Context) {
 	}
 	logrus.Info(data)
 	jsonData, err := json.Marshal(data)
-	if err != nil {
-		newErrorResponse(c, http.StatusInternalServerError, err.Error())
-		return
-	}
-	c.JSON(http.StatusOK, jsonData)
-}
-
-func (h Handler) preloadData(c *gin.Context) {
-	userId, err := h.GetUserFromToken(c.Request.Header.Get("Authorization"))
-	if err != nil {
-		newErrorResponse(c, http.StatusUnauthorized, err.Error())
-	}
-	preloadData, err := h.wifiService.PreloadData(userId)
-	if err != nil {
-		newErrorResponse(c, http.StatusInternalServerError, err.Error())
-	}
-	logrus.Info(preloadData)
-	jsonData, err := json.Marshal(preloadData)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return

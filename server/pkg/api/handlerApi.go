@@ -30,10 +30,10 @@ func (h Handler) InitRoutes() *gin.Engine {
 
 	apiNotAuth := router.Group("/")
 	{
-		apiNotAuth.POST("/getResult", h.calculationOfValues)
+		apiNotAuth.POST("/getResult", h.handlerMap)
 		apiNotAuth.POST("/fluxMigrator", h.fluxMigrator)
 		apiNotAuth.POST("/acrylicMigrator", h.acrylicMigrator)
-		apiNotAuth.POST("/telephoneMigrator", h.telephoneMigrator)
+		apiNotAuth.POST("/telephoneMigrator", h.mobileMigrator)
 	}
 
 	auth := router.Group("/auth")
@@ -47,13 +47,14 @@ func (h Handler) InitRoutes() *gin.Engine {
 
 	apiWifiMap := router.Group("/api/map") //, h.userIdentity)
 	{
-		apiWifiMap.POST("/calculation", h.calculationOfValues)
-		//apiWifiMap.POST("/save", h.saveData)
-		//apiWifiMap.POST("/load", h.loadData)
-		//apiWifiMap.POST("/getInfo", h.getInfo)
+		apiWifiMap.POST("/calculation", h.handlerMap)
+		apiWifiMap.POST("/save", h.saveData)
+		apiWifiMap.POST("/load", h.loadData)
+		apiWifiMap.POST("/delete", h.loadData)
+		//apiWifiMap.POST("/getInfo", h.getStatisticsInPoint)
 		apiWifiMap.POST("/fluxMigrator", h.fluxMigrator)
 		apiWifiMap.POST("/acrylicMigrator", h.acrylicMigrator)
-		apiWifiMap.POST("/telephoneMigrator", h.telephoneMigrator)
+		apiWifiMap.POST("/mobileMigrator", h.mobileMigrator)
 	}
 
 	return router

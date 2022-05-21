@@ -86,8 +86,8 @@ func GenerateFullPathOfFileToAcrylic(path, userId string) string {
 	return path + userId + "-acrylic.png"
 }
 
-func GenerateFullPathOfFileToTelephone(path, userId string) string {
-	return path + userId + "-telephone.png"
+func GenerateFullPathOfFileToMobile(path, userId string) string {
+	return path + userId + "-mobile.png"
 }
 
 //func ValidationValues(routers []model.RouterSettings) []model.RouterSettings {
