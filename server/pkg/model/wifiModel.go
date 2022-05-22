@@ -1,7 +1,7 @@
 package model
 
 type RequestRouters struct {
-	Id       int             `json:"id"`
+	Id       string          `json:"id"`
 	Coords   CoordsRouters   `json:"coords"`
 	Settings SettingsRouters `json:"settings"`
 }

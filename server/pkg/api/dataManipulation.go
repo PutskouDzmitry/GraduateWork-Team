@@ -31,7 +31,7 @@ func (h Handler) saveData(c *gin.Context) {
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 	}
-	routers, err := getValuesOfRoutersSave(c)
+	routers, err := getValuesOfRouters(c)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 	}
