@@ -123,7 +123,6 @@ func (h Handler) loadData(c *gin.Context) {
 func convertToResponseData(c *gin.Context, wifi []model.Wifi) []model.Response {
 	var dataArray []model.Response
 
-	var dataWifi []model.WifiResponseForManipulation
 	for _, value := range wifi {
 		fileBytesInput, err := ioutil.ReadFile(value.PathInput)
 		if err != nil {
@@ -138,14 +137,11 @@ func convertToResponseData(c *gin.Context, wifi []model.Wifi) []model.Response {
 			return nil
 		}
 		sEncOutput := b64.StdEncoding.EncodeToString(fileBytesOutput)
-		dataWifi = append(dataWifi, model.WifiResponseForManipulation{
-			Router: value.Router,
-		})
 		dataArray = append(dataArray, model.Response{
 			User:       value.User,
 			PathInput:  sEncInput,
 			PathOutput: sEncOutput,
-			Data:       dataWifi,
+			Data:       value.Router,
 		})
 	}
 	return dataArray
