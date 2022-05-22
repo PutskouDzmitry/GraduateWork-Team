@@ -28,6 +28,8 @@ function RouterSettings({}) {
     signalLossTransmitting: 0,
     signalLossReceiving: 0,
     numberOfChannels: 0,
+    scale: 0,
+    typeOfSignal: "2.4",
   });
 
   useEffect(() => {
@@ -39,6 +41,8 @@ function RouterSettings({}) {
       signalLossTransmitting,
       signalLossReceiving,
       numberOfChannels,
+      scale,
+      typeOfSignal,
     } = currentRouterSettings;
 
     setSettings({
@@ -49,6 +53,8 @@ function RouterSettings({}) {
       signalLossTransmitting,
       signalLossReceiving,
       numberOfChannels,
+      scale,
+      typeOfSignal,
     });
   }, [routerModalOpened]);
 
@@ -62,6 +68,8 @@ function RouterSettings({}) {
       signalLossTransmitting,
       signalLossReceiving,
       numberOfChannels,
+      scale,
+      typeOfSignal,
     } = settingsForm.current;
 
     const settings = {
@@ -72,6 +80,8 @@ function RouterSettings({}) {
       signalLossTransmitting: signalLossTransmitting.value,
       signalLossReceiving: signalLossReceiving.value,
       numberOfChannels: numberOfChannels.value,
+      scale: scale.value,
+      typeOfSignal: typeOfSignal.value,
     };
     dispatch(updateRouter(currentRouterId, settings));
     dispatch(routerModalClose());

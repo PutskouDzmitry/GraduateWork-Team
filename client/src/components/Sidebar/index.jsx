@@ -12,7 +12,7 @@ function Sidebar(props) {
     <div className={`sidebar ${isOpened ? "sidebar_opened" : ""}`}>
       <div className="sidebar__body">
         {isUserLoggedIn ? (
-          <>hehe</>
+          <>You are logged in as: xXx=_Dim04Ka_=xXx</>
         ) : (
           <>
             <p className="sidebar__body__text">

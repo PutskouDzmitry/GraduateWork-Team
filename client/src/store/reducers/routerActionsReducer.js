@@ -12,6 +12,8 @@ let initialState = {
       signalLossTransmitting: 0,
       signalLossReceiving: 0,
       numberOfChannels: 0,
+      scale: 0,
+      typeOfSignal: "2.4",
     },
   },
 };

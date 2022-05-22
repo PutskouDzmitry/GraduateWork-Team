@@ -2,6 +2,7 @@ import userActionTypes from "../constants/userActionTypes";
 
 let initialState = {
   isUserLoggedIn: false,
+  savedMaps: [],
 };
 
 const userActionsReducer = (state = initialState, action) => {
@@ -19,6 +20,13 @@ const userActionsReducer = (state = initialState, action) => {
       newState = {
         ...state,
         isUserLoggedIn: false,
+      };
+      return newState;
+
+    case userActionTypes.UPDATE_SAVED_MAPS:
+      newState = {
+        ...state,
+        savedMaps: action.maps,
       };
       return newState;
 

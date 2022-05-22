@@ -19,7 +19,6 @@ function LogInForm({ type }) {
     let formData = new FormData();
     const username = loginUsername.current.value;
     const password = loginPassword.current.value;
-    console.log(username, password);
     formData.append("login", username);
     formData.append("password", password);
     xhr.onload = () => {

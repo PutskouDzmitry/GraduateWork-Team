@@ -23,6 +23,8 @@
     background-color: white;
     padding: 15px;
     width: 350px;
+    height: 480px;
+    overflow-y: scroll;
     box-shadow: 5px 5px 20px 5px rgba(0, 0, 0, 0.5);
     border: 5px outset $blue;
 
@@ -43,7 +45,7 @@
 
       &__input {
         font-size: 18px;
-        width: 320px;
+        width: 300px;
         border: 2px solid transparent;
         border-bottom: 2px solid $gray;
         background-color: transparent;

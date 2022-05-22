@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addRouter, removeAllRouters } from "../../store/actions/routerActions";
+import { updateSavedMaps } from "../../store/actions/userActions";
 import {
   objectModeOn,
   objectModeOff,
@@ -26,6 +27,8 @@ function Main() {
   const isObjectModeOn = useSelector(
     (state) => state.objectsInfo.isObjectModeOn
   );
+  const savedMaps = useSelector((state) => state.user.savedMaps);
+  const isUserLoggedIn = useSelector((state) => state.user.isUserLoggedIn);
   const currentObject = useSelector((state) => state.objectsInfo.currentObject);
 
   const handleChange = async () => {
@@ -71,8 +74,7 @@ function Main() {
     dispatch(setCurrentObject(obj));
   };
 
-  // useEffect for loading saves
-  const save = () => {
+  const saveMap = () => {
     let formData = new FormData();
     const file = dataURLtoBlob(canvasOld.current.toDataURL());
     const fileOutput = dataURLtoBlob(canvasNew.current.toDataURL());
@@ -83,22 +85,65 @@ function Main() {
 
     var xhr = new XMLHttpRequest();
     xhr.onload = function () {
-      console.log(xhr.response);
+      // update last save
+      var xhrUpdate = new XMLHttpRequest();
+      xhrUpdate.onload = function () {
+        const parsedMaps = JSON.parse(xhrUpdate.response);
+        dispatch(updateSavedMaps(parsedMaps));
+      };
+
+      xhrUpdate.open("POST", "http://localhost:8080/api/map/load", true);
+      xhrUpdate.send();
     };
 
     xhr.open("POST", "http://localhost:8080/api/map/save", true);
     xhr.send(formData);
   };
 
-  const load = () => {
+  const loadMap = () => {
+    dispatch(removeAllRouters());
+    setFileName("Last Saved Map");
+    canvasOld.current.getContext("2d").clearRect(0, 0, 600, 400);
+    let ctx = canvasOld.current.getContext("2d");
+    let url = `data:image/png;base64,${savedMaps.Data[0].PathInput}`;
+    let img = new Image();
+    img.onload = function () {
+      ctx.drawImage(img, 0, 0);
+    };
+    img.src = url;
+    setIsChanged(true);
+
+    savedMaps.Data[0].Data.forEach((el, index) => {
+      let left = el.coordinates_of_router.x;
+      let top = el.coordinates_of_router.y;
+      let id = `${index}-${Date.now()}`;
+      let coords = { left, top };
+      let settings = {
+        transmitterPower: el.transmitter_power,
+        gainOfTransmittingAntenna: el.gain_of_transmitting_antenna,
+        gainOfReceivingAntenna: el.gain_of_receiving_antenna,
+        speed: el.speed,
+        signalLossTransmitting: el.signal_loss_receiving,
+        signalLossReceiving: el.signal_loss_transmitting,
+        numberOfChannels: el.number_of_channels,
+        scale: el.scale,
+        type: el.type_of_signal,
+      };
+      dispatch(addRouter(id, coords, settings));
+    });
+  };
+
+  // useEffect for updating saves
+  useEffect(() => {
     var xhr = new XMLHttpRequest();
     xhr.onload = function () {
-      console.log(xhr.response);
+      const parsedMaps = JSON.parse(xhr.response);
+      dispatch(updateSavedMaps(parsedMaps));
     };
 
     xhr.open("POST", "http://localhost:8080/api/map/load", true);
     xhr.send();
-  };
+  }, []);
 
   useEffect(() => {
     const currentCanvas = canvasOld.current;
@@ -171,6 +216,8 @@ function Main() {
         signalLossTransmitting: 0,
         signalLossReceiving: 0,
         numberOfChannels: 0,
+        scale: 0,
+        typeOfSignal: "2.4",
       };
       dispatch(addRouter(id, coords, settings));
     };
@@ -219,9 +266,23 @@ function Main() {
             </button>
           </>
         ) : (
-          <button className="button button_wide" onClick={toggleObjectMode}>
-            Start drawing objects
-          </button>
+          <>
+            <button className="button button_wide" onClick={toggleObjectMode}>
+              Start drawing objects
+            </button>
+            {isUserLoggedIn ? (
+              <>
+                <button className="button button_wide" onClick={saveMap}>
+                  Save Current Map
+                </button>
+                <button className="button button_wide" onClick={loadMap}>
+                  Load Saved Map
+                </button>
+              </>
+            ) : (
+              ""
+            )}
+          </>
         )}
       </div>
       <div className="main-block__center">
@@ -272,12 +333,10 @@ function Main() {
         />
         {isChanged ? (
           <>
-            <button className="button button_special" onClick={save}>
+            <button className="button button_special" onClick={handleUpload}>
               Submit
             </button>
-            <button className="button button_special" onClick={load}>
-              Load
-            </button>
+            {isUploaded ? <div className="rainbow-image"></div> : ""}
           </>
         ) : (
           ""
