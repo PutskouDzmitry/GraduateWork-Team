@@ -70,11 +70,15 @@ type Wifi struct {
 	PathOutput string
 }
 
-type WifiResponse struct {
-	User       int64
+type WifiResponseForManipulation struct {
 	Router     []RouterSettings
 	PathInput  string
 	PathOutput string
+}
+
+type Response struct {
+	User int64
+	Data []WifiResponseForManipulation
 }
 
 type CoordinatesPoints struct {

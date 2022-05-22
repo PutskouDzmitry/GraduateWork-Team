@@ -24,6 +24,7 @@ CREATE TABLE "router_data_models"
   signal_loss_transmitting    float,
   signal_loss_receiving float,
   number_of_channels float,
+  typeOfSignal float,
   scale float,
   com float
 );
