@@ -3,6 +3,7 @@ package data
 import (
 	"fmt"
 	"github.com/PutskouDzmitry/GraduateWork-Team/server/pkg/model"
+	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
@@ -88,7 +89,7 @@ func (w wifiData) SaveData(wifiSettings []model.RouterSettings, userId int64, pa
 }
 
 func (w wifiData) addDataIntoDb(wifiSettings []model.RouterSettings, userId int64, pathInput, pathOutput string) error {
-	for i, value := range wifiSettings {
+	for _, value := range wifiSettings {
 		coord := value.CoordinatesOfRouter
 
 		var coordPoints CoordinatesPoints
@@ -113,7 +114,7 @@ func (w wifiData) addDataIntoDb(wifiSettings []model.RouterSettings, userId int6
 		}
 
 		var routerCheck RouterDataModel
-		getRouter := make([]RouterDataModel, 0, 10)
+		var router RouterDataModel
 		result = w.postgres.Table("router_data_models").Where("transmitter_power=? AND gain_of_transmitting_antenna=?", value.TransmitterPower, value.GainOfTransmittingAntenna).Find(&routerCheck)
 		if result.Error != nil {
 			return result.Error
@@ -124,19 +125,16 @@ func (w wifiData) addDataIntoDb(wifiSettings []model.RouterSettings, userId int6
 			if result.Error != nil {
 				return result.Error
 			}
-			result = w.postgres.Table("router_data_models").Find(&getRouter)
+			result = w.postgres.Table("router_data_models").Where("transmitter_power=? AND gain_of_transmitting_antenna=? AND gain_of_receiving_antenna=?", routerSettings.TransmitterPower, routerSettings.GainOfTransmittingAntenna, routerSettings.GainOfReceivingAntenna).Find(&router)
 			if result.Error != nil {
 				return result.Error
 			}
 		} else {
-			result = w.postgres.Table("router_data_models").Find(&getRouter)
-			if result.Error != nil {
-				return result.Error
-			}
+			router = routerCheck
 		}
 
 		var wifiCheck WifiDataModel
-		wifiModel := createWifiModels(getRouter[i].IdRouter, userId, pathInput, pathOutput)
+		wifiModel := createWifiModels(router.IdRouter, userId, pathInput, pathOutput)
 
 		result = w.postgres.Where("id_router_wifi=?", routerCheck.IdRouter).Find(&wifiCheck)
 		if result.Error != nil {
@@ -149,6 +147,21 @@ func (w wifiData) addDataIntoDb(wifiSettings []model.RouterSettings, userId int6
 			}
 		}
 	}
+	//var routerCheck []RouterDataModel
+	//w.postgres.Table("router_data_models").Find(&routerCheck)
+	//logrus.Info("---------------------")
+	//for _, value := range routerCheck {
+	//	logrus.Info(value)
+	//}
+	//logrus.Info("---------------------")
+
+	var routerCheck []WifiDataModel
+	w.postgres.Table("wifi_data_models").Find(&routerCheck)
+	logrus.Info("---------------------")
+	for _, value := range routerCheck {
+		logrus.Info(value)
+	}
+	logrus.Info("---------------------")
 	return nil
 }
 
@@ -207,6 +220,8 @@ func (w wifiData) getDataFromDb(userId int64) ([]model.Wifi, error) {
 		}
 		routers = append(routers, router)
 	}
+	logrus.Info(routers)
+
 	routerSettings := make([]model.RouterSettings, 0, 10)
 	for _, value := range routers {
 		var coordPoint CoordinatesPoints

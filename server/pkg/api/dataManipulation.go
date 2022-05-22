@@ -77,6 +77,86 @@ func (h Handler) saveData(c *gin.Context) {
 	//		NumberOfChannels:    13,
 	//		Scale:               1,
 	//	},
+	//	{
+	//		CoordinatesOfRouter: model.CoordinatesPoints{
+	//			X: 200,
+	//			Y: 600,
+	//		},
+	//		//мощность передатчика P
+	//		TransmitterPower: 1280,
+	//		//коэффициент усиления передающей антенны Gt
+	//		GainOfTransmittingAntenna: 250,
+	//		//коэффициент усиления приемной антенны GT
+	//		GainOfReceivingAntenna: 4220,
+	//		//чувствительность приемника на данной скорости Pmin
+	//		Speed: 5240,
+	//		//потери сигнала в коаксиальном кабеле и разъемах передающего тракта Lt
+	//		SignalLossTransmitting: -1,
+	//		//потери сигнала в коаксиальном кабеле и разъемах приемного тракта LT
+	//		SignalLossReceiving: -1,
+	//		NumberOfChannels:    13,
+	//		Scale:               1,
+	//	},
+	//	{
+	//		CoordinatesOfRouter: model.CoordinatesPoints{
+	//			X: 200,
+	//			Y: 600,
+	//		},
+	//		//мощность передатчика P
+	//		TransmitterPower: 1280,
+	//		//коэффициент усиления передающей антенны Gt
+	//		GainOfTransmittingAntenna: 530,
+	//		//коэффициент усиления приемной антенны GT
+	//		GainOfReceivingAntenna: 440,
+	//		//чувствительность приемника на данной скорости Pmin
+	//		Speed: 5540,
+	//		//потери сигнала в коаксиальном кабеле и разъемах передающего тракта Lt
+	//		SignalLossTransmitting: -1,
+	//		//потери сигнала в коаксиальном кабеле и разъемах приемного тракта LT
+	//		SignalLossReceiving: -1,
+	//		NumberOfChannels:    13,
+	//		Scale:               1,
+	//	},
+	//	{
+	//		CoordinatesOfRouter: model.CoordinatesPoints{
+	//			X: 200,
+	//			Y: 600,
+	//		},
+	//		//мощность передатчика P
+	//		TransmitterPower: 1680,
+	//		//коэффициент усиления передающей антенны Gt
+	//		GainOfTransmittingAntenna: 650,
+	//		//коэффициент усиления приемной антенны GT
+	//		GainOfReceivingAntenna: 460,
+	//		//чувствительность приемника на данной скорости Pmin
+	//		Speed: 5640,
+	//		//потери сигнала в коаксиальном кабеле и разъемах передающего тракта Lt
+	//		SignalLossTransmitting: -1,
+	//		//потери сигнала в коаксиальном кабеле и разъемах приемного тракта LT
+	//		SignalLossReceiving: -1,
+	//		NumberOfChannels:    13,
+	//		Scale:               1,
+	//	},
+	//	{
+	//		CoordinatesOfRouter: model.CoordinatesPoints{
+	//			X: 200,
+	//			Y: 600,
+	//		},
+	//		//мощность передатчика P
+	//		TransmitterPower: 18220,
+	//		//коэффициент усиления передающей антенны Gt
+	//		GainOfTransmittingAntenna: 5022,
+	//		//коэффициент усиления приемной антенны GT
+	//		GainOfReceivingAntenna: 4220,
+	//		//чувствительность приемника на данной скорости Pmin
+	//		Speed: 54220,
+	//		//потери сигнала в коаксиальном кабеле и разъемах передающего тракта Lt
+	//		SignalLossTransmitting: -1,
+	//		//потери сигнала в коаксиальном кабеле и разъемах приемного тракта LT
+	//		SignalLossReceiving: -1,
+	//		NumberOfChannels:    13,
+	//		Scale:               1,
+	//	},
 	//}
 	err = h.wifiService.SaveData(routers, int64(userId), filePathInput, filePathOutput)
 	if err != nil {
@@ -117,7 +197,6 @@ func (h Handler) loadData(c *gin.Context) {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
-	logrus.Info(data)
 	c.JSON(http.StatusOK, convertToResponseData(c, data))
 }
 
