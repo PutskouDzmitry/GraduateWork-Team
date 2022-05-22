@@ -12,9 +12,10 @@ import (
 func (h Handler) saveData(c *gin.Context) {
 	_, err := h.GetUserFromToken(c.Request.Header.Get("Authorization"))
 	if err != nil {
-		newErrorResponse(c, http.StatusUnauthorized, err.Error())
+		logrus.Info(err)
+		//newErrorResponse(c, http.StatusUnauthorized, err.Error())
 	}
-	userId := 1
+	userId := 2
 	filePath := "kek"
 	routers := []model.RouterSettings{
 		{
@@ -43,13 +44,13 @@ func (h Handler) saveData(c *gin.Context) {
 				Y: 600,
 			},
 			//мощность передатчика P
-			TransmitterPower: 18,
+			TransmitterPower: 180,
 			//коэффициент усиления передающей антенны Gt
-			GainOfTransmittingAntenna: 5,
+			GainOfTransmittingAntenna: 50,
 			//коэффициент усиления приемной антенны GT
-			GainOfReceivingAntenna: 4,
+			GainOfReceivingAntenna: 40,
 			//чувствительность приемника на данной скорости Pmin
-			Speed: 54,
+			Speed: 540,
 			//потери сигнала в коаксиальном кабеле и разъемах передающего тракта Lt
 			SignalLossTransmitting: -1,
 			//потери сигнала в коаксиальном кабеле и разъемах приемного тракта LT
@@ -69,9 +70,10 @@ func (h Handler) saveData(c *gin.Context) {
 func (h Handler) loadData(c *gin.Context) {
 	_, err := h.GetUserFromToken(c.Request.Header.Get("Authorization"))
 	if err != nil {
-		newErrorResponse(c, http.StatusUnauthorized, err.Error())
+		logrus.Info(err)
+		//newErrorResponse(c, http.StatusUnauthorized, err.Error())
 	}
-	var userId = 1
+	var userId = 2
 	data, err := h.wifiService.GetData(int64(userId))
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
@@ -84,6 +86,21 @@ func (h Handler) loadData(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, jsonData)
+}
+
+func (h Handler) deleteData(c *gin.Context) {
+	_, err := h.GetUserFromToken(c.Request.Header.Get("Authorization"))
+	if err != nil {
+		newErrorResponse(c, http.StatusUnauthorized, err.Error())
+	}
+	userId := 2
+	routerId := 1
+	err = h.wifiService.DeleteData(int64(userId), int64(routerId))
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	c.JSON(http.StatusOK, "data is deleted")
 }
 
 func (h Handler) GetUserFromToken(token string) (int, error) {

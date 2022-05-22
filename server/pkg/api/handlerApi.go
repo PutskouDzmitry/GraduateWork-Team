@@ -50,7 +50,7 @@ func (h Handler) InitRoutes() *gin.Engine {
 		apiWifiMap.POST("/calculation", h.handlerMap)
 		apiWifiMap.POST("/save", h.saveData)
 		apiWifiMap.POST("/load", h.loadData)
-		apiWifiMap.POST("/delete", h.loadData)
+		apiWifiMap.POST("/delete", h.deleteData)
 		//apiWifiMap.POST("/getInfo", h.getStatisticsInPoint)
 		apiWifiMap.POST("/fluxMigrator", h.fluxMigrator)
 		apiWifiMap.POST("/acrylicMigrator", h.acrylicMigrator)
