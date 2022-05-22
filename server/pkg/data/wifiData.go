@@ -245,5 +245,11 @@ func convertRouterDataModelToRouterSettings(router RouterDataModel, point Coordi
 }
 
 func (w wifiData) DeleteData(userId, routerId int64) error {
+	var wifiCheck WifiDataModel
+
+	result := w.postgres.Where("id_user_data=? AND id_router_wifi=?", userId, routerId).Delete(&wifiCheck)
+	if result.Error != nil {
+		return result.Error
+	}
 	return nil
 }
