@@ -34,13 +34,13 @@ type SignalOnFlux struct {
 }
 
 type SettingsRouters struct {
-	TransmitterPower          int `json:"transmitterPower"`
-	GainOfTransmittingAntenna int `json:"gainOfTransmittingAntenna"`
-	GainOfReceivingAntenna    int `json:"gainOfReceivingAntenna"`
-	Speed                     int `json:"speed"`
-	SignalLossTransmitting    int `json:"signalLossTransmitting"`
-	SignalLossReceiving       int `json:"signalLossReceiving"`
-	NumberOfChannels          int `json:"numberOfChannels"`
+	TransmitterPower          string `json:"transmitterPower"`
+	GainOfTransmittingAntenna string `json:"gainOfTransmittingAntenna"`
+	GainOfReceivingAntenna    string `json:"gainOfReceivingAntenna"`
+	Speed                     string `json:"speed"`
+	SignalLossTransmitting    string `json:"signalLossTransmitting"`
+	SignalLossReceiving       string `json:"signalLossReceiving"`
+	NumberOfChannels          string `json:"numberOfChannels"`
 }
 
 type CoordsRouters struct {

@@ -11,6 +11,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -153,19 +154,19 @@ func getValuesOfRouters(c *gin.Context) ([]model.RouterSettings, error) {
 	for i, value := range settings {
 		routerSettings[i].CoordinatesOfRouter.X = value.Coords.X
 		routerSettings[i].CoordinatesOfRouter.Y = value.Coords.Y
-		transmitterPower := value.Settings.TransmitterPower
-		routerSettings[i].TransmitterPower = float64(transmitterPower)
-		gainOfTransmittingAntenna := value.Settings.GainOfTransmittingAntenna
-		routerSettings[i].GainOfTransmittingAntenna = float64(gainOfTransmittingAntenna)
-		gainOfReceivingAntenna := value.Settings.GainOfReceivingAntenna
-		routerSettings[i].GainOfReceivingAntenna = float64(gainOfReceivingAntenna)
-		speed := value.Settings.Speed
+		transmitterPower, _ := strconv.ParseFloat(value.Settings.TransmitterPower, 8)
+		routerSettings[i].TransmitterPower = transmitterPower
+		gainOfTransmittingAntenna, _ := strconv.ParseFloat(value.Settings.GainOfTransmittingAntenna, 8)
+		routerSettings[i].GainOfTransmittingAntenna = gainOfTransmittingAntenna
+		gainOfReceivingAntenna, _ := strconv.ParseFloat(value.Settings.GainOfReceivingAntenna, 8)
+		routerSettings[i].GainOfReceivingAntenna = gainOfReceivingAntenna
+		speed, _ := strconv.Atoi(value.Settings.Speed)
 		routerSettings[i].Speed = speed
-		signalLossTransmitting := value.Settings.SignalLossTransmitting
-		routerSettings[i].SignalLossTransmitting = float64(signalLossTransmitting)
-		signalLossReceiving := value.Settings.SignalLossReceiving
-		routerSettings[i].SignalLossReceiving = float64(signalLossReceiving)
-		numberOfChannels := value.Settings.NumberOfChannels
+		signalLossTransmitting, _ := strconv.ParseFloat(value.Settings.SignalLossTransmitting, 8)
+		routerSettings[i].SignalLossTransmitting = signalLossTransmitting
+		signalLossReceiving, _ := strconv.ParseFloat(value.Settings.SignalLossReceiving, 8)
+		routerSettings[i].SignalLossReceiving = signalLossReceiving
+		numberOfChannels, _ := strconv.Atoi(value.Settings.NumberOfChannels)
 		routerSettings[i].NumberOfChannels = numberOfChannels
 		routerSettings[i].Scale = 1
 		routerSettings[i].COM = 10
