@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/PutskouDzmitry/GraduateWork-Team/server/pkg/data"
 	"github.com/PutskouDzmitry/GraduateWork-Team/server/pkg/model"
+	"github.com/sirupsen/logrus"
 	"math"
 )
 
@@ -75,6 +76,7 @@ func getSensitivityVersusBaudRate(speed int) float64 {
 }
 
 func getCenterFrequency(number int, typeOfSignal float64) float64 {
+	logrus.Info(typeOfSignal)
 	if typeOfSignal == 2.4 {
 		switch number {
 		case 1:
