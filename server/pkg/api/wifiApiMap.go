@@ -168,6 +168,8 @@ func getValuesOfRouters(c *gin.Context) ([]model.RouterSettings, error) {
 		routerSettings[i].SignalLossReceiving = signalLossReceiving
 		numberOfChannels, _ := strconv.Atoi(value.Settings.NumberOfChannels)
 		routerSettings[i].NumberOfChannels = numberOfChannels
+		typeOfSignal, _ := strconv.Atoi(value.Settings.TypeOfSignal)
+		routerSettings[i].TypeOfSignal = float64(typeOfSignal)
 		routerSettings[i].Scale = 1
 		routerSettings[i].COM = 10
 	}

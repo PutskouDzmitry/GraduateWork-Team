@@ -5,11 +5,6 @@ type RequestRouters struct {
 	Settings SettingsRouters `json:"settings"`
 }
 
-type RequestRoutersInt struct {
-	Coords   CoordsRouters   `json:"coords"`
-	Settings SettingsRouters `json:"settings"`
-}
-
 type RequestFlux struct {
 	Steps     []CoordsForFlux `json:"steps"`
 	AcsParsed []AcsParsed     `json:"acsParsed"`
@@ -45,6 +40,7 @@ type SettingsRouters struct {
 	SignalLossTransmitting    string `json:"signalLossTransmitting"`
 	SignalLossReceiving       string `json:"signalLossReceiving"`
 	NumberOfChannels          string `json:"numberOfChannels"`
+	TypeOfSignal              string `json:"type_of_signal"`
 }
 
 type CoordsRouters struct {
