@@ -123,13 +123,13 @@ func (w wifiData) addDataIntoDb(wifiSettings []model.RouterSettings, userId int6
 	var path []FilePath
 	w.postgres.Find(&path)
 	for _, value := range path {
-		w.postgres.Where("id=?", value.Id).Delete(&path)
+		w.postgres.Table("file_path").Where("id=?", value.Id).Delete(&path)
 	}
 
 	var wifi []WifiDataModel
 	w.postgres.Find(&wifi)
 	for _, value := range wifi {
-		w.postgres.Where("id=?", value.Id).Delete(&wifi)
+		w.postgres.Table("wifi_data_models").Where("id=?", value.Id).Delete(&wifi)
 	}
 	for _, value := range wifiSettings {
 		coord := value.CoordinatesOfRouter
