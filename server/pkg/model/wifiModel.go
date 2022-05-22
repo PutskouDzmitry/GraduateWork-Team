@@ -71,14 +71,14 @@ type Wifi struct {
 }
 
 type WifiResponseForManipulation struct {
-	Router     []RouterSettings
-	PathInput  string
-	PathOutput string
+	Router []RouterSettings
 }
 
 type Response struct {
-	User int64
-	Data []WifiResponseForManipulation
+	User       int64
+	PathInput  string
+	PathOutput string
+	Data       []WifiResponseForManipulation
 }
 
 type CoordinatesPoints struct {

@@ -120,32 +120,35 @@ func (h Handler) loadData(c *gin.Context) {
 	c.JSON(http.StatusOK, convertToResponseData(c, data))
 }
 
-func convertToResponseData(c *gin.Context, wifi []model.Wifi) model.Response {
-	var data model.Response
+func convertToResponseData(c *gin.Context, wifi []model.Wifi) []model.Response {
+	var dataArray []model.Response
+
 	var dataWifi []model.WifiResponseForManipulation
 	for _, value := range wifi {
 		fileBytesInput, err := ioutil.ReadFile(value.PathInput)
 		if err != nil {
 			newErrorResponse(c, http.StatusInternalServerError, err.Error())
-			return model.Response{}
+			return nil
 		}
 		sEncInput := b64.StdEncoding.EncodeToString(fileBytesInput)
 
 		fileBytesOutput, err := ioutil.ReadFile(value.PathOutput)
 		if err != nil {
 			newErrorResponse(c, http.StatusInternalServerError, err.Error())
-			return model.Response{}
+			return nil
 		}
-		sEncOutPut := b64.StdEncoding.EncodeToString(fileBytesOutput)
+		sEncOutput := b64.StdEncoding.EncodeToString(fileBytesOutput)
 		dataWifi = append(dataWifi, model.WifiResponseForManipulation{
-			Router:     value.Router,
+			Router: value.Router,
+		})
+		dataArray = append(dataArray, model.Response{
+			User:       value.User,
 			PathInput:  sEncInput,
-			PathOutput: sEncOutPut,
+			PathOutput: sEncOutput,
+			Data:       dataWifi,
 		})
 	}
-	data.User = wifi[0].User
-	data.Data = dataWifi
-	return data
+	return dataArray
 }
 
 func (h Handler) deleteData(c *gin.Context) {
