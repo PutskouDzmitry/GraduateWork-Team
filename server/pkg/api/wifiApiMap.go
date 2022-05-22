@@ -7,12 +7,10 @@ import (
 	"github.com/PutskouDzmitry/GraduateWork-Team/server/pkg/model"
 	"github.com/PutskouDzmitry/GraduateWork-Team/server/pkg/service"
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
-	"strconv"
 	"strings"
 )
 
@@ -145,7 +143,6 @@ func (h Handler) getUserId(c *gin.Context, header string) (string, error) {
 
 func getValuesOfRouters(c *gin.Context) ([]model.RouterSettings, error) {
 	data := c.Request.FormValue("data")
-	logrus.Info(data)
 	var settings []model.RequestRouters
 	dataInByte := []byte(data)
 	err := json.Unmarshal(dataInByte, &settings)
@@ -156,19 +153,19 @@ func getValuesOfRouters(c *gin.Context) ([]model.RouterSettings, error) {
 	for i, value := range settings {
 		routerSettings[i].CoordinatesOfRouter.X = value.Coords.X
 		routerSettings[i].CoordinatesOfRouter.Y = value.Coords.Y
-		transmitterPower, _ := strconv.ParseFloat(value.Settings.TransmitterPower, 8)
-		routerSettings[i].TransmitterPower = transmitterPower
-		gainOfTransmittingAntenna, _ := strconv.ParseFloat(value.Settings.GainOfTransmittingAntenna, 8)
-		routerSettings[i].GainOfTransmittingAntenna = gainOfTransmittingAntenna
-		gainOfReceivingAntenna, _ := strconv.ParseFloat(value.Settings.GainOfReceivingAntenna, 8)
-		routerSettings[i].GainOfReceivingAntenna = gainOfReceivingAntenna
-		speed, _ := strconv.Atoi(value.Settings.Speed)
+		transmitterPower := value.Settings.TransmitterPower
+		routerSettings[i].TransmitterPower = float64(transmitterPower)
+		gainOfTransmittingAntenna := value.Settings.GainOfTransmittingAntenna
+		routerSettings[i].GainOfTransmittingAntenna = float64(gainOfTransmittingAntenna)
+		gainOfReceivingAntenna := value.Settings.GainOfReceivingAntenna
+		routerSettings[i].GainOfReceivingAntenna = float64(gainOfReceivingAntenna)
+		speed := value.Settings.Speed
 		routerSettings[i].Speed = speed
-		signalLossTransmitting, _ := strconv.ParseFloat(value.Settings.SignalLossTransmitting, 8)
-		routerSettings[i].SignalLossTransmitting = signalLossTransmitting
-		signalLossReceiving, _ := strconv.ParseFloat(value.Settings.SignalLossReceiving, 8)
-		routerSettings[i].SignalLossReceiving = signalLossReceiving
-		numberOfChannels, _ := strconv.Atoi(value.Settings.NumberOfChannels)
+		signalLossTransmitting := value.Settings.SignalLossTransmitting
+		routerSettings[i].SignalLossTransmitting = float64(signalLossTransmitting)
+		signalLossReceiving := value.Settings.SignalLossReceiving
+		routerSettings[i].SignalLossReceiving = float64(signalLossReceiving)
+		numberOfChannels := value.Settings.NumberOfChannels
 		routerSettings[i].NumberOfChannels = numberOfChannels
 		routerSettings[i].Scale = 1
 		routerSettings[i].COM = 10
