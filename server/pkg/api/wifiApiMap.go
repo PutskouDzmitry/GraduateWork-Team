@@ -170,7 +170,8 @@ func getValuesOfRouters(c *gin.Context) ([]model.RouterSettings, error) {
 		routerSettings[i].NumberOfChannels = numberOfChannels
 		typeOfSignal, _ := strconv.Atoi(value.Settings.TypeOfSignal)
 		routerSettings[i].TypeOfSignal = float64(typeOfSignal)
-		routerSettings[i].Scale = 1
+		scale, _ := strconv.Atoi(value.Settings.Scale)
+		routerSettings[i].Scale = float64(scale)
 		routerSettings[i].COM = 10
 	}
 	return routerSettings, nil

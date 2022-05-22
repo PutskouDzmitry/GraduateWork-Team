@@ -41,6 +41,7 @@ type SettingsRouters struct {
 	SignalLossReceiving       string `json:"signalLossReceiving"`
 	NumberOfChannels          string `json:"numberOfChannels"`
 	TypeOfSignal              string `json:"type_of_signal"`
+	Scale                     string `json:"scale"`
 }
 
 type CoordsRouters struct {
