@@ -71,6 +71,35 @@ function Main() {
     dispatch(setCurrentObject(obj));
   };
 
+  // useEffect for loading saves
+  const save = () => {
+    let formData = new FormData();
+    const file = dataURLtoBlob(canvasOld.current.toDataURL());
+    const fileOutput = dataURLtoBlob(canvasNew.current.toDataURL());
+
+    formData.append("myFile", file);
+    formData.append("myFileOutput", fileOutput);
+    formData.append("data", JSON.stringify(routers));
+
+    var xhr = new XMLHttpRequest();
+    xhr.onload = function () {
+      console.log(xhr.response);
+    };
+
+    xhr.open("POST", "http://localhost:8080/api/map/save", true);
+    xhr.send(formData);
+  };
+
+  const load = () => {
+    var xhr = new XMLHttpRequest();
+    xhr.onload = function () {
+      console.log(xhr.response);
+    };
+
+    xhr.open("POST", "http://localhost:8080/api/map/load", true);
+    xhr.send();
+  };
+
   useEffect(() => {
     const currentCanvas = canvasOld.current;
     const objectsCanvas = canvasForObjects.current;
@@ -242,9 +271,14 @@ function Main() {
           multiple={false}
         />
         {isChanged ? (
-          <button className="button button_special" onClick={handleUpload}>
-            Submit
-          </button>
+          <>
+            <button className="button button_special" onClick={save}>
+              Submit
+            </button>
+            <button className="button button_special" onClick={load}>
+              Load
+            </button>
+          </>
         ) : (
           ""
         )}

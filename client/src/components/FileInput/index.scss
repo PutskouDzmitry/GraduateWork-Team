@@ -25,6 +25,12 @@
   justify-content: center;
   align-items: center;
 
+  & div {
+    max-width: 200px;
+    max-height: 40px;
+    overflow: hidden;
+  }
+
   &__button {
     font-family: $font-default;
     font-weight: 400;

@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import "./index.scss";
 import { useSelector } from "react-redux";
+import LoginLogoutButton from "../LoginLogoutButton";
 
 function Sidebar(props) {
   const [isOpened, setIsOpened] = useState(false);
@@ -10,7 +11,17 @@ function Sidebar(props) {
   return (
     <div className={`sidebar ${isOpened ? "sidebar_opened" : ""}`}>
       <div className="sidebar__body">
-        {isUserLoggedIn ? "You are logged in" : "You are not logged in"}
+        {isUserLoggedIn ? (
+          <>hehe</>
+        ) : (
+          <>
+            <p className="sidebar__body__text">
+              You are not authenicated. Please,
+              <LoginLogoutButton className="button" /> to enable saving and
+              loading
+            </p>
+          </>
+        )}
       </div>
       <button
         className={`sidebar__button ${
