@@ -138,7 +138,7 @@ func (w wifiData) addDataIntoDb(wifiSettings []model.RouterSettings, userId int6
 		var wifiCheck WifiDataModel
 		wifiModel := createWifiModels(getRouter[i].IdRouter, userId, pathInput, pathOutput)
 
-		result = w.postgres.Find(&wifiCheck)
+		result = w.postgres.Where("id_router_wifi=?", routerCheck.IdRouter).Find(&wifiCheck)
 		if result.Error != nil {
 			return result.Error
 		}
