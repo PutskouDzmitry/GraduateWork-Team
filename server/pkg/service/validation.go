@@ -89,8 +89,12 @@ func GenerateFullPathOfFileToMobile(path, userId string) string {
 	return path + userId + "-mobile.png"
 }
 
-func GenerateFullPathOfFileForSave(path, userId string) string {
-	return path + userId + "-save.png"
+func GenerateFullPathOfFileForSaveOrigin(path, userId string) string {
+	return path + userId + "-saveOrigin.png"
+}
+
+func GenerateFullPathOfFileForSaveNotOrigin(path, userId string) string {
+	return path + userId + "-saveNotOrigin.png"
 }
 
 //func ValidationValues(routers []model.RouterSettings) []model.RouterSettings {

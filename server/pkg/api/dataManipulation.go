@@ -172,7 +172,13 @@ func getImageFromContextForSave(c *gin.Context, userId string, typeOfFile string
 	if err != nil {
 		return "", fmt.Errorf("error with get file from form: %w", err)
 	}
-	filename := service.GenerateFullPathOfFileForSave(inputPathFile, userId)
+	var filename string
+	if typeOfFile == "myFile" {
+		filename = service.GenerateFullPathOfFileForSaveOrigin(inputPathFile, userId)
+	}
+	if typeOfFile == "myFileOutput" {
+		filename = service.GenerateFullPathOfFileForSaveNotOrigin(inputPathFile, userId)
+	}
 	out, err := os.Create(filename)
 	if err != nil {
 		return "", err
