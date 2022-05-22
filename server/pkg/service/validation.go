@@ -90,6 +90,10 @@ func GenerateFullPathOfFileToMobile(path, userId string) string {
 	return path + userId + "-mobile.png"
 }
 
+func GenerateFullPathOfFileForSave(path, userId string) string {
+	return path + userId + "-save.png"
+}
+
 //func ValidationValues(routers []model.RouterSettings) []model.RouterSettings {
 //	newRouters := make([]model.RouterSettings, len(routers), len(routers)+1)
 //	for i, value := range routers {

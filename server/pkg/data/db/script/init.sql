@@ -2,7 +2,8 @@ CREATE TABLE "wifi_data_models"
 (
   id_user_data int,
   id_router_wifi int,
-  path char(90)
+  path_input char(90),
+  path_output char(90)
 );
 
 CREATE TABLE "users"

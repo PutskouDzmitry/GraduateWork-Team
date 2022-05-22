@@ -64,9 +64,10 @@ type RouterSettings struct {
 }
 
 type Wifi struct {
-	User   int64
-	Router []RouterSettings
-	Path   string
+	User       int64
+	Router     []RouterSettings
+	PathInput  string
+	PathOutput string
 }
 
 type CoordinatesPoints struct {

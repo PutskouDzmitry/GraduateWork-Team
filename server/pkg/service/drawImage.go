@@ -91,10 +91,10 @@ func (d drawImage) DrawOnImage() error {
 			}
 			ctx.SetRGBA255(int(chooseColor.R), int(chooseColor.G), int(chooseColor.B), int(chooseColor.A))
 		}
+		ctx.SetLineWidth(0)
+		ctx.FillPreserve()
+		ctx.Stroke()
 	}
-	ctx.SetLineWidth(0)
-	ctx.FillPreserve()
-	ctx.Stroke()
 	ctx.SavePNG(d.filePathOutput)
 	return nil
 }

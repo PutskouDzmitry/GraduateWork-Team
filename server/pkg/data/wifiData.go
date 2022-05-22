@@ -15,7 +15,8 @@ type WifiUserModels struct {
 type WifiDataModel struct {
 	IdUserData   int    `gorm:"id_user_data"`
 	IdRouterWifi int    `gorm:"id_router_wifi"`
-	Path         string `gorm:"path"`
+	PathInput    string `gorm:"path_input"`
+	PathOutput   string `gorm:"path_output"`
 }
 
 type CoordinatesPoints struct {
@@ -56,7 +57,7 @@ type wifiData struct {
 }
 
 type WifiData interface {
-	SaveData(wifiSettings []model.RouterSettings, userId int64, filePath string) error
+	SaveData(wifiSettings []model.RouterSettings, userId int64, pathInput, pathOutput string) error
 	GetData(userId int64) (model.Wifi, error)
 	DeleteData(userId, routerId int64) error
 }
@@ -65,7 +66,7 @@ func NewWifiData(postgres *gorm.DB) WifiData {
 	return &wifiData{postgres: postgres}
 }
 
-func (w wifiData) SaveData(wifiSettings []model.RouterSettings, userId int64, filePath string) error {
+func (w wifiData) SaveData(wifiSettings []model.RouterSettings, userId int64, pathInput, pathOutput string) error {
 	var newUser model.User
 	newUser1 := model.User{
 		Id:       int(userId),
@@ -79,14 +80,14 @@ func (w wifiData) SaveData(wifiSettings []model.RouterSettings, userId int64, fi
 			return fmt.Errorf("user doesn't find: %w", result.Error)
 		}
 	}
-	err := w.addDataIntoDb(wifiSettings, userId, filePath)
+	err := w.addDataIntoDb(wifiSettings, userId, pathInput, pathOutput)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (w wifiData) addDataIntoDb(wifiSettings []model.RouterSettings, userId int64, filePath string) error {
+func (w wifiData) addDataIntoDb(wifiSettings []model.RouterSettings, userId int64, pathInput, pathOutput string) error {
 	for i, value := range wifiSettings {
 		coord := value.CoordinatesOfRouter
 		result := w.postgres.Create(&coord)
@@ -110,7 +111,7 @@ func (w wifiData) addDataIntoDb(wifiSettings []model.RouterSettings, userId int6
 			return result.Error
 		}
 
-		wifiModel := createWifiModels(router[i].IdRouter, userId, filePath)
+		wifiModel := createWifiModels(router[i].IdRouter, userId, pathInput, pathOutput)
 		result = w.postgres.Create(&wifiModel)
 		if result.Error != nil {
 			return result.Error
@@ -134,11 +135,12 @@ func convertRouterSettingsToRouterDataModel(routers model.RouterSettings, point 
 	}
 }
 
-func createWifiModels(routersID int64, userID int64, path string) WifiDataModel {
+func createWifiModels(routersID int64, userID int64, pathInput, pathOutput string) WifiDataModel {
 	return WifiDataModel{
 		IdUserData:   int(userID),
 		IdRouterWifi: int(routersID),
-		Path:         path,
+		PathInput:    pathInput,
+		PathOutput:   pathOutput,
 	}
 }
 
@@ -156,7 +158,7 @@ func (w wifiData) GetData(userId int64) (model.Wifi, error) {
 }
 
 func (w wifiData) getDataFromDb(userId int64) (model.Wifi, error) {
-	var wifiDataModel []WifiDataModel
+	wifiDataModel := make([]WifiDataModel, 0, 10)
 	result := w.postgres.Table("wifi_data_models").Where("id_user_data=?", userId).Find(&wifiDataModel)
 	if result.Error != nil {
 		return model.Wifi{}, result.Error
@@ -181,9 +183,10 @@ func (w wifiData) getDataFromDb(userId int64) (model.Wifi, error) {
 		routerSettings = append(routerSettings, routerSetting)
 	}
 	return model.Wifi{
-		User:   userId,
-		Router: routerSettings,
-		Path:   wifiDataModel[0].Path,
+		User:       userId,
+		Router:     routerSettings,
+		PathInput:  wifiDataModel[0].PathInput,
+		PathOutput: wifiDataModel[0].PathOutput,
 	}, nil
 }
 

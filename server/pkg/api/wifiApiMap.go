@@ -180,7 +180,7 @@ func getImageFromContext(c *gin.Context, userId string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("error with get file from form: %w", err)
 	}
-	filename := service.GenerateFullPathOfFileToAcrylic(inputPathFile, userId)
+	filename := service.GenerateFullPathOfFileToMap(inputPathFile, userId)
 	out, err := os.Create(filename)
 	if err != nil {
 		return "", err
