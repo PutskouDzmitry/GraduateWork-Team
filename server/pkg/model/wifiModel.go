@@ -6,6 +6,12 @@ type RequestRouters struct {
 	Settings SettingsRouters `json:"settings"`
 }
 
+type RequestRoutersString struct {
+	Id       string          `json:"id"`
+	Coords   CoordsRouters   `json:"coords"`
+	Settings SettingsRouters `json:"settings"`
+}
+
 type RequestFlux struct {
 	Steps     []CoordsForFlux `json:"steps"`
 	AcsParsed []AcsParsed     `json:"acsParsed"`

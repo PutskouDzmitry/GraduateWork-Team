@@ -2,6 +2,7 @@ package api
 
 import (
 	b64 "encoding/base64"
+	"encoding/json"
 	"fmt"
 	"github.com/PutskouDzmitry/GraduateWork-Team/server/pkg/model"
 	"github.com/PutskouDzmitry/GraduateWork-Team/server/pkg/service"
@@ -30,7 +31,7 @@ func (h Handler) saveData(c *gin.Context) {
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 	}
-	routers, err := getValuesOfRouters(c)
+	routers, err := getValuesOfRoutersSave(c)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 	}
@@ -164,6 +165,38 @@ func (h Handler) saveData(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, "data is saved")
+}
+
+func getValuesOfRoutersSave(c *gin.Context) ([]model.RouterSettings, error) {
+	data := c.Request.FormValue("data")
+	var settings []model.RequestRoutersString
+	dataInByte := []byte(data)
+	err := json.Unmarshal(dataInByte, &settings)
+	if err != nil {
+		return nil, err
+	}
+	routerSettings := make([]model.RouterSettings, len(settings), len(settings)+1)
+	for i, value := range settings {
+		routerSettings[i].CoordinatesOfRouter.X = value.Coords.X
+		routerSettings[i].CoordinatesOfRouter.Y = value.Coords.Y
+		transmitterPower, _ := strconv.ParseFloat(value.Settings.TransmitterPower, 8)
+		routerSettings[i].TransmitterPower = transmitterPower
+		gainOfTransmittingAntenna, _ := strconv.ParseFloat(value.Settings.GainOfTransmittingAntenna, 8)
+		routerSettings[i].GainOfTransmittingAntenna = gainOfTransmittingAntenna
+		gainOfReceivingAntenna, _ := strconv.ParseFloat(value.Settings.GainOfReceivingAntenna, 8)
+		routerSettings[i].GainOfReceivingAntenna = gainOfReceivingAntenna
+		speed, _ := strconv.Atoi(value.Settings.Speed)
+		routerSettings[i].Speed = speed
+		signalLossTransmitting, _ := strconv.ParseFloat(value.Settings.SignalLossTransmitting, 8)
+		routerSettings[i].SignalLossTransmitting = signalLossTransmitting
+		signalLossReceiving, _ := strconv.ParseFloat(value.Settings.SignalLossReceiving, 8)
+		routerSettings[i].SignalLossReceiving = signalLossReceiving
+		numberOfChannels, _ := strconv.Atoi(value.Settings.NumberOfChannels)
+		routerSettings[i].NumberOfChannels = numberOfChannels
+		routerSettings[i].Scale = 1
+		routerSettings[i].COM = 10
+	}
+	return routerSettings, nil
 }
 
 func getImageFromContextForSave(c *gin.Context, userId string, typeOfFile string) (string, error) {
