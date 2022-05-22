@@ -124,6 +124,13 @@ func (h Handler) loadData(c *gin.Context) {
 func convertToResponseData(c *gin.Context, wifi []model.Wifi) model.Response {
 	var userId int64
 	var dataRouters []model.ResponseData
+	var routerSettings []model.RouterSettings
+
+	for _, value := range wifi {
+		for _, valueWifi := range value.Router {
+			routerSettings = append(routerSettings, valueWifi)
+		}
+	}
 
 	for i, value := range wifi {
 		if i == 1 {
@@ -145,7 +152,7 @@ func convertToResponseData(c *gin.Context, wifi []model.Wifi) model.Response {
 		dataRouters = append(dataRouters, model.ResponseData{
 			PathInput:  sEncInput,
 			PathOutput: sEncOutput,
-			Data:       value.Router,
+			Data:       routerSettings,
 		})
 		userId = value.User
 	}
