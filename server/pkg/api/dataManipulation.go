@@ -1,12 +1,14 @@
 package api
 
 import (
-	"encoding/json"
+	b64 "encoding/base64"
 	"fmt"
+	"github.com/PutskouDzmitry/GraduateWork-Team/server/pkg/model"
 	"github.com/PutskouDzmitry/GraduateWork-Team/server/pkg/service"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"strconv"
@@ -21,6 +23,7 @@ func (h Handler) saveData(c *gin.Context) {
 	userId := 2
 
 	filePathInput, err := getImageFromContextForSave(c, "2", "myFile") //fmt.Sprint("./users_images/input/", userId , "-map.png")
+	//filePathInput := fmt.Sprint("./users_images/input/", userId , "-map.png")
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 	}
@@ -28,11 +31,12 @@ func (h Handler) saveData(c *gin.Context) {
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 	}
+	//filePathOutput := fmt.Sprint("./users_images/input/", userId , "-map.png")
 	routers, err := getValuesOfRouters(c)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 	}
-	//[]model.RouterSettings{
+	//routers := []model.RouterSettings{
 	//	{
 	//		CoordinatesOfRouter: model.CoordinatesPoints{
 	//			X: 200,
@@ -114,12 +118,29 @@ func (h Handler) loadData(c *gin.Context) {
 		return
 	}
 	logrus.Info(data)
-	jsonData, err := json.Marshal(data)
+	c.JSON(http.StatusOK, convertToResponseData(c, data))
+}
+
+func convertToResponseData(c *gin.Context, data model.Wifi) model.WifiResponse {
+	fileBytesInput, err := ioutil.ReadFile(data.PathInput)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
-		return
+		return model.WifiResponse{}
 	}
-	c.JSON(http.StatusOK, jsonData)
+	sEncInput := b64.StdEncoding.EncodeToString(fileBytesInput)
+
+	fileBytesOutput, err := ioutil.ReadFile(data.PathOutput)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return model.WifiResponse{}
+	}
+	sEncOutPut := b64.StdEncoding.EncodeToString(fileBytesOutput)
+	return model.WifiResponse{
+		User:       data.User,
+		Router:     data.Router,
+		PathInput:  sEncInput,
+		PathOutput: sEncOutPut,
+	}
 }
 
 func (h Handler) deleteData(c *gin.Context) {

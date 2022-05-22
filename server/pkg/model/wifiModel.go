@@ -70,6 +70,13 @@ type Wifi struct {
 	PathOutput string
 }
 
+type WifiResponse struct {
+	User       int64
+	Router     []RouterSettings
+	PathInput  string
+	PathOutput string
+}
+
 type CoordinatesPoints struct {
 	X float64 `json:"x"`
 	Y float64 `json:"y"`

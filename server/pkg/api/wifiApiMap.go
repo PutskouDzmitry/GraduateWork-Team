@@ -7,6 +7,7 @@ import (
 	"github.com/PutskouDzmitry/GraduateWork-Team/server/pkg/model"
 	"github.com/PutskouDzmitry/GraduateWork-Team/server/pkg/service"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -144,6 +145,7 @@ func (h Handler) getUserId(c *gin.Context, header string) (string, error) {
 
 func getValuesOfRouters(c *gin.Context) ([]model.RouterSettings, error) {
 	data := c.Request.FormValue("data")
+	logrus.Info(data)
 	var settings []model.RequestRouters
 	dataInByte := []byte(data)
 	err := json.Unmarshal(dataInByte, &settings)
