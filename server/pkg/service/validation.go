@@ -12,7 +12,6 @@ var (
 	signalLossTransmitting = 0
 	signalLossReceiving    = 0
 	scale                  = 9
-	thickness              = 10
 	com                    = 10
 )
 
