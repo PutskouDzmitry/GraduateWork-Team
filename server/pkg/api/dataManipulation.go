@@ -117,34 +117,42 @@ func (h Handler) loadData(c *gin.Context) {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
+	logrus.Info(data)
 	c.JSON(http.StatusOK, convertToResponseData(c, data))
 }
 
-func convertToResponseData(c *gin.Context, wifi []model.Wifi) []model.Response {
-	var dataArray []model.Response
+func convertToResponseData(c *gin.Context, wifi []model.Wifi) model.Response {
+	var userId int64
+	var dataRouters []model.ResponseData
 
-	for _, value := range wifi {
+	for i, value := range wifi {
+		if i == 1 {
+			break
+		}
 		fileBytesInput, err := ioutil.ReadFile(value.PathInput)
 		if err != nil {
 			newErrorResponse(c, http.StatusInternalServerError, err.Error())
-			return nil
+			return model.Response{}
 		}
 		sEncInput := b64.StdEncoding.EncodeToString(fileBytesInput)
 
 		fileBytesOutput, err := ioutil.ReadFile(value.PathOutput)
 		if err != nil {
 			newErrorResponse(c, http.StatusInternalServerError, err.Error())
-			return nil
+			return model.Response{}
 		}
 		sEncOutput := b64.StdEncoding.EncodeToString(fileBytesOutput)
-		dataArray = append(dataArray, model.Response{
-			User:       value.User,
+		dataRouters = append(dataRouters, model.ResponseData{
 			PathInput:  sEncInput,
 			PathOutput: sEncOutput,
 			Data:       value.Router,
 		})
+		userId = value.User
 	}
-	return dataArray
+	return model.Response{
+		User: userId,
+		Data: dataRouters,
+	}
 }
 
 func (h Handler) deleteData(c *gin.Context) {
