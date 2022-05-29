@@ -152,6 +152,40 @@ func (d drawImageToMigrator) FluxMigrator() error {
 }
 
 func (d drawImageToMigrator) TelephoneMigrator() error {
+	powers := make([]float64, 0, 10)
+	powersMin := make([]float64, 0, 10)
+	minPowers := make([]valueOfPowerOnPoint, 0, 10)
+	maxPowers := make([]valueOfPowerOnPoint, 0, 10)
+	for _, value := range d.coordinatesOfRouters {
+		for _, valueOfPoint := range value.RoutersSettingsMigration {
+			powers = append(powers, valueOfPoint.Power)
+		}
+		maxPowers = append(maxPowers, findMaxPower(powers, value))
+
+		maxPowerOnPoint := findMaxPower(powers, value)
+		for _, value := range d.coordinatesOfRouters {
+			for _, valueOfPoint := range value.RoutersSettingsMigration {
+				if valueOfPoint.MAC == maxPowerOnPoint.router.MAC {
+					powersMin = append(powersMin, valueOfPoint.Power)
+				}
+			}
+		}
+		minPowers = append(minPowers, findMinPower(powersMin, value))
+		powers = make([]float64, 0, 10)
+		powersMin = make([]float64, 0, 10)
+	}
+
+	distance := make([]radiusOfRouter, 0, 10)
+	for i, value := range maxPowers {
+		distance = append(distance, radiusOfRouter{
+			coordinates: value.coordinates,
+			radius:      getRadius(value.coordinates.X, value.coordinates.Y, minPowers[i].coordinates.X, minPowers[i].coordinates.Y),
+		})
+	}
+	err := d.drawWifiOnMap(distance)
+	if err != nil {
+		logrus.Error(err)
+	}
 	return nil
 }
 
