@@ -163,7 +163,7 @@ func (d drawImageToMigrator) drawWifiOnMap(data []radiusOfRouter) error {
 	}
 	radii := make([]float64, 0, len(data)+1)
 	for _, value := range data {
-		radii = append(radii, value.radius)
+		radii = append(radii, (value.radius / 4))
 	}
 	rotation -= math.Pi / 2
 	ctx := gg.NewContextForImage(im)
@@ -241,6 +241,35 @@ func ValidStringFromImage(str string) []model.RouterSettingForMigrator {
 	str45 := re.ReplaceAllString(str, "")
 	s := strings.Split(str45, "\n")
 	return getBaseInfoFromString(s)
+}
+
+func ValidStringFromImageMobile(str string) []model.RouterSettingForMigrator {
+	var re = regexp.MustCompile(`[[:punct:]]`)
+	routersSettings := make([]model.RouterSettingForMigrator, 0, 10)
+	str45 := re.ReplaceAllString(str, "")
+	for {
+		positionOfPower := strings.Index(str45, "WPA")
+		if positionOfPower == -1 {
+			break
+		}
+		power := str45[positionOfPower-6 : positionOfPower-3]
+		//logrus.Info(strings.TrimSpace(power))
+		powerInt, err := strconv.Atoi(power)
+		if err != nil {
+			logrus.Error(powerInt, err)
+		}
+
+		positionOfMAC := strings.Index(str45, "MAC")
+		MAC := str45[positionOfMAC+3 : positionOfMAC+16]
+		//logrus.Info(MAC)
+		routersSettings = append(routersSettings, model.RouterSettingForMigrator{
+			Name:  "",
+			Power: float64(powerInt),
+			MAC:   MAC,
+		})
+		str45 = str45[positionOfPower+2:]
+	}
+	return routersSettings
 }
 
 type TestStr struct {

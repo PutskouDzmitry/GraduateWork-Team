@@ -65,7 +65,6 @@ type wifiData struct {
 type WifiData interface {
 	SaveData(wifiSettings []model.RouterSettings, userId int64, pathInput, pathOutput string) error
 	GetData(userId int64) ([]model.Wifi, error)
-	DeleteData(userId, routerId int64) error
 }
 
 func NewWifiData(postgres *gorm.DB) WifiData {
@@ -114,16 +113,16 @@ func (w wifiData) addDataIntoDb(wifiSettings []model.RouterSettings, userId int6
 		w.postgres.Where("id_router=?", value.IdRouter).Delete(&routers)
 	}
 
-	var user []WifiUserModels
-	w.postgres.Find(&user)
-	for _, value := range user {
-		w.postgres.Where("id=?", value.UserModelId).Delete(&user)
-	}
-
 	var path []FilePath
-	w.postgres.Find(&path)
+	w.postgres.Table("file_path").Find(&path)
 	for _, value := range path {
 		w.postgres.Table("file_path").Where("id=?", value.Id).Delete(&path)
+	}
+
+	var user []WifiUserModels
+	w.postgres.Table("users").Find(&user)
+	for _, value := range user {
+		w.postgres.Table("users").Where("id=?", value.UserModelId).Delete(&user)
 	}
 
 	var wifi []WifiDataModel
@@ -200,32 +199,7 @@ func (w wifiData) addDataIntoDb(wifiSettings []model.RouterSettings, userId int6
 			}
 		}
 	}
-	//var routerCheck []RouterDataModel
-	//w.postgres.Table("router_data_models").Find(&routerCheck)
-	//logrus.Info("---------------------")
-	//for _, value := range routerCheck {
-	//	logrus.Info(value)
-	//}
-	//logrus.Info("---------------------")
-
-	//var routerCheck []WifiDataModel
-	//w.postgres.Table("wifi_data_models").Find(&routerCheck)
-	//logrus.Info("---------------------")
-	//for _, value := range routerCheck {
-	//	logrus.Info(value)
-	//}
-	//logrus.Info("---------------------")
 	return nil
-}
-
-func findId(ids []FilePath) int64 {
-	var max int64
-	for _, value := range ids {
-		if value.Id > max {
-			max = value.Id
-		}
-	}
-	return max
 }
 
 func convertRouterSettingsToRouterDataModel(routers model.RouterSettings, point CoordinatesPoints) RouterDataModelWithOutID {
@@ -330,14 +304,4 @@ func convertRouterDataModelToRouterSettings(router RouterDataModel, point Coordi
 		Scale:                     router.Scale,
 		COM:                       router.COM,
 	}
-}
-
-func (w wifiData) DeleteData(userId, routerId int64) error {
-	var wifiCheck WifiDataModel
-
-	result := w.postgres.Where("id_user_data=? AND id_router_wifi=?", userId, routerId).Delete(&wifiCheck)
-	if result.Error != nil {
-		return result.Error
-	}
-	return nil
 }

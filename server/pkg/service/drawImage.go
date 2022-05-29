@@ -82,7 +82,7 @@ func (d drawImage) DrawOnImage() error {
 				}
 				cosX := x + rNew*math.Cos(a)
 				sinY := y + rNew*math.Sin(a)
-				detectOutPositionOfSignal(im, cosX, sinY)
+				//detectOutPositionOfSignal(im, cosX, sinY)
 				if i == 0 {
 					ctx.MoveTo(x+rNew, y)
 					continue

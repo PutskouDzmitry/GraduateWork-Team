@@ -29,6 +29,7 @@ func CalculationOfValues(coordinates model.RouterSettings) (float64, error) {
 	}
 
 	numberOfChannel := getCenterFrequency(coordinates.NumberOfChannels, coordinates.TypeOfSignal)
+	logrus.Info(coordinates.NumberOfChannels, coordinates.TypeOfSignal, numberOfChannel)
 	if numberOfChannel == -1 {
 		return -1, fmt.Errorf("this program doesn't supposed this number of channel: %v", coordinates.NumberOfChannels)
 	}
@@ -76,7 +77,6 @@ func getSensitivityVersusBaudRate(speed int) float64 {
 }
 
 func getCenterFrequency(number int, typeOfSignal float64) float64 {
-	logrus.Info(typeOfSignal)
 	if typeOfSignal == 2.4 {
 		switch number {
 		case 1:
@@ -186,7 +186,6 @@ type wifiService struct {
 type WifiService interface {
 	SaveData(routers []model.RouterSettings, userId int64, pathInput, pathOutput string) error
 	GetData(userId int64) ([]model.Wifi, error)
-	DeleteData(userId, routerId int64) error
 }
 
 func NewWifiService(wifi data.WifiData) WifiService {
@@ -199,8 +198,4 @@ func (w wifiService) SaveData(routers []model.RouterSettings, userId int64, path
 
 func (w wifiService) GetData(userId int64) ([]model.Wifi, error) {
 	return w.wifi.GetData(userId)
-}
-
-func (w wifiService) DeleteData(userId, routerId int64) error {
-	return w.wifi.DeleteData(userId, routerId)
 }

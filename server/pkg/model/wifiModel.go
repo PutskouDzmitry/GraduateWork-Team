@@ -40,7 +40,7 @@ type SettingsRouters struct {
 	SignalLossTransmitting    string `json:"signalLossTransmitting"`
 	SignalLossReceiving       string `json:"signalLossReceiving"`
 	NumberOfChannels          string `json:"numberOfChannels"`
-	TypeOfSignal              string `json:"type_of_signal"`
+	TypeOfSignal              string `json:"typeOfSignal"`
 	Scale                     string `json:"scale"`
 }
 

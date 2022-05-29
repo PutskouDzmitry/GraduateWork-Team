@@ -7,6 +7,7 @@ import (
 	"github.com/PutskouDzmitry/GraduateWork-Team/server/pkg/model"
 	"github.com/PutskouDzmitry/GraduateWork-Team/server/pkg/service"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -22,6 +23,7 @@ var (
 )
 
 func testValue() []model.RouterSettings {
+	logrus.Info()
 	return []model.RouterSettings{
 		{
 			CoordinatesOfRouter: model.CoordinatesPoints{
@@ -105,11 +107,11 @@ func (h Handler) handlerMap(c *gin.Context) {
 		return
 	}
 	// validation
-	err = service.ValidationOfPlaceRouter(filePathInput, routersOld)
-	if err != nil {
-		newErrorResponse(c, http.StatusInternalServerError, err.Error())
-		return
-	}
+	//err = service.ValidationOfPlaceRouter(filePathInput, routersOld)
+	//if err != nil {
+	//	newErrorResponse(c, http.StatusInternalServerError, err.Error())
+	//	return
+	//}
 	routers := routersOld //service.ValidationValues(routersOld)
 	filePathOutput := service.GenerateFullPathOfFileToMap(outputPathFile, userId)
 	drawImage := service.NewDrawImage(routers, filePathInput, filePathOutput)
@@ -168,9 +170,9 @@ func getValuesOfRouters(c *gin.Context) ([]model.RouterSettings, error) {
 		routerSettings[i].SignalLossReceiving = signalLossReceiving
 		numberOfChannels, _ := strconv.Atoi(value.Settings.NumberOfChannels)
 		routerSettings[i].NumberOfChannels = numberOfChannels
-		typeOfSignal, _ := strconv.Atoi(value.Settings.TypeOfSignal)
+		typeOfSignal, _ := strconv.ParseFloat(value.Settings.TypeOfSignal, 64)
 		routerSettings[i].TypeOfSignal = float64(typeOfSignal)
-		scale, _ := strconv.Atoi(value.Settings.Scale)
+		scale, _ := strconv.ParseFloat(value.Settings.Scale, 64)
 		routerSettings[i].Scale = float64(scale)
 		routerSettings[i].COM = 10
 	}

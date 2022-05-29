@@ -31,6 +31,7 @@ function Main() {
   const isUserLoggedIn = useSelector((state) => state.user.isUserLoggedIn);
   const currentObject = useSelector((state) => state.objectsInfo.currentObject);
 
+  // выбор файла
   const handleChange = async () => {
     canvasOld.current.getContext("2d").clearRect(0, 0, 600, 400);
     let ctx = canvasOld.current.getContext("2d");
@@ -45,6 +46,8 @@ function Main() {
     dispatch(removeAllRouters());
   };
 
+
+  //отрисовка нового изображения
   const handleUpload = async () => {
     let formData = new FormData();
 
@@ -151,6 +154,7 @@ function Main() {
     const ctxCurrent = currentCanvas.getContext("2d");
     const ctxObjects = objectsCanvas.getContext("2d");
 
+    // рисование стенок
     const objectClickListener = (e) => {
       if (isObjectModeOn) {
         let x1 = 0,
@@ -159,6 +163,7 @@ function Main() {
           y2 = 0;
         let isCurrentlyDrawing = false;
 
+        //инициализиуер координаты на мыши
         objectsCanvas.addEventListener("mousedown", function (e) {
           isCurrentlyDrawing = true;
           x1 = e.offsetX;
@@ -224,6 +229,7 @@ function Main() {
     currentCanvas.addEventListener("click", clickListener);
     objectsCanvas.addEventListener("click", objectClickListener);
 
+    //подтягивает из хранилищя роутероы, если роутеры изменлились, то и тут изменились
     return () => {
       currentCanvas.removeEventListener("click", clickListener);
       objectsCanvas.addEventListener("click", objectClickListener);

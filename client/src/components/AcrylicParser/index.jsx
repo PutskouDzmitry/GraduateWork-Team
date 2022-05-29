@@ -53,6 +53,8 @@ function AcrylicParser() {
     setFileName(fileInput.current.files[0].name);
   };
 
+
+  //перевод изображения в строку
   const acrylicHandleChange = async () => {
     dispatch(loaderModalOpen());
     recognize(acrylicFileInput.current.files, "eng").then((text) => {

@@ -6,7 +6,6 @@ import (
 	"github.com/PutskouDzmitry/GraduateWork-Team/server/pkg/model"
 	"github.com/PutskouDzmitry/GraduateWork-Team/server/pkg/service"
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -70,7 +69,6 @@ func getValuesToFlux(c *gin.Context) ([]model.RoutersSettingForMigrator, error) 
 			RoutersSettingsMigration: router,
 		})
 	}
-	logrus.Info(len(routers[0].RoutersSettingsMigration))
 	return routers, nil
 }
 
@@ -126,7 +124,7 @@ func getDataAcrylic(c *gin.Context) ([]model.RoutersSettingForMigrator, error) {
 
 func (h Handler) mobileMigrator(c *gin.Context) {
 	userId := "2"
-	dataOfRouters, err := getDataToTelephone(c)
+	dataOfRouters, err := getDataToMobile(c)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -152,6 +150,24 @@ func (h Handler) mobileMigrator(c *gin.Context) {
 	c.Writer.WriteString(sEnc)
 }
 
-func getDataToTelephone(c *gin.Context) ([]model.RoutersSettingForMigrator, error) {
-	return nil, nil
+func getDataToMobile(c *gin.Context) ([]model.RoutersSettingForMigrator, error) {
+	data := c.Request.FormValue("data")
+	var settings model.RequestAcrylicPicture
+	dataInByte := []byte(data)
+	err := json.Unmarshal(dataInByte, &settings)
+	if err != nil {
+		return nil, err
+	}
+
+	routersSettingForMigrator := make([]model.RoutersSettingForMigrator, 0, 10)
+	for i, value := range settings.AcrylicParsed {
+		routersSettingForMigrator = append(routersSettingForMigrator, model.RoutersSettingForMigrator{
+			Coordinates: model.CoordinatesPoints{
+				X: settings.Steps[i].Coords.X,
+				Y: settings.Steps[i].Coords.Y,
+			},
+			RoutersSettingsMigration: service.ValidStringFromImage(value.ParsedText),
+		})
+	}
+	return routersSettingForMigrator, nil
 }
