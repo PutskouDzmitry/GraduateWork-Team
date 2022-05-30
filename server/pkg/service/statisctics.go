@@ -15,6 +15,94 @@ func NewCalculationStatistics(routerSettings []model.RouterSettings, point model
 }
 
 func (s statistics) CalculateStatisticsInPoint() ([]model.ResponseOfGettingStatisticsOnPoint, error) {
-
-	return nil, nil
+	responses := make([]model.ResponseOfGettingStatisticsOnPoint, 0, 10)
+	responses = append(responses, model.ResponseOfGettingStatisticsOnPoint{
+		Name:          "Kek1",
+		MAC:           "kek1",
+		SignalStrange: -79,
+		SignalQuality: 20,
+		Frequency:     2.431,
+		MaxSpeed:      54,
+	})
+	responses = append(responses, model.ResponseOfGettingStatisticsOnPoint{
+		Name:          "Kek2",
+		MAC:           "kek2",
+		SignalStrange: -79,
+		SignalQuality: 20,
+		Frequency:     2.431,
+		MaxSpeed:      54,
+	})
+	responses = append(responses, model.ResponseOfGettingStatisticsOnPoint{
+		Name:          "Kek3",
+		MAC:           "kek3",
+		SignalStrange: -79,
+		SignalQuality: 20,
+		Frequency:     2.431,
+		MaxSpeed:      54,
+	})
+	responses = append(responses, model.ResponseOfGettingStatisticsOnPoint{
+		Name:          "Kek4",
+		MAC:           "kek4",
+		SignalStrange: -79,
+		SignalQuality: 20,
+		Frequency:     2.431,
+		MaxSpeed:      54,
+	})
+	responses = append(responses, model.ResponseOfGettingStatisticsOnPoint{
+		Name:          "Kek5",
+		MAC:           "kek5",
+		SignalStrange: -79,
+		SignalQuality: 20,
+		Frequency:     2.431,
+		MaxSpeed:      54,
+	})
+	responses = append(responses, model.ResponseOfGettingStatisticsOnPoint{
+		Name:          "Kek6",
+		MAC:           "kek6",
+		SignalStrange: -79,
+		SignalQuality: 20,
+		Frequency:     2.431,
+		MaxSpeed:      54,
+	})
+	responses = append(responses, model.ResponseOfGettingStatisticsOnPoint{
+		Name:          "Kek7",
+		MAC:           "kek7",
+		SignalStrange: -79,
+		SignalQuality: 20,
+		Frequency:     2.431,
+		MaxSpeed:      54,
+	})
+	responses = append(responses, model.ResponseOfGettingStatisticsOnPoint{
+		Name:          "Kek8",
+		MAC:           "kek8",
+		SignalStrange: -79,
+		SignalQuality: 20,
+		Frequency:     2.431,
+		MaxSpeed:      54,
+	})
+	responses = append(responses, model.ResponseOfGettingStatisticsOnPoint{
+		Name:          "Kek9",
+		MAC:           "kek9",
+		SignalStrange: -79,
+		SignalQuality: 20,
+		Frequency:     2.431,
+		MaxSpeed:      54,
+	})
+	responses = append(responses, model.ResponseOfGettingStatisticsOnPoint{
+		Name:          "Kek10",
+		MAC:           "kek10",
+		SignalStrange: -79,
+		SignalQuality: 20,
+		Frequency:     2.431,
+		MaxSpeed:      54,
+	})
+	responses = append(responses, model.ResponseOfGettingStatisticsOnPoint{
+		Name:          "Kek11",
+		MAC:           "kek11",
+		SignalStrange: -79,
+		SignalQuality: 20,
+		Frequency:     2.431,
+		MaxSpeed:      54,
+	})
+	return responses, nil
 }

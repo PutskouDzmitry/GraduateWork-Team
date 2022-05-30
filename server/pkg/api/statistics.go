@@ -5,7 +5,6 @@ import (
 	"github.com/PutskouDzmitry/GraduateWork-Team/server/pkg/model"
 	"github.com/PutskouDzmitry/GraduateWork-Team/server/pkg/service"
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
 	"net/http"
 )
 
@@ -27,7 +26,7 @@ func (h Handler) getStatisticsInPoint(c *gin.Context) {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
-	logrus.Info(getStatistics)
+	c.JSON(http.StatusOK, getStatistics)
 }
 
 func getPointForStatistics(c *gin.Context) (model.CoordinatesPoints, error) {

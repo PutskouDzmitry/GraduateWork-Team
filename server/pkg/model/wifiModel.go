@@ -102,6 +102,7 @@ type ResponseOfGettingStatisticsOnPoint struct {
 	Name          string  `json:"name"`
 	MAC           string  `json:"mac"`
 	SignalStrange float64 `json:"signal_strange"`
+	SignalQuality float64 `json:"signal_quality"`
 	Frequency     float64 `json:"frequency"`
 	MaxSpeed      float64 `json:"max_speed"`
 }
