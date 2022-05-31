@@ -6,6 +6,7 @@ import (
 	"github.com/fogleman/gg"
 	"github.com/sirupsen/logrus"
 	"math"
+	"math/rand"
 	"regexp"
 	"strconv"
 	"strings"
@@ -195,10 +196,10 @@ func (d drawImageToMigrator) drawWifiOnMap(data []radiusOfRouter) error {
 	if err != nil {
 		return fmt.Errorf("error with load png file: %w", err)
 	}
-	radii := make([]float64, 0, len(data)+1)
+	radii := make([]float64, 0, 10)
 	for i, _ := range data {
 		//radii = append(radii, (value.radius / 4))
-		radii = append(radii, (100 + float64(i)/4))
+		radii = append(radii, float64(rand.Intn(150)+i))
 	}
 	rotation -= math.Pi / 2
 	ctx := gg.NewContextForImage(im)
