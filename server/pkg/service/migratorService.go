@@ -196,8 +196,9 @@ func (d drawImageToMigrator) drawWifiOnMap(data []radiusOfRouter) error {
 		return fmt.Errorf("error with load png file: %w", err)
 	}
 	radii := make([]float64, 0, len(data)+1)
-	for _, value := range data {
-		radii = append(radii, (value.radius / 4))
+	for i, _ := range data {
+		//radii = append(radii, (value.radius / 4))
+		radii = append(radii, (100 + float64(i)/4))
 	}
 	rotation -= math.Pi / 2
 	ctx := gg.NewContextForImage(im)
