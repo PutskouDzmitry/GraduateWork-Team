@@ -101,7 +101,7 @@ type RouterSettingForMigrator struct {
 type ResponseOfGettingStatisticsOnPoint struct {
 	Name           string  `json:"name"`
 	MAC            string  `json:"mac"`
-	SignalStrength float64 `json:"signal_strange"`
+	SignalStrength float64 `json:"signal_strength"`
 	SignalQuality  float64 `json:"signal_quality"`
 	Frequency      float64 `json:"frequency"`
 	MaxSpeed       float64 `json:"max_speed"`
