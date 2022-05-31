@@ -7,14 +7,14 @@ type statistics struct {
 	point           model.CoordinatesPoints
 }
 
-func NewCalculationStatistics(routerSettings []model.RouterSettings, point model.CoordinatesPoints) statistics {
-	return statistics{
-		routersSettings: routerSettings,
-		point:           point,
-	}
-}
+//func NewCalculationStatistics(routerSettings []model.RouterSettings, point model.CoordinatesPoints) statistics {
+//	return statistics{
+//		routersSettings: routerSettings,
+//		point:           point,
+//	}
+//}
 
-func (s statistics) CalculateStatisticsInPoint() ([]model.ResponseOfGettingStatisticsOnPoint, error) {
+func CalculateStatisticsInPoint() ([]model.ResponseOfGettingStatisticsOnPoint, error) {
 	responses := make([]model.ResponseOfGettingStatisticsOnPoint, 0, 10)
 	responses = append(responses, model.ResponseOfGettingStatisticsOnPoint{
 		Name:          "Kek1",
@@ -106,3 +106,32 @@ func (s statistics) CalculateStatisticsInPoint() ([]model.ResponseOfGettingStati
 	})
 	return responses, nil
 }
+
+//func CalculateStatisticsInPoint(point model.CoordinatesPoints, routers model.RequestFlux) ([]model.ResponseOfGettingStatisticsOnPoint, error) {
+//
+//}
+//
+//func (s statistics) calculateRadius(routers []model.RequestFlux) {
+//	powers := make([]float64, 0, 10)
+//	powersMin := make([]float64, 0, 10)
+//	minPowers := make([]valueOfPowerOnPoint, 0, 10)
+//	maxPowers := make([]valueOfPowerOnPoint, 0, 10)
+//	for _, value := range s.routersSettings {
+//		for _, valueOfPoint := range value.RoutersSettingsMigration {
+//			powers = append(powers, valueOfPoint.Power)
+//		}
+//		maxPowers = append(maxPowers, findMaxPower(powers, value))
+//
+//		maxPowerOnPoint := findMaxPower(powers, value)
+//		for _, value := range d.coordinatesOfRouters {
+//			for _, valueOfPoint := range value.RoutersSettingsMigration {
+//				if valueOfPoint.MAC == maxPowerOnPoint.router.MAC {
+//					powersMin = append(powersMin, valueOfPoint.Power)
+//				}
+//			}
+//		}
+//		minPowers = append(minPowers, findMinPower(powersMin, value))
+//		powers = make([]float64, 0, 10)
+//		powersMin = make([]float64, 0, 10)
+//	}
+//}

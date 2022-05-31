@@ -9,19 +9,25 @@ import (
 )
 
 func (h Handler) getStatisticsInPoint(c *gin.Context) {
-	routers, err := getValuesOfRouters(c)
-	if err != nil {
-		newErrorResponse(c, http.StatusInternalServerError, err.Error())
-		return
-	}
-	pointForStatistics, err := getPointForStatistics(c)
-	if err != nil {
-		newErrorResponse(c, http.StatusInternalServerError, err.Error())
-		return
-	}
+	//routers, err := getValuesOfRouters(c)
+	//if err != nil {
+	//	newErrorResponse(c, http.StatusInternalServerError, err.Error())
+	//	return
+	//}
+	//pointForStatistics, err := getPointForStatistics(c)
+	//if err != nil {
+	//	newErrorResponse(c, http.StatusInternalServerError, err.Error())
+	//	return
+	//}
 
-	statistics := service.NewCalculationStatistics(routers, pointForStatistics)
-	getStatistics, err := statistics.CalculateStatisticsInPoint()
+	//statistics := service.NewCalculationStatistics(routers, pointForStatistics)
+	//getStatistics, err := statistics.CalculateStatisticsInPoint()
+	//if err != nil {
+	//	newErrorResponse(c, http.StatusInternalServerError, err.Error())
+	//	return
+	//}
+
+	getStatistics, err := service.CalculateStatisticsInPoint()
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
