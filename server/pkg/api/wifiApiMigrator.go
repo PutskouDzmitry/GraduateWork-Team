@@ -6,6 +6,7 @@ import (
 	"github.com/PutskouDzmitry/GraduateWork-Team/server/pkg/model"
 	"github.com/PutskouDzmitry/GraduateWork-Team/server/pkg/service"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -43,22 +44,22 @@ func getValuesToFlux(c *gin.Context) ([]model.RoutersSettingForMigrator, error) 
 	data := c.Request.FormValue("data")
 	var settings model.RequestFlux
 	dataInByte := []byte(data)
+	logrus.Info(data)
 	err := json.Unmarshal(dataInByte, &settings)
 	routers := make([]model.RoutersSettingForMigrator, 0, 10)
 	router := make([]model.RouterSettingForMigrator, 0, 10)
 	if err != nil {
 		return nil, err
 	}
-	for _, value := range settings.Steps {
-		for _, value := range settings.AcsParsed {
-			for _, valueOfPoint := range value.Signals {
-				if s, err := strconv.ParseFloat(valueOfPoint.Obj.LastSignalStrength, 64); err == nil {
-					router = append(router, model.RouterSettingForMigrator{
-						Name:  valueOfPoint.Obj.AdId,
-						Power: s,
-						MAC:   valueOfPoint.Obj.MAC,
-					})
-				}
+
+	for i, value := range settings.Steps {
+		for _, valueAcs := range settings.AcsParsed[i].Signals {
+			if s, err := strconv.ParseFloat(valueAcs.Obj.LastSignalStrength, 64); err == nil {
+				router = append(router, model.RouterSettingForMigrator{
+					Name:  valueAcs.Obj.AdId,
+					Power: s,
+					MAC:   valueAcs.Obj.MAC,
+				})
 			}
 		}
 		routers = append(routers, model.RoutersSettingForMigrator{
@@ -68,6 +69,7 @@ func getValuesToFlux(c *gin.Context) ([]model.RoutersSettingForMigrator, error) 
 			},
 			RoutersSettingsMigration: router,
 		})
+		router = make([]model.RouterSettingForMigrator, 0, 10)
 	}
 	return routers, nil
 }

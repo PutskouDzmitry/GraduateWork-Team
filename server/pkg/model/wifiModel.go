@@ -10,6 +10,11 @@ type RequestFlux struct {
 	AcsParsed []AcsParsed     `json:"acsParsed"`
 }
 
+type RequestFluxStat struct {
+	Id  int64           `json:"id"`
+	Obj []SignalsOnFlux `json:"signals"`
+}
+
 type CoordsForFlux struct {
 	Id     int64         `json:"id"`
 	Coords CoordsRouters `json:"coords"`

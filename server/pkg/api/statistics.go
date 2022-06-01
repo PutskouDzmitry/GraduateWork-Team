@@ -10,30 +10,23 @@ import (
 )
 
 func (h Handler) getStatisticsInPoint(c *gin.Context) {
-	//routers, err := getValuesOfRouters(c)
-	//if err != nil {
-	//	newErrorResponse(c, http.StatusInternalServerError, err.Error())
-	//	return
-	//}
-	//pointForStatistics, err := getPointForStatistics(c)
-	//if err != nil {
-	//	newErrorResponse(c, http.StatusInternalServerError, err.Error())
-	//	return
-	//}
-
-	//statistics := service.NewCalculationStatistics(routers, pointForStatistics)
-	//getStatistics, err := statistics.CalculateStatisticsInPoint()
-	//if err != nil {
-	//	newErrorResponse(c, http.StatusInternalServerError, err.Error())
-	//	return
-	//}
-
-	getStatistics, err := service.CalculateStatisticsInPoint()
+	routers, err := getValuesToFlux(c)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
-	logrus.Info("kek")
+	pointForStatistics, err := getPointForStatistics(c)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	getStatistics, err := service.CalculateStatisticsInPoint(pointForStatistics, routers)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	logrus.Info(getStatistics)
 	c.JSON(http.StatusOK, getStatistics)
 }
 

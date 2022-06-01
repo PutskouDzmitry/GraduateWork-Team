@@ -6,10 +6,13 @@ import (
 	"github.com/fogleman/gg"
 	"github.com/sirupsen/logrus"
 	"math"
-	"math/rand"
 	"regexp"
 	"strconv"
 	"strings"
+)
+
+var (
+	scaleImage = 4
 )
 
 type drawImageToMigrator struct {
@@ -64,7 +67,7 @@ func (d drawImageToMigrator) AcrylicMigrator() error {
 	for i, value := range maxPowers {
 		distance = append(distance, radiusOfRouter{
 			coordinates: value.coordinates,
-			radius:      getRadius(value.coordinates.X, value.coordinates.Y, minPowers[i].coordinates.X, minPowers[i].coordinates.Y),
+			radius:      getRadius(value.coordinates.X, value.coordinates.Y, minPowers[i].coordinates.X, minPowers[i].coordinates.Y, false),
 		})
 	}
 	err := d.drawWifiOnMap(distance)
@@ -126,9 +129,10 @@ func (d drawImageToMigrator) FluxMigrator() error {
 		maxPowers = append(maxPowers, findMaxPower(powers, value))
 
 		maxPowerOnPoint := findMaxPower(powers, value)
-		for _, value := range d.coordinatesOfRouters {
-			for _, valueOfPoint := range value.RoutersSettingsMigration {
-				if valueOfPoint.MAC == maxPowerOnPoint.router.MAC {
+		for _, valueMin := range d.coordinatesOfRouters {
+			for _, valueOfPoint := range valueMin.RoutersSettingsMigration {
+				if valueOfPoint.MAC == maxPowerOnPoint.router.MAC && valueMin.Coordinates.X != value.Coordinates.X && valueMin.Coordinates.Y != value.Coordinates.X {
+					//logrus.Info(valueOfPoint.Power, "|", maxPowerOnPoint.router.Power)
 					powersMin = append(powersMin, valueOfPoint.Power)
 				}
 			}
@@ -142,7 +146,7 @@ func (d drawImageToMigrator) FluxMigrator() error {
 	for i, value := range maxPowers {
 		distance = append(distance, radiusOfRouter{
 			coordinates: value.coordinates,
-			radius:      getRadius(value.coordinates.X, value.coordinates.Y, minPowers[i].coordinates.X, minPowers[i].coordinates.Y),
+			radius:      getRadius(value.coordinates.X, value.coordinates.Y, minPowers[i].coordinates.X, minPowers[i].coordinates.Y, false),
 		})
 	}
 	err := d.drawWifiOnMap(distance)
@@ -180,7 +184,7 @@ func (d drawImageToMigrator) TelephoneMigrator() error {
 	for i, value := range maxPowers {
 		distance = append(distance, radiusOfRouter{
 			coordinates: value.coordinates,
-			radius:      getRadius(value.coordinates.X, value.coordinates.Y, minPowers[i].coordinates.X, minPowers[i].coordinates.Y),
+			radius:      getRadius(value.coordinates.X, value.coordinates.Y, minPowers[i].coordinates.X, minPowers[i].coordinates.Y, false),
 		})
 	}
 	err := d.drawWifiOnMap(distance)
@@ -197,9 +201,8 @@ func (d drawImageToMigrator) drawWifiOnMap(data []radiusOfRouter) error {
 		return fmt.Errorf("error with load png file: %w", err)
 	}
 	radii := make([]float64, 0, 10)
-	for i, _ := range data {
-		//radii = append(radii, (value.radius / 4))
-		radii = append(radii, float64(rand.Intn(150)+i))
+	for _, value := range data {
+		radii = append(radii, value.radius/float64(scaleImage))
 	}
 	rotation -= math.Pi / 2
 	ctx := gg.NewContextForImage(im)
@@ -256,7 +259,11 @@ func (d drawImageToMigrator) drawWifiOnMap(data []radiusOfRouter) error {
 	return nil
 }
 
-func getRadius(x0, y0, x1, y1 float64) float64 {
+func getRadius(x0, y0, x1, y1 float64, check bool) float64 {
+	if check == true {
+		x1 = 100
+		y1 = 100
+	}
 	var x0x1 float64
 	var y0y1 float64
 	if x1-x0 >= 0 {
