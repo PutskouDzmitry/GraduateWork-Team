@@ -167,7 +167,7 @@ function ACSparser() {
       let coords = { left, top };
       var xhr = new XMLHttpRequest();
       let formData = new FormData();
-      formData.append("data", JSON.stringify(acsParsed));
+      formData.append("data", JSON.stringify({ steps, acsParsed }));
       formData.append("point", JSON.stringify({ coords }));
       xhr.onload = () => {
         let data = [];
