@@ -3,6 +3,7 @@ import modalActionTypes from "../constants/modalActionTypes";
 let initialState = {
   routerModalOpened: false,
   loaderModalOpened: false,
+  statsModalOpened: false,
 };
 
 const modalActionsReducer = (state = initialState, action) => {
@@ -34,6 +35,20 @@ const modalActionsReducer = (state = initialState, action) => {
       newState = {
         ...state,
         loaderModalOpened: false,
+      };
+      return newState;
+
+    case modalActionTypes.STATS_MODAL_OPEN:
+      newState = {
+        ...state,
+        statsModalOpened: true,
+      };
+      return newState;
+
+    case modalActionTypes.STATS_MODAL_CLOSE:
+      newState = {
+        ...state,
+        statsModalOpened: false,
       };
       return newState;
 

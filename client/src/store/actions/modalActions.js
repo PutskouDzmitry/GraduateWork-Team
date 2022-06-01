@@ -15,3 +15,11 @@ export const loaderModalOpen = () => ({
 export const loaderModalClose = () => ({
   type: modalActionTypes.LOADER_MODAL_CLOSE,
 });
+
+export const statsModalOpen = () => ({
+  type: modalActionTypes.STATS_MODAL_OPEN,
+});
+
+export const statsModalClose = () => ({
+  type: modalActionTypes.STATS_MODAL_CLOSE,
+});

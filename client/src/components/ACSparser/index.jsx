@@ -6,10 +6,12 @@ import {
   objectModeOff,
   setCurrentObject,
 } from "../../store/actions/objectActions";
-import Step from "../Step";
+import { statsModalOpen } from "../../store/actions/modalActions";
 import { objectsInfo, dataURLtoBlob, parseACSfiles } from "../../constants";
 
+import Step from "../Step";
 import FileInput from "../FileInput";
+import StatsModal from "../StatsModal";
 
 import "./index.scss";
 
@@ -32,6 +34,7 @@ function ACSparser() {
     (state) => state.objectsInfo.isObjectModeOn
   );
   const currentObject = useSelector((state) => state.objectsInfo.currentObject);
+  const [statTableData, setStatTableData] = useState([]);
 
   const handleChange = async () => {
     canvasOld.current.getContext("2d").clearRect(0, 0, 600, 400);
@@ -92,6 +95,7 @@ function ACSparser() {
   useEffect(() => {
     const currentCanvas = canvasOld.current;
     const objectsCanvas = canvasForObjects.current;
+    const newCanvas = canvasNew.current;
     const ctxCurrent = currentCanvas.getContext("2d");
     const ctxObjects = objectsCanvas.getContext("2d");
 
@@ -156,12 +160,39 @@ function ACSparser() {
         dispatch(addStep(id, coords));
       }
     };
+
+    const statClickListener = (e) => {
+      let left = e.offsetX;
+      let top = e.offsetY;
+      let coords = { left, top };
+      var xhr = new XMLHttpRequest();
+      let formData = new FormData();
+      formData.append("data", JSON.stringify(acsParsed));
+      formData.append("point", JSON.stringify({ coords }));
+      xhr.onload = () => {
+        let data = [];
+        JSON.parse(xhr.response).forEach((el) => {
+          let tableLine = {};
+          Object.entries(el).forEach(([key, val]) => {
+            tableLine[key] = val;
+          });
+          data.push(tableLine);
+        });
+        setStatTableData(data);
+        dispatch(statsModalOpen());
+      };
+      xhr.open("POST", "http://localhost:8080/api/map/getInfo", true);
+      xhr.send(formData);
+    };
+
     currentCanvas.addEventListener("click", clickListener);
     objectsCanvas.addEventListener("click", objectClickListener);
+    newCanvas.addEventListener("click", statClickListener);
 
     return () => {
       currentCanvas.removeEventListener("click", clickListener);
-      objectsCanvas.addEventListener("click", objectClickListener);
+      objectsCanvas.removeEventListener("click", objectClickListener);
+      newCanvas.removeEventListener("click", statClickListener);
     };
   });
 
@@ -271,6 +302,7 @@ function ACSparser() {
           ""
         )}
       </div>
+      <StatsModal tableData={statTableData} />
     </div>
   );
 }
