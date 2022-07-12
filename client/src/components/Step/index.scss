@@ -1,0 +1,23 @@
+@import "../../styles/constants.scss";
+
+.step {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px solid black;
+  background-color: $blue;
+  opacity: 0.5;
+  width: 4px;
+  height: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform: translate(-4px, -4px);
+  cursor: default;
+  transition: 0.2s;
+
+  &:hover {
+    opacity: 1;
+    background-color: $red;
+    transform: translate(-4px, -4px) scale(2);
+  }
+}

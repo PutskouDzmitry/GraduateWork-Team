@@ -1,0 +1,55 @@
+version: '3.4'
+
+services:
+  db-book:
+    image: ${SERVER_IMAGE}
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_PORT=${REDIS_INNER_PORT}
+      - REDIS_HOST=${REDIS_HOST}
+      - MONGO_USER=${MONGO_USER}
+      - MONGO_PASSWORD=${MONGO_PASSWORD}
+      - MONGO_HOST=${MONGO_HOST}
+      - MONGO_PORT=${MONGO_INNER_PORT}
+    ports:
+      - ${SERVER_OUT_PORT}:${SERVER_INNER_PORT}
+    container_name: ${SERVER_CONTAINER_NAME}
+    networks:
+      - ${NETWORK_NAME}
+    depends_on:
+      - ${MONGO_NAME}
+  mongo:
+    container_name: ${MONGO_NAME}
+    image: ${MONGO_IMAGE}
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    networks:
+      - ${NETWORK_NAME}
+    ports:
+      - ${MONGO_OUT_PORT}:${MONGO_INNER_PORT}
+    healthcheck:
+      test: ${MONGO_COMMAND}
+      interval: ${MONGO_INTERAVAL}
+      timeout: ${MONGO_TIMEOUT}
+      retries: ${MONGO_RETRIES}
+      start_period: ${MONGO_START_PERIOD}
+  redis:
+    container_name: ${REDIS_NAME}
+    image: ${REDIS_IMAGE}
+    environment:
+      REDIS_INITDB_ROOT_PASSWORD: ${REDIS_PASSWORD}
+    networks:
+      - ${NETWORK_NAME}
+    ports:
+      - ${REDIS_OUT_PORT}:${REDIS_INNER_PORT}
+    healthcheck:
+      test: ${REDIS_COMMAND}
+      interval: ${REDIS_INTERVAL}
+      timeout: ${REDIS_TIMEOUT}
+      retries: ${REDIS_RETRIES}
+      start_period: ${REDIS_START_PERIOD}
+
+networks:
+  book-network:
+    name: ${NETWORK_NAME}
